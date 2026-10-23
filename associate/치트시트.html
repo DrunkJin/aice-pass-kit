@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AICE Associate 치트시트</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=IBM+Plex+Sans+KR:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ===========================================
+   THEME — 인쇄용 한 장 요약 (A4 가로 2페이지)
+   =========================================== */
+:root {
+    --paper: #fbf8f1; --ink: #1b2233; --ink-2: #4b546b; --ink-3: #7d8497;
+    --red: #d6402b; --blue: #2b59c3; --green: #23845a; --yellow: #f4cf55;
+    --code-bg: #f1ece0;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'IBM Plex Sans KR', sans-serif; color: var(--ink); background: #e9e3d6; word-break: keep-all; font-size: 12px; line-height: 1.45; }
+.page {
+    width: 297mm; min-height: 210mm; margin: 16px auto; background: var(--paper); padding: 9mm 10mm;
+    box-shadow: 0 6px 24px rgba(0,0,0,.15); position: relative;
+}
+header { display: flex; flex-wrap: wrap; gap: 4px 16px; align-items: baseline; justify-content: space-between; border-bottom: 3px solid var(--ink); padding-bottom: 4px; margin-bottom: 7px; }
+h1 { font-family: 'Black Han Sans', sans-serif; font-weight: 400; font-size: 26px; }
+h1 em { font-style: normal; color: var(--red); }
+.meta { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--ink-2); }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0 8mm; }
+.col + .col { border-left: 1px dashed rgba(27,34,51,.2); padding-left: 8mm; margin-left: -4mm; }
+.box { break-inside: avoid; margin-bottom: 7px; }
+h2 { font-family: 'Black Han Sans', sans-serif; font-weight: 400; font-size: 14px; display: flex; gap: 6px; align-items: center; margin-bottom: 3px; }
+h2 .q { font-family: 'JetBrains Mono', monospace; font-size: 10px; background: var(--ink); color: #fff; padding: 1px 6px; border-radius: 999px; }
+h2 .q.r { background: var(--red); } h2 .q.b { background: var(--blue); } h2 .q.g { background: var(--green); }
+pre {
+    font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0;
+    font-family: 'JetBrains Mono', monospace; font-size: 10.6px; line-height: 1.42; background: var(--code-bg);
+    border-left: 3px solid var(--blue); border-radius: 4px; padding: 4px 7px; white-space: pre-wrap; word-break: normal; overflow-wrap: anywhere;
+}
+pre .c { color: #7a7f8e; font-style: italic; }
+pre b { color: var(--red); }
+p, li { font-size: 11.3px; }
+ul { padding-left: 1.1em; } li::marker { color: var(--red); }
+table { width: 100%; border-collapse: collapse; font-size: 10.6px; }
+th, td { border: 1px solid rgba(27,34,51,.3); padding: 2px 5px; text-align: left; vertical-align: top; }
+th { background: var(--ink); color: #fff; font-weight: 500; }
+code { font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; font-family: 'JetBrains Mono', monospace; font-size: 10.3px; background: var(--code-bg); padding: 0 3px; border-radius: 3px; }
+.warn { border: 1.5px solid var(--red); background: rgba(214,64,43,.07); border-radius: 5px; padding: 4px 7px; }
+.warn b { color: var(--red); }
+.ok { border: 1.5px solid var(--green); background: rgba(35,132,90,.07); border-radius: 5px; padding: 4px 7px; }
+.toolbar { text-align: center; margin: 16px; font-size: 14px; }
+.toolbar button { font: inherit; padding: 8px 18px; border-radius: 999px; border: 2px solid var(--ink); background: var(--ink); color: #fff; cursor: pointer; }
+.toolbar a { margin-left: 12px; color: var(--ink); }
+@page { size: A4 landscape; margin: 0; }
+@media print {
+    body { background: #fff; }
+    .toolbar { display: none; }
+    .page { margin: 0; box-shadow: none; height: 209mm; min-height: 0; overflow: hidden; page-break-after: always; break-after: page; }
+    .page:last-child { page-break-after: auto; break-after: auto; }
+}
+@media screen and (max-width: 1150px) {
+    .page { width: auto; margin: 10px; }
+    .cols { grid-template-columns: 1fr; }
+    .col + .col { border-left: 0; padding-left: 0; margin-left: 0; }
+}
+</style>
+</head>
+<body>
+<div class="toolbar"><button onclick="window.print()">🖨 인쇄 / PDF 저장</button><a href="index.html">← 학습 홈</a></div>
+
+<!-- ================= PAGE 1 ================= -->
+<div class="page">
+<header><h1>AICE Associate <em>치트시트</em> · 1/4 준비 · 탐색 · 시각화</h1><span class="meta">문항 1~5 · 변수명은 문제 그대로!</span></header>
+<div class="cols">
+<div class="col">
+<div class="box"><h2><span class="q">Q1~2</span>import · alias</h2>
+<pre>import numpy as np
+import pandas as pd
+import sklearn as sk
+import seaborn as sns
+import matplotlib.pyplot as plt</pre></div>
+<div class="box"><h2><span class="q">Q3</span>읽기 · 병합</h2>
+<pre>df = pd.read_csv('a.csv')          <span class="c"># sep=',', encoding='cp949'</span>
+df = pd.read_json('a.json')
+df = pd.read_excel('a.xlsx')
+<span class="c"># 병합: 공통 키로 옆으로 붙이기</span>
+df = pd.merge(df1, df2, on='id', how='inner')  <span class="c"># left/outer</span>
+<span class="c"># 이어붙이기: 위아래로 쌓기</span>
+df = pd.concat([a, b], axis=0, ignore_index=True)</pre></div>
+<div class="box"><h2><span class="q">확인</span>데이터 훑어보기</h2>
+<pre>df.head(); df.tail(); df.shape; df.columns
+df.info()                 <span class="c"># 타입 · 결측</span>
+df.describe()             <span class="c"># 수치 통계</span>
+df['c'].value_counts()    <span class="c"># 범주 개수</span>
+df['c'].unique(); df['c'].nunique()
+df.isna().sum()           <span class="c"># 컬럼별 결측 수</span>
+df.groupby('c')['y'].mean().sort_values()
+df.corr(numeric_only=True)['y'].sort_values()</pre></div>
+</div>
+<div class="col">
+<div class="box"><h2><span class="q r">Q4~5</span>시각화 (seaborn)</h2>
+<pre>sns.countplot(data=df, x='c')            <span class="c"># 범주 개수</span>
+sns.histplot(data=df, x='n', bins=30, kde=True)
+sns.boxplot(data=df, x='c', y='n')       <span class="c"># 이상치</span>
+sns.scatterplot(data=df, x='a', y='b', hue='c')
+sns.jointplot(data=df, x='a', y='b')     <span class="c"># 산점+분포</span>
+sns.barplot(data=df, x='c', y='n')       <span class="c"># 평균 막대</span>
+sns.heatmap(df.corr(numeric_only=True), annot=True, fmt='.2f', cmap='coolwarm')
+plt.title('t'); plt.xlabel('x'); plt.ylabel('y')
+plt.legend(); plt.show()</pre></div>
+<div class="box"><h2><span class="q">선택</span>행·열 고르기</h2>
+<pre>df['a']            <span class="c"># Series (1열)</span>
+df[['a','b']]      <span class="c"># DataFrame (여러 열)</span>
+df.loc[행조건, ['a','b']]   <span class="c"># 이름 기준</span>
+df.iloc[0:5, 0:3]          <span class="c"># 위치 기준</span>
+df[(df['a'] &gt; 1) &amp; (df['b'] == 'x')]   <span class="c"># 괄호 필수! and→&amp; or→|</span>
+df[df['c'].isin(['x','y'])]
+df[df['c'] != '-']           <span class="c"># 잘못된 값 제거</span></pre></div>
+</div>
+</div>
+</div>
+
+<!-- ================= PAGE 2 ================= -->
+<div class="page">
+<header><h1>AICE Associate <em>치트시트</em> · 2/4 전처리 · 머신러닝</h1><span class="meta">문항 6~11 · 결과는 반드시 지정 변수에 저장</span></header>
+<div class="cols">
+<div class="col">
+<div class="box"><h2><span class="q g">Q6</span>이상치 제거</h2>
+<pre><span class="c"># 문제에 기준이 주어지면 그대로</span>
+df_temp = df[df['Speed'] &lt; 300]
+<span class="c"># IQR 기준</span>
+q1 = df['n'].quantile(0.25); q3 = df['n'].quantile(0.75)
+iqr = q3 - q1
+df_temp = df[(df['n'] &gt;= q1 - 1.5*iqr) &amp; (df['n'] &lt;= q3 + 1.5*iqr)]</pre></div>
+<div class="box"><h2><span class="q g">Q7</span>결측치</h2>
+<pre>df_na = df_temp.dropna()                  <span class="c"># 결측 행 삭제</span>
+df_na = df_temp.dropna(subset=['a'])      <span class="c"># 특정 열 기준</span>
+df['n'] = df['n'].fillna(df['n'].median())  <span class="c"># 수치: 평균/중앙값</span>
+df['c'] = df['c'].fillna(df['c'].mode()[0]) <span class="c"># 범주: 최빈값</span>
+df = df.drop('결측많은열', axis=1)</pre></div>
+<div class="box"><h2><span class="q g">Q8</span>컬럼 삭제 · 값 바꾸기 · 타입</h2>
+<pre>df_del = df_na.drop(['a','b'], axis=1)    <span class="c"># = columns=[...]</span>
+df['c'] = df['c'].replace({'Yes':1, 'No':0})
+df['c'] = df['c'].map({'Yes':1, 'No':0})
+df['t'] = df['t'].replace(' ', '0').astype(float)
+df['t'] = pd.to_numeric(df['t'], errors='coerce')  <span class="c"># 변환불가→NaN</span>
+df['b'] = df['b'].astype(int)             <span class="c"># bool→0/1</span></pre></div>
+<div class="box"><h2><span class="q g">Q9</span>인코딩</h2>
+<pre><span class="c"># 원-핫: object 컬럼 → 0/1 여러 열</span>
+cols = df_del.select_dtypes('object').columns
+df_preset = pd.get_dummies(data=df_del, columns=cols)   <span class="c"># drop_first=True 옵션</span>
+<span class="c"># 라벨 인코딩: 문자 → 0,1,2 (주로 타깃 y)</span>
+from sklearn.preprocessing import LabelEncoder
+le = LabelEncoder()
+df['y'] = le.fit_transform(df['y'])</pre></div>
+</div>
+<div class="col">
+<div class="box"><h2><span class="q g">Q10</span>분할 · 스케일링</h2>
+<pre>from sklearn.model_selection import train_test_split
+X = df_preset.drop('target', axis=1)
+y = df_preset['target']
+X_train, X_valid, y_train, y_valid = train_test_split(
+    X, y, test_size=0.2, random_state=42, stratify=y)  <span class="c"># stratify=분류만</span>
+
+from sklearn.preprocessing import StandardScaler  <span class="c"># MinMaxScaler</span>
+scaler = StandardScaler()
+X_train = scaler.fit_transform(X_train)   <span class="c"># train: fit+transform</span>
+X_valid = scaler.transform(X_valid)       <span class="c"># valid: transform만!</span></pre></div>
+<div class="box warn"><b>반환값 함정</b> · <code>df.dropna()</code>, <code>df.drop()</code>, <code>pd.get_dummies()</code>는 <b>새 DataFrame을 돌려줄 뿐</b>이에요. 반드시 <code>df_na = ...</code>처럼 지정된 변수에 저장하세요. <code>inplace=True</code>를 쓰면 반환값은 <b>None</b>이에요.</div>
+<div class="box"><h2><span class="q b">Q11</span>ML 모델 4줄 템플릿</h2>
+<pre>from sklearn.ensemble import RandomForestClassifier
+model = RandomForestClassifier(n_estimators=100, max_depth=5, random_state=42)
+model.fit(X_train, y_train)
+y_pred = model.predict(X_valid)</pre>
+<table style="margin-top:4px">
+<tr><th>분류 (Classifier)</th><th>회귀 (Regressor)</th><th>import 위치</th></tr>
+<tr><td>LogisticRegression</td><td>LinearRegression</td><td>sklearn.linear_model</td></tr>
+<tr><td>KNeighborsClassifier</td><td>KNeighborsRegressor</td><td>sklearn.neighbors</td></tr>
+<tr><td>DecisionTreeClassifier</td><td>DecisionTreeRegressor</td><td>sklearn.tree</td></tr>
+<tr><td>RandomForestClassifier</td><td>RandomForestRegressor</td><td>sklearn.ensemble</td></tr>
+<tr><td>XGBClassifier</td><td>XGBRegressor</td><td>xgboost</td></tr>
+<tr><td>LGBMClassifier</td><td>LGBMRegressor</td><td>lightgbm</td></tr>
+</table></div>
+</div>
+</div>
+</div>
+
+<!-- ================= PAGE 3 ================= -->
+<div class="page">
+<header><h1>AICE Associate <em>치트시트</em> · 3/4 평가 · 실전</h1><span class="meta">문항 12 · 분류=범주 타깃, 회귀=연속 숫자 타깃</span></header>
+<div class="cols">
+<div class="col">
+<div class="box"><h2><span class="q b">Q12</span>성능 평가</h2>
+<pre>from sklearn.metrics import (accuracy_score, precision_score,
+    recall_score, f1_score, confusion_matrix, classification_report,
+    mean_absolute_error, mean_squared_error, r2_score)
+<span class="c"># 분류 — 인자 순서: (정답, 예측)</span>
+accuracy_score(y_valid, y_pred)
+f1_score(y_valid, y_pred)            <span class="c"># 다중분류: average='macro'</span>
+confusion_matrix(y_valid, y_pred)
+print(classification_report(y_valid, y_pred))
+<span class="c"># 회귀</span>
+mae  = mean_absolute_error(y_valid, y_pred)
+mse  = mean_squared_error(y_valid, y_pred)
+rmse = np.sqrt(mse)
+r2   = r2_score(y_valid, y_pred)</pre></div>
+<div class="box"><h2><span class="q">지표</span>언제 무엇을?</h2>
+<table>
+<tr><th>지표</th><th>뜻</th></tr>
+<tr><td>accuracy</td><td>전체 중 맞춘 비율. 불균형 데이터에선 착시 주의</td></tr>
+<tr><td>precision</td><td>양성이라 예측한 것 중 진짜 양성 (TP/(TP+FP))</td></tr>
+<tr><td>recall</td><td>진짜 양성 중 잡아낸 비율 (TP/(TP+FN)) · 이탈·사기 탐지</td></tr>
+<tr><td>f1</td><td>precision과 recall의 조화평균</td></tr>
+<tr><td>MAE / RMSE</td><td>평균 오차 크기. 작을수록 좋음 · R2는 1에 가까울수록 좋음</td></tr>
+</table></div>
+</div>
+<div class="col">
+<div class="box"><h2><span class="q">에러</span>자주 보는 에러 → 해결</h2>
+<table>
+<tr><th>메시지</th><th>해결</th></tr>
+<tr><td>could not convert string to float</td><td>object 컬럼 남음 → get_dummies / replace / to_numeric</td></tr>
+<tr><td>Input contains NaN</td><td>결측 남음 → <code>isna().sum()</code> 후 dropna/fillna</td></tr>
+<tr><td>KeyError: 'col'</td><td>컬럼명 오타·이미 삭제됨 → <code>df.columns</code> 확인</td></tr>
+<tr><td>NameError</td><td>위쪽 셀 미실행 → 위에서부터 다시 실행</td></tr>
+<tr><td>can't convert np.ndarray of type numpy.object_</td><td><code>X_train.astype('float32')</code> 후 텐서로</td></tr>
+<tr><td>mat1 and mat2 shapes cannot be multiplied</td><td>첫 Linear 입력 = <code>X_tr.shape[1]</code> 확인</td></tr>
+<tr><td>expected scalar type Long / Float</td><td>CrossEntropy는 y를 long, MSE·BCE는 float32</td></tr>
+</table></div>
+<div class="box ok"><b>도움말 (허용)</b> · <code>Shift+Tab</code> 함수 인자 보기 · <code>함수?</code> 도움말 · <code>Tab</code> 자동완성 · 공식 문서: numpy, pandas, matplotlib, seaborn, scikit-learn, PyTorch 공식 문서</div>
+<div class="box warn"><b>마지막 10분 점검</b><br>☐ 지정 변수가 모두 있나? (<code>%who</code>) ☐ 파라미터 값이 문제와 같은가? ☐ 에러 난 셀은 없나? ☐ 꼬였으면 Restart &amp; Run All</div>
+</div>
+</div>
+</div>
+
+<!-- ================= PAGE 4 ================= -->
+<div class="page">
+<header><h1>AICE Associate <em>치트시트</em> · 4/4 딥러닝 (PyTorch)</h1><span class="meta">문항 13~14 · zero_grad → 예측 → loss → backward → step</span></header>
+<div class="cols">
+<div class="col">
+<div class="box"><h2><span class="q r">Q13</span>PyTorch 신경망</h2>
+<pre>import torch, torch.nn as nn
+from torch.utils.data import TensorDataset, DataLoader
+torch.manual_seed(42); f32 = torch.float32
+X_tr = torch.tensor(X_train.values, dtype=f32)   <span class="c"># bool이면 astype 먼저</span>
+y_tr = torch.tensor(y_train.values, dtype=f32).view(-1, 1)  <span class="c"># 다중: long</span>
+X_va = torch.tensor(X_valid.values, dtype=f32)
+y_va = torch.tensor(y_valid.values, dtype=f32).view(-1, 1)
+loader = DataLoader(TensorDataset(X_tr, y_tr),
+                    batch_size=32, shuffle=True)
+
+model = nn.Sequential(
+    nn.Linear(X_tr.shape[1], 64), nn.ReLU(), nn.Dropout(0.2),
+    nn.Linear(64, 32), nn.ReLU(), nn.Linear(32, <b>1</b>))   <span class="c"># ← 표 참고</span>
+loss_fn = <b>nn.MSELoss()</b>
+optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+history = {'loss': [], 'val_loss': []}
+best, wait, patience = float('inf'), 0, 5
+for epoch in range(50):
+    model.train(); total = 0
+    for xb, yb in loader:
+        optimizer.zero_grad()                  <span class="c"># ① 기울기 초기화</span>
+        loss = loss_fn(model(xb), yb)          <span class="c"># ② 예측 + 손실</span>
+        loss.backward(); optimizer.step()      <span class="c"># ③ 역전파 ④ 갱신</span>
+        total += loss.item() * len(xb)
+    model.eval()
+    with torch.no_grad():
+        val = loss_fn(model(X_va), y_va).item()
+    history['loss'].append(total / len(X_tr))
+    history['val_loss'].append(val)
+    if val &lt; best:
+        best, wait = val, 0
+        best_state = {k: v.clone() for k, v in model.state_dict().items()}
+    else:
+        wait += 1
+        if wait &gt;= patience: break             <span class="c"># 조기 종료</span>
+model.load_state_dict(best_state)</pre></div>
+</div>
+<div class="col">
+<div class="box"><h2><span class="q r">핵심</span>마지막 층 · 손실 짝꿍</h2>
+<table>
+<tr><th>문제</th><th>마지막 층</th><th>손실</th><th>y 텐서</th><th>예측 후처리</th></tr>
+<tr><td>회귀</td><td><code>nn.Linear(h, 1)</code></td><td><code>nn.MSELoss()</code></td><td>float32 (N,1)</td><td>그대로</td></tr>
+<tr><td>이진분류</td><td><code>nn.Linear(h, 1)</code></td><td><code>nn.BCEWithLogitsLoss()</code></td><td>float32 (N,1)</td><td><code>(torch.sigmoid(out) &gt; 0.5).int()</code></td></tr>
+<tr><td>다중분류</td><td><code>nn.Linear(h, n)</code></td><td><code>nn.CrossEntropyLoss()</code></td><td>long (N,)</td><td><code>out.argmax(dim=1)</code></td></tr>
+</table>
+<p style="margin-top:3px">sigmoid·softmax는 <b>손실 함수 안에 이미 들어 있어요</b>. 모델 끝에 따로 붙이지 마세요.</p></div>
+<div class="box"><h2><span class="q r">Q14</span>학습 곡선 · 검증 지표</h2>
+<pre>plt.plot(history['loss']); plt.plot(history['val_loss'])
+plt.title('Model Loss'); plt.xlabel('Epochs'); plt.ylabel('Loss')
+plt.legend(['loss', 'val_loss']); plt.show()
+
+model.eval()
+with torch.no_grad():
+    pred = model(X_va).numpy().ravel()          <span class="c"># 회귀 예측</span>
+dnn_mae = mean_absolute_error(y_valid, pred)</pre></div>
+</div>
+</div>
+</div>
+
+</body>
+</html>

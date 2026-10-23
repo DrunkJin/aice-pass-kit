@@ -1,0 +1,23 @@
+# OS / 에디터
+.DS_Store
+.vscode/
+.idea/
+
+# 로컬 도구 설정
+.claude/
+
+# Python / Jupyter
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.venv/
+venv/
+
+# 노트북 실행 부산물 (모델 체크포인트, 중간 저장 CSV)
+*.pt
+*.pth
+*.keras
+*.h5
+best_model*
+associate/notebooks/*.csv
+associate/notebooks/정답/*.csv

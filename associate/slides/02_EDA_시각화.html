@@ -1,0 +1,1449 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EDA와 시각화</title>
+
+<!-- ===========================================
+     FONTS (Google Fonts)
+     - Black Han Sans   : 제목용 한글 디스플레이
+     - IBM Plex Sans KR : 본문
+     - JetBrains Mono   : 코드
+     - Nanum Pen Script : 빨간 채점펜 손글씨 주석
+     =========================================== -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=IBM+Plex+Sans+KR:wght@300;400;500;700&family=JetBrains+Mono:wght@400;700&family=Nanum+Pen+Script&display=swap" rel="stylesheet">
+
+<style>
+/* ===========================================
+   THEME — 이 변수만 바꾸면 전체 색/글꼴이 바뀝니다
+   콘셉트: 시험지(크림 모눈종이) + Jupyter 셀 + 빨간 채점펜
+   =========================================== */
+:root {
+    --stage-bg: #23283a;          /* 슬라이드 바깥 여백 색 */
+    --slide-bg: #f3eee3;          /* 종이 */
+    --paper-2: #e9e1cf;           /* 진한 종이 (카드 배경) */
+    --ink: #1b2233;               /* 본문 잉크 */
+    --ink-2: #4b546b;             /* 보조 텍스트 */
+    --ink-3: #7d8497;             /* 흐린 텍스트 */
+    --rule: rgba(27, 34, 51, 0.07); /* 모눈 선 */
+    --red: #d6402b;               /* 채점펜 / 강조 */
+    --red-soft: rgba(214, 64, 43, 0.10);
+    --blue: #2b59c3;              /* Jupyter In[] 프롬프트 */
+    --blue-soft: rgba(43, 89, 195, 0.10);
+    --green: #23845a;             /* 정답 / OK */
+    --green-soft: rgba(35, 132, 90, 0.11);
+    --yellow: #f4cf55;            /* 형광펜 */
+    --code-bg: #1d2232;           /* 코드 셀 배경 */
+    --code-fg: #e8e3d7;
+
+    --font-display: 'Black Han Sans', sans-serif;
+    --font-body: 'IBM Plex Sans KR', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    --font-pen: 'Nanum Pen Script', cursive;
+
+    --pad-x: 120px;               /* 좌우 여백 (왼쪽 빨간 여백선 고려) */
+    --pad-y: 72px;
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* ===========================================
+   VIEWPORT BASE (frontend-slides 필수 CSS — 전체 포함)
+   =========================================== */
+html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    background: var(--stage-bg, #000);
+}
+.deck-viewport {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    background: var(--stage-bg, #000);
+}
+.deck-stage {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 1920px;
+    height: 1080px;
+    overflow: hidden;
+    transform-origin: 0 0;
+    background: var(--slide-bg, #fff);
+}
+.slide {
+    position: absolute;
+    inset: 0;
+    width: 1920px;
+    height: 1080px;
+    overflow: hidden;
+    display: block;
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    background: var(--slide-bg, #fff);
+}
+.slide.active,
+.slide.visible {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+    z-index: 1;
+}
+img, video, canvas, svg { max-width: 100%; max-height: 100%; }
+.deck-controls {
+    position: fixed;
+    left: 50%;
+    bottom: 22px;
+    transform: translateX(-50%);
+    z-index: 1000;
+}
+@media print {
+    html, body { width: 1920px; height: auto; overflow: visible; background: #fff; }
+    .deck-viewport { position: static; overflow: visible; background: #fff; }
+    .deck-stage { position: static; width: auto; height: auto; transform: none !important; background: none; }
+    .slide {
+        position: relative; display: block !important; visibility: visible !important;
+        opacity: 1 !important; pointer-events: auto !important;
+        width: 1920px; height: 1080px; break-after: page; page-break-after: always;
+    }
+    .slide:last-child { break-after: auto; page-break-after: auto; }
+    .deck-controls { display: none !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.2s !important;
+    }
+}
+
+/* ===========================================
+   PAPER BACKGROUND — 모눈 + 왼쪽 빨간 여백선 (시험지 느낌)
+   =========================================== */
+.slide {
+    font-family: var(--font-body);
+    color: var(--ink);
+    font-size: 30px;
+    line-height: 1.55;
+    background-color: var(--slide-bg);
+    background-image:
+        linear-gradient(var(--rule) 1px, transparent 1px),
+        linear-gradient(90deg, var(--rule) 1px, transparent 1px);
+    background-size: 48px 48px;
+    background-position: -1px -1px;
+    padding: var(--pad-y) var(--pad-x) 64px;
+    word-break: keep-all;          /* 한글 단어 중간에서 줄바꿈 방지 */
+}
+.slide::before {               /* 빨간 여백선 */
+    content: "";
+    position: absolute;
+    top: 0; bottom: 0; left: 72px;
+    width: 2px;
+    background: var(--red);
+    opacity: .55;
+}
+.slide::after {                /* 펀치 구멍 3개 */
+    content: "";
+    position: absolute;
+    left: 22px; top: 50%;
+    width: 22px; height: 22px;
+    margin-top: -11px;
+    border-radius: 50%;
+    background: var(--stage-bg);
+    opacity: .16;
+    box-shadow: 0 -300px 0 var(--stage-bg), 0 300px 0 var(--stage-bg);
+}
+
+/* ===========================================
+   SLIDE HEADER — 섹션 태그 + 페이지 번호 (JS가 자동 기입)
+   =========================================== */
+.hd {
+    position: absolute;
+    top: 30px; left: var(--pad-x); right: 72px;
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: var(--font-mono);
+    font-size: 20px;
+    letter-spacing: .04em;
+    color: var(--ink-3);
+}
+.hd .tag { color: var(--red); font-weight: 700; }
+.hd .pg::before { content: attr(data-pg); }
+
+/* ===========================================
+   TYPOGRAPHY
+   =========================================== */
+h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing: -.01em; line-height: 1.15; }
+h2.t { font-size: 64px; margin-top: 18px; margin-bottom: 14px; }
+h2.t small { font-family: var(--font-body); font-size: 30px; color: var(--ink-3); margin-left: 16px; font-weight: 400; letter-spacing: 0; }
+h3 { font-size: 36px; margin-bottom: 10px; }
+.lead { font-size: 31px; color: var(--ink-2); margin-bottom: 28px; max-width: 1560px; }
+p + p { margin-top: 12px; }
+b, strong { font-weight: 700; }
+code, .mono { font-family: var(--font-mono); font-size: .86em; }
+pre, code, kbd, .mono, .hd, .chip, .k { font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; }  /* != 가 ≠ 로 바뀌지 않게 (초보자 오타 방지) */
+:not(pre) > code {
+    background: rgba(27, 34, 51, .08);
+    padding: 1px 8px; border-radius: 6px;
+}
+mark {                                  /* 형광펜 */
+    background: linear-gradient(transparent 52%, var(--yellow) 52%, var(--yellow) 92%, transparent 92%);
+    color: inherit; padding: 0 2px;
+}
+.red { color: var(--red); }
+.blue { color: var(--blue); }
+.green { color: var(--green); }
+.dim { color: var(--ink-3); }
+.small { font-size: 24px; }
+.xs { font-size: 21px; }
+ul.list, ol.list { padding-left: 1.2em; }
+ul.list li, ol.list li { margin: 6px 0; }
+ul.list li::marker { color: var(--red); }
+ol.list li::marker { color: var(--red); font-family: var(--font-mono); font-weight: 700; }
+
+/* ===========================================
+   LAYOUT GRIDS
+   =========================================== */
+.cols { display: grid; gap: 40px; align-items: start; }
+.c2 { grid-template-columns: 1fr 1fr; }
+.c3 { grid-template-columns: repeat(3, 1fr); }
+.c4 { grid-template-columns: repeat(4, 1fr); }
+.c37 { grid-template-columns: 3fr 7fr; }
+.c46 { grid-template-columns: 4fr 6fr; }
+.c64 { grid-template-columns: 6fr 4fr; }
+.c73 { grid-template-columns: 7fr 3fr; }
+.stack > * + * { margin-top: 22px; }
+.center-y { align-items: center; }
+
+/* ===========================================
+   CARDS — 종이 위에 올린 메모 카드
+   =========================================== */
+.card {
+    background: rgba(255, 253, 247, .82);
+    border: 2px solid var(--ink);
+    border-radius: 14px;
+    padding: 26px 30px;
+    box-shadow: 6px 6px 0 rgba(27, 34, 51, .12);
+}
+.card h3 { font-size: 34px; }
+.card.red, .card.blue, .card.green, .card.yellow { color: var(--ink); }  /* 테두리 색이 글자색에 번지지 않게 */
+.card.red   { border-top: 10px solid var(--red); }
+.card.blue  { border-top: 10px solid var(--blue); }
+.card.green { border-top: 10px solid var(--green); }
+.card.yellow{ border-top: 10px solid var(--yellow); }
+.card .k {                              /* 카드 안의 작은 라벨 */
+    font-family: var(--font-mono); font-size: 19px; letter-spacing: .08em;
+    color: var(--ink-3); text-transform: uppercase; display: block; margin-bottom: 6px;
+}
+
+/* ===========================================
+   JUPYTER CELL — In [ ]: 프롬프트 + 다크 코드 블록 + Out
+   =========================================== */
+.cell { display: grid; grid-template-columns: 112px 1fr; gap: 0 14px; align-items: start; }
+.cell + .cell { margin-top: 16px; }
+.cell .in, .cell .outp {
+    font-family: var(--font-mono); font-size: 20px; text-align: right;
+    padding-top: 18px; white-space: nowrap;
+}
+.cell .in { color: var(--blue); }
+.cell .outp { color: var(--red); }
+pre {
+    font-family: var(--font-mono);
+    font-size: 24px;
+    line-height: 1.5;
+    background: var(--code-bg);
+    color: var(--code-fg);
+    border-radius: 12px;
+    padding: 16px 24px;
+    overflow: hidden;
+    white-space: pre;
+    tab-size: 4;
+    border-left: 6px solid var(--blue);
+}
+pre.out {                               /* 출력 결과: 밝은 종이 위 */
+    background: rgba(255, 253, 247, .9);
+    color: var(--ink);
+    border: 1.5px dashed var(--ink-3);
+    border-left: 6px solid var(--red);
+    font-size: 21px;
+}
+pre.sm { font-size: 21px; }
+pre.xs { font-size: 19px; line-height: 1.45; }
+pre.bad { border-left-color: var(--red); }
+pre.good { border-left-color: var(--green); }
+/* 문법 강조 (JS 하이라이터가 넣는 span) */
+.tk-kw { color: #ff9a7a; font-weight: 700; }
+.tk-str { color: #b8dc8c; }
+.tk-com { color: #8a92a8; font-style: italic; }
+.tk-num { color: #f4cf55; }
+.tk-fn { color: #92c0ff; }
+.tk-bi { color: #e4a8ff; }
+.tk-arg { color: #ffd2a1; }
+pre .hl {                               /* 코드 안에서 특정 부분 강조 */
+    background: rgba(244, 207, 85, .22);
+    outline: 2px solid rgba(244, 207, 85, .55);
+    border-radius: 4px;
+}
+
+/* ===========================================
+   TABLE
+   =========================================== */
+table.tbl { width: 100%; border-collapse: collapse; font-size: 25px; background: rgba(255,253,247,.85); }
+.tbl th, .tbl td { border: 1.5px solid rgba(27,34,51,.25); padding: 10px 16px; text-align: left; vertical-align: top; }
+.tbl th { background: var(--ink); color: var(--slide-bg); font-weight: 500; font-size: 23px; }
+.tbl td code { font-size: .85em; }
+.tbl tr.hit td { background: rgba(244, 207, 85, .28); }
+
+/* ===========================================
+   CALLOUTS — 함정 / 팁 / 시험 포인트
+   =========================================== */
+.callout {
+    border-radius: 12px; padding: 18px 24px 18px 88px; position: relative;
+    font-size: 26px; line-height: 1.5;
+}
+.callout::before {
+    position: absolute; left: 22px; top: 14px; font-size: 40px; line-height: 1;
+}
+.callout b.h { display: block; font-family: var(--font-display); font-weight: 400; font-size: 30px; margin-bottom: 4px; }
+.callout.warn { background: var(--red-soft); border: 2px solid var(--red); }
+.callout.warn::before { content: "⚠️"; }
+.callout.tip { background: var(--green-soft); border: 2px solid var(--green); }
+.callout.tip::before { content: "💡"; }
+.callout.exam { background: var(--blue-soft); border: 2px solid var(--blue); }
+.callout.exam::before { content: "📝"; }
+
+/* ===========================================
+   RED-PEN NOTE — 채점펜 손글씨 주석
+   =========================================== */
+.pen {
+    font-family: var(--font-pen);
+    color: var(--red);
+    font-size: 46px;
+    line-height: 1.05;
+    transform: rotate(-3deg);
+    display: inline-block;
+}
+.pen.abs { position: absolute; }
+.circle {                               /* 빨간 동그라미 표시 */
+    display: inline-block; padding: 0 10px;
+    border: 3px solid var(--red); border-radius: 50% 46% 52% 48%;
+    transform: rotate(-2deg);
+}
+
+/* ===========================================
+   FLOW — 단계 흐름 (1 → 2 → 3 ...)
+   =========================================== */
+.flow { list-style: none; display: flex; gap: 14px; flex-wrap: wrap; }
+.flow li {
+    flex: 1; min-width: 0;
+    background: rgba(255,253,247,.9); border: 2px solid var(--ink); border-radius: 12px;
+    padding: 16px 16px 14px; position: relative; font-size: 23px; line-height: 1.35;
+}
+.flow li b {
+    display: block; font-family: var(--font-mono); font-size: 20px; color: var(--red); margin-bottom: 6px;
+}
+.flow li:not(:last-child)::after {
+    content: "→"; position: absolute; right: -16px; top: 50%; transform: translate(50%, -50%);
+    font-size: 28px; color: var(--ink-3); z-index: 2;
+}
+.flow li.on { background: var(--ink); color: var(--slide-bg); }
+.flow li.on b { color: var(--yellow); }
+
+/* ===========================================
+   QUIZ — 클릭하면 정답이 보이는 문제 카드
+   =========================================== */
+.quiz {
+    background: rgba(255,253,247,.9); border: 2px dashed var(--blue); border-radius: 14px;
+    padding: 22px 28px; font-size: 27px;
+}
+.quiz .q { font-weight: 500; }
+.quiz .q::before {
+    content: "Q"; font-family: var(--font-display); color: var(--blue);
+    font-size: 34px; margin-right: 12px;
+}
+.quiz button.show-a {
+    margin-top: 14px; font-family: var(--font-body); font-size: 22px; cursor: pointer;
+    background: var(--blue); color: #fff; border: 0; border-radius: 999px; padding: 8px 22px;
+}
+.quiz .a { display: none; margin-top: 14px; border-top: 1.5px dashed var(--ink-3); padding-top: 14px; }
+.quiz.open .a { display: block; animation: pop .35s var(--ease-out-expo); }
+.quiz.open button.show-a { background: var(--ink-3); }
+@keyframes pop { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* ===========================================
+   SMALL BITS — chips, kbd, practice link, big number
+   =========================================== */
+.chips { display: flex; flex-wrap: wrap; gap: 10px; }
+.chip {
+    font-family: var(--font-mono); font-size: 20px; padding: 6px 14px; border-radius: 999px;
+    border: 1.5px solid var(--ink); background: rgba(255,253,247,.8);
+}
+.chip.r { border-color: var(--red); color: var(--red); }
+.chip.b { border-color: var(--blue); color: var(--blue); }
+.chip.g { border-color: var(--green); color: var(--green); }
+kbd {
+    font-family: var(--font-mono); font-size: .8em; padding: 2px 10px; border-radius: 6px;
+    border: 1.5px solid var(--ink-2); border-bottom-width: 4px; background: #fffdf7;
+}
+.practice {
+    display: inline-flex; align-items: center; gap: 14px;
+    background: var(--ink); color: var(--slide-bg); border-radius: 12px;
+    padding: 12px 22px; font-size: 24px;
+}
+.practice::before { content: "✍️"; }
+.practice code { background: rgba(255,255,255,.12); color: var(--yellow); }
+.bignum { font-family: var(--font-display); font-size: 120px; line-height: 1; color: var(--red); }
+.bignum small { font-size: 40px; color: var(--ink-2); margin-left: 6px; }
+.foot {                                  /* 슬라이드 하단 메모 */
+    position: absolute; left: var(--pad-x); right: 72px; bottom: 34px;
+    font-size: 21px; color: var(--ink-3);
+}
+
+/* ===========================================
+   TITLE SLIDE
+   =========================================== */
+.slide.title { padding-top: 150px; }
+.slide.title .deckno {
+    position: absolute; right: 70px; top: 40px;
+    font-family: var(--font-display); font-size: 520px; line-height: 1;
+    color: transparent; -webkit-text-stroke: 3px rgba(27,34,51,.14);
+}
+.slide.title .kicker {
+    font-family: var(--font-mono); font-size: 24px; letter-spacing: .14em; color: var(--red); font-weight: 700;
+}
+.slide.title h1 { font-size: 132px; margin: 20px 0 26px; max-width: 1400px; }
+.slide.title h1 em { font-style: normal; color: var(--red); }
+.slide.title .sub { font-size: 36px; color: var(--ink-2); max-width: 1250px; }
+.slide.title .meta { position: absolute; left: var(--pad-x); bottom: 80px; right: 72px; }
+.stamp {                                  /* 합격 도장 */
+    position: absolute; right: 150px; bottom: 120px;
+    width: 250px; height: 250px; border-radius: 50%;
+    border: 7px solid var(--red); color: var(--red);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    font-family: var(--font-display); font-size: 62px; line-height: 1;
+    transform: rotate(-14deg); opacity: .85;
+    box-shadow: inset 0 0 0 8px var(--slide-bg), inset 0 0 0 11px var(--red);
+}
+.stamp small { font-family: var(--font-mono); font-size: 18px; margin-top: 10px; letter-spacing: .1em; }
+
+/* ===========================================
+   SECTION DIVIDER
+   =========================================== */
+.slide.section { display: block; padding-top: 260px; }
+.slide.section .no {
+    font-family: var(--font-mono); font-size: 34px; color: var(--red); font-weight: 700; letter-spacing: .1em;
+}
+.slide.section h2 { font-size: 120px; margin: 16px 0 24px; }
+.slide.section p { font-size: 36px; color: var(--ink-2); max-width: 1300px; }
+
+/* ===========================================
+   ANIMATIONS — 슬라이드가 보일 때 순서대로 등장
+   =========================================== */
+.reveal {
+    opacity: 0; transform: translateY(26px);
+    transition: opacity .6s var(--ease-out-expo), transform .6s var(--ease-out-expo);
+}
+.slide.visible .reveal { opacity: 1; transform: none; }
+.slide.visible .reveal:nth-child(2) { transition-delay: .08s; }
+.slide.visible .reveal:nth-child(3) { transition-delay: .16s; }
+.slide.visible .reveal:nth-child(4) { transition-delay: .24s; }
+.slide.visible .reveal:nth-child(5) { transition-delay: .32s; }
+.slide.visible .reveal:nth-child(6) { transition-delay: .40s; }
+.slide.visible .reveal:nth-child(7) { transition-delay: .48s; }
+.stamp.reveal { transform: rotate(-14deg) scale(1.6); }
+.slide.visible .stamp.reveal { transform: rotate(-14deg) scale(1); transition-delay: .5s; }
+
+/* ===========================================
+   DECK CHROME — 진행바, 페이지 표시, 목차 버튼 (슬라이드 바깥)
+   =========================================== */
+.progress {
+    position: fixed; left: 0; top: 0; height: 4px; background: var(--red);
+    z-index: 1001; transition: width .3s ease;
+}
+.deck-controls {
+    left: auto; right: 18px; bottom: 14px; transform: none;   /* 오른쪽 아래 구석: 슬라이드 내용과 겹치지 않게 */
+    display: flex; gap: 8px; align-items: center;
+    background: rgba(20, 24, 36, .82); backdrop-filter: blur(6px);
+    padding: 6px 8px; border-radius: 999px;
+    font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #e8e3d7;
+    opacity: .25; transition: opacity .25s;
+}
+.deck-controls:hover { opacity: 1; }
+.deck-controls button, .deck-controls a {
+    background: transparent; color: inherit; border: 0; cursor: pointer;
+    font: inherit; padding: 6px 12px; border-radius: 999px; text-decoration: none;
+}
+.deck-controls button:hover, .deck-controls a:hover { background: rgba(255,255,255,.12); }
+.deck-controls .count { padding: 0 6px; min-width: 64px; text-align: center; }
+
+/* ===========================================
+   INLINE EDITING — E 키 또는 왼쪽 위 모서리에 마우스
+   =========================================== */
+.edit-hotzone { position: fixed; top: 0; left: 0; width: 80px; height: 80px; z-index: 10000; cursor: pointer; }
+.edit-toggle {
+    position: fixed; top: 16px; left: 16px; z-index: 10001;
+    width: 44px; height: 44px; border-radius: 50%; border: 0; cursor: pointer;
+    background: #f3eee3; font-size: 20px; box-shadow: 0 4px 14px rgba(0,0,0,.3);
+    opacity: 0; pointer-events: none; transition: opacity .3s ease;
+}
+.edit-toggle.show, .edit-toggle.active { opacity: 1; pointer-events: auto; }
+.edit-toggle.active { background: var(--red); }
+body.editing [contenteditable="true"] { outline: 2px dashed rgba(214,64,43,.5); outline-offset: 4px; }
+.edit-banner {
+    position: fixed; top: 16px; left: 50%; transform: translateX(-50%); z-index: 10001;
+    background: var(--red); color: #fff; font: 14px 'IBM Plex Sans KR', sans-serif;
+    padding: 6px 16px; border-radius: 999px; display: none;
+}
+body.editing .edit-banner { display: block; }
+
+/* ===========================================
+   DECK-SPECIFIC STYLES (덱마다 추가)
+   =========================================== */
+/* 읽기용 덱: 기본 크기를 조금 키워 빈 공간을 줄임 */
+.slide pre { font-size: 26px; line-height: 1.6; padding: 18px 26px; }
+.slide pre.out { font-size: 23px; }
+.slide pre.sm { font-size: 24px; }
+.slide pre.xs { font-size: 21px; }
+.slide .tbl { font-size: 26px; }
+.slide .tbl th, .slide .tbl td { padding: 12px 18px; }
+.slide .callout { font-size: 27px; }
+.slide .cell + .cell { margin-top: 20px; }
+.slide .quiz { font-size: 29px; padding: 26px 32px; }
+
+/* 덱 02 전용: 그래프 스케치(SVG) */
+.fig {
+    background: #fffdf7; border: 2px solid var(--ink); border-radius: 14px;
+    padding: 18px 20px 10px; box-shadow: 6px 6px 0 rgba(27,34,51,.12);
+}
+.fig svg { display: block; width: 100%; height: auto; max-height: none; }
+.fig .cap { font-family: var(--font-mono); font-size: 20px; color: var(--ink-3); margin-bottom: 6px; }
+.fig text { font-family: 'JetBrains Mono', monospace; font-size: 17px; fill: #4b546b; }
+.fig text.lab { font-family: 'Nanum Pen Script', cursive; font-size: 30px; fill: #d6402b; }
+.fig text.t { font-family: 'IBM Plex Sans KR', sans-serif; font-size: 18px; font-weight: 700; fill: #1b2233; }
+.ax { stroke: #1b2233; stroke-width: 2; fill: none; }
+.grid-l { stroke: rgba(27,34,51,.12); stroke-width: 1; }
+.b1 { fill: #2b59c3; } .b2 { fill: #d6402b; } .b3 { fill: #23845a; } .b4 { fill: #f4cf55; }
+.b1o { fill: rgba(43,89,195,.25); stroke: #2b59c3; stroke-width: 2; }
+.ln1 { stroke: #2b59c3; stroke-width: 3; fill: rgba(43,89,195,.12); }
+.ln2 { stroke: #d6402b; stroke-width: 3; fill: rgba(214,64,43,.10); }
+.dot { fill: rgba(43,89,195,.55); }
+.dot-r { fill: #d6402b; }
+.pen-l { stroke: #d6402b; stroke-width: 2.5; fill: none; stroke-dasharray: 6 5; }
+.box { fill: rgba(43,89,195,.15); stroke: #1b2233; stroke-width: 2.5; }
+.med { stroke: #d6402b; stroke-width: 4; }
+.hm text { font-size: 20px; font-weight: 700; }
+.scale-bar { height: 34px; border-radius: 8px; background: linear-gradient(90deg, #2b59c3, #f3eee3 50%, #d6402b); border: 2px solid var(--ink); }
+.scale-lab { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 22px; margin-top: 8px; }
+.anat2 { font-family: var(--font-mono); font-size: 38px; background: var(--code-bg); color: var(--code-fg); border-radius: 14px; padding: 30px 34px 20px; border-left: 6px solid var(--blue); display: flex; flex-wrap: wrap; align-items: flex-end; }
+.anat2 .p { display: flex; flex-direction: column; align-items: center; }
+.anat2 .p span { white-space: pre; padding: 2px 4px; border-radius: 6px; }
+.anat2 .p small { font-family: var(--font-body); font-size: 20px; margin-top: 12px; color: var(--yellow); white-space: nowrap; }
+.anat2 .hl1 span { background: rgba(146,192,255,.3); } .anat2 .hl2 span { background: rgba(184,220,140,.22); }
+.anat2 .hl3 span { background: rgba(255,210,161,.25); } .anat2 .hl4 span { background: rgba(255,154,122,.25); }
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<div class="edit-hotzone" aria-hidden="true"></div>
+<button class="edit-toggle" id="editToggle" title="편집 모드 (E)">✏️</button>
+<div class="edit-banner">편집 모드 · 텍스트를 클릭해 수정 · Ctrl+S 로 파일 저장 · E 로 종료</div>
+
+<div class="deck-viewport">
+<main class="deck-stage" id="deckStage" data-deck="02" data-ver="c2b9a14add" data-tag="02 · EDA·시각화">
+<!-- ========== 1. 표지 ========== -->
+<section class="slide active visible title">
+    <div class="deckno">02</div>
+    <div class="kicker reveal">AICE ASSOCIATE · DECK 02</div>
+    <h1 class="reveal">그래프로<br><em>데이터를 읽는</em> 법</h1>
+    <p class="sub reveal">시험 4~5번은 그래프를 그리고, 그래프를 보고 무엇을 지울지 판단하는 문제예요. seaborn 8가지 그래프와 해석 요령을 정리합니다.</p>
+    <div class="meta reveal">
+        <div class="chips">
+            <span class="chip">countplot</span><span class="chip">histplot</span><span class="chip">boxplot</span><span class="chip">jointplot</span>
+            <span class="chip">heatmap · corr</span><span class="chip r">그래프 해석</span>
+        </div>
+    </div>
+</section>
+
+<!-- ========== 2. EDA란 ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">EDA = 모델 만들기 전에 데이터와 인사하기</h2>
+    <p class="lead reveal">EDA(탐색적 데이터 분석)는 데이터를 요약하고 그려 보면서 <mark>"무엇을 고쳐야 하는지"</mark>를 찾는 단계예요. 의사가 수술 전에 엑스레이를 찍는 것과 같아요.</p>
+    <div class="cols c3 reveal" style="gap:28px">
+        <div class="card blue"><span class="k">질문 1</span><h3>어떻게 생겼나?</h3><p class="small">값이 어디에 몰려 있는지, 범주는 몇 종류인지 봐요.<br><code>histplot</code> <code>countplot</code></p></div>
+        <div class="card red"><span class="k">질문 2</span><h3>이상한 값은?</h3><p class="small">말이 안 되는 값(시속 400km), 잘못된 범주(<code>'-'</code>)를 찾아요.<br><code>boxplot</code> <code>jointplot</code></p></div>
+        <div class="card green"><span class="k">질문 3</span><h3>무엇이 관련 있나?</h3><p class="small">타깃과 같이 움직이는 컬럼을 찾아요.<br><code>scatterplot</code> <code>heatmap</code></p></div>
+    </div>
+    <div class="cols c2 reveal" style="gap:28px; margin-top:28px">
+        <div class="callout exam"><b class="h">시험에서는</b>4번: countplot을 그리고 잘못된 값 행을 제거해요. 5번: jointplot으로 두 변수 관계를 보고 6번에서 이상치를 지워요.</div>
+        <div class="callout tip"><b class="h">그리기만 해도 점수</b>시각화 문항은 대부분 <b>요구한 그래프가 에러 없이 그려지면</b> 정답이에요. 함수 이름과 x, y만 정확히 쓰세요.</div>
+    </div>
+    <div class="cols c64 reveal" style="gap:28px; margin-top:26px">
+        <div class="cell"><div class="in">루틴</div><pre class="sm"><code class="py">df.info()                        # ① 타입·결측
+df.describe()                    # ② 숫자 요약 (max가 튀나?)
+df['범주컬럼'].value_counts()      # ③ 이상한 범주?
+df.corr(numeric_only=True)       # ④ 타깃과 관련?</code></pre></div>
+        <div class="card"><span class="k">시험 시작 2분 루틴</span><p class="small">데이터를 읽자마자 이 네 줄을 실행하면 뒤 문항에서 무엇을 지우고 바꿀지 미리 보여요.</p></div>
+    </div>
+</section>
+
+<!-- ========== 3. 섹션 ========== -->
+<section class="slide section">
+    <div class="no reveal">PART 1</div>
+    <h2 class="reveal">그리기의 기본 틀</h2>
+    <p class="reveal">matplotlib은 "도화지와 펜", seaborn은 "자주 쓰는 그래프를 한 줄로 그려주는 도구"예요. 둘을 같이 써요.</p>
+    <span class="pen abs reveal" style="right:220px; top:650px">import seaborn as sns<br>import matplotlib.pyplot as plt</span>
+</section>
+
+<!-- ========== 4. matplotlib 기본 ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">matplotlib: 제목·축·범례 붙이기</h2>
+    <div class="cols c2" style="gap:40px">
+        <div class="reveal">
+            <div class="cell"><div class="in">In [1]:</div><pre><code class="py">import matplotlib.pyplot as plt
+
+plt.figure(figsize=(8, 4))     # 도화지 크기
+plt.plot(history.history['loss'])
+plt.plot(history.history['val_loss'])
+plt.title('Model Loss')        # 제목
+plt.xlabel('Epochs')           # x축 이름
+plt.ylabel('Loss')             # y축 이름
+plt.legend(['loss', 'val_loss'])  # 범례
+plt.show()                     # 화면에 출력</code></pre></div>
+            <div class="callout exam" style="margin-top:20px"><b class="h">14번 문항이 이 모양</b>딥러닝 학습 곡선을 그릴 때 제목·축 이름·범례를 <b>문제에 적힌 글자 그대로</b> 넣으라고 해요.</div>
+        </div>
+        <div class="fig reveal">
+            <div class="cap">결과 모습 (스케치)</div>
+            <svg viewBox="0 0 640 430">
+                <text class="t" x="250" y="26">Model Loss</text>
+                <line class="grid-l" x1="80" y1="120" x2="610" y2="120"/><line class="grid-l" x1="80" y1="220" x2="610" y2="220"/><line class="grid-l" x1="80" y1="320" x2="610" y2="320"/>
+                <path class="ax" d="M80 50 V370 H610"/>
+                <path d="M85 80 C 160 220, 240 290, 330 312 S 520 335, 605 338" stroke="#2b59c3" stroke-width="4" fill="none"/>
+                <path d="M85 110 C 170 230, 250 280, 330 296 S 520 300, 605 312" stroke="#d6402b" stroke-width="4" fill="none"/>
+                <rect x="450" y="60" width="150" height="66" fill="#fffdf7" stroke="#1b2233" stroke-width="1.5"/>
+                <line x1="462" y1="82" x2="494" y2="82" stroke="#2b59c3" stroke-width="4"/><text x="502" y="87">loss</text>
+                <line x1="462" y1="108" x2="494" y2="108" stroke="#d6402b" stroke-width="4"/><text x="502" y="113">val_loss</text>
+                <text x="315" y="405">Epochs</text>
+                <text x="18" y="215" transform="rotate(-90 30 215)">Loss</text>
+                <text class="lab" x="340" y="190">← title, xlabel, ylabel,</text>
+                <text class="lab" x="380" y="225">legend 4종 세트</text>
+            </svg>
+        </div>
+    </div>
+</section>
+
+<!-- ========== 5. seaborn 공통 패턴 ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">seaborn은 모두 같은 모양으로 불러요</h2>
+    <div class="anat2 reveal" style="margin-top:6px">
+        <div class="p"><span>sns.</span><small>&nbsp;</small></div>
+        <div class="p hl1"><span>countplot</span><small>① 그래프 종류</small></div>
+        <div class="p"><span>(</span><small>&nbsp;</small></div>
+        <div class="p hl2"><span>data=df</span><small>② 어떤 표에서</small></div>
+        <div class="p"><span>, </span><small>&nbsp;</small></div>
+        <div class="p hl3"><span>x='Address1'</span><small>③ 어떤 컬럼을</small></div>
+        <div class="p"><span>, </span><small>&nbsp;</small></div>
+        <div class="p hl4"><span>hue='Weather'</span><small>④ 색으로 나눠서</small></div>
+        <div class="p"><span>)</span><small>&nbsp;</small></div>
+    </div>
+    <div class="cols c2" style="gap:36px; margin-top:28px">
+        <table class="tbl reveal">
+            <tr><th>인자</th><th>뜻</th></tr>
+            <tr><td><code>data=</code></td><td>그릴 DataFrame</td></tr>
+            <tr><td><code>x=</code>, <code>y=</code></td><td>축에 놓을 <b>컬럼 이름</b>(문자열)</td></tr>
+            <tr><td><code>hue=</code></td><td>색깔로 구분할 컬럼 (예: 타깃)</td></tr>
+            <tr><td><code>bins=</code>, <code>kde=</code></td><td>histplot 막대 개수 / 곡선 표시</td></tr>
+        </table>
+        <div class="stack reveal">
+            <div class="callout warn"><b class="h">x=를 꼭 이름으로</b>옛날 블로그 코드 <code>sns.countplot('Address1', data=df)</code>는 지금 버전에서 <code>TypeError: countplot() got multiple values for argument 'data'</code>가 나요.</div>
+            <div class="callout tip"><b class="h">기억법</b>"<b>data</b>에서 <b>x</b>를 <b>hue</b>별로". 이 순서가 몸에 붙으면 8가지 그래프를 다 그릴 수 있어요.</div>
+        </div>
+    </div>
+    <div class="cell reveal" style="margin-top:24px"><div class="in">같은 틀</div><pre class="sm"><code class="py">sns.histplot(data=df, x='Distance')                         # 숫자 1개
+sns.boxplot(data=df, x='Weather', y='Time_Driving')         # 범주 + 숫자
+sns.scatterplot(data=df, x='Distance', y='Time_Driving', hue='Weather')</code></pre></div>
+</section>
+
+<!-- ========== 6. 섹션 ========== -->
+<section class="slide section">
+    <div class="no reveal">PART 2</div>
+    <h2 class="reveal">변수 하나의 분포 보기</h2>
+    <p class="reveal">범주형이면 countplot, 숫자형이면 histplot·kdeplot·boxplot. 시험 4번(잘못된 값 찾기)이 여기서 나와요.</p>
+</section>
+
+<!-- ========== 7. countplot ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">countplot: 범주별 개수 <small>시험 4번</small></h2>
+    <div class="cols c2" style="gap:40px">
+        <div class="reveal">
+            <div class="cell"><div class="in">In [2]:</div><pre><code class="py">sns.countplot(data=df, x='Address1')
+plt.show()
+
+df['Address1'].value_counts()   # 숫자로 확인</code></pre></div>
+            <div class="cell"><div class="outp">Out:</div><pre class="out">Address1
+Gangnam    133
+Mapo        84
+Songpa      70
+-           13
+Name: count, dtype: int64</pre></div>
+            <div class="cell"><div class="in">In [3]:</div><pre><code class="py">df = df[df['Address1'] != '-']   # '-' 행 제거</code></pre></div>
+        </div>
+        <div class="stack">
+            <div class="fig reveal">
+                <div class="cap">sns.countplot(data=df, x='Address1')</div>
+                <svg viewBox="0 0 640 330">
+                    <path class="ax" d="M60 20 V280 H620"/>
+                    <rect class="b1" x="90" y="40" width="100" height="240"/>
+                    <rect class="b1" x="225" y="128" width="100" height="152"/>
+                    <rect class="b1" x="360" y="154" width="100" height="126"/>
+                    <rect class="b2" x="495" y="257" width="100" height="23"/>
+                    <text x="105" y="305">Gangnam</text><text x="252" y="305">Mapo</text><text x="380" y="305">Songpa</text><text x="540" y="305">-</text>
+                    <circle cx="545" cy="262" r="46" class="pen-l"/>
+                    <text class="lab" x="490" y="170">주소가</text><text class="lab" x="490" y="205">아님!</text>
+                </svg>
+            </div>
+            <div class="callout exam reveal"><b class="h">해석 포인트</b>막대 중에 <b>의미 없는 범주</b>(<code>'-'</code>, <code>'?'</code>, <code>'Unknown'</code>)가 보이면 그 행을 지우라는 문제가 이어서 나와요.</div>
+        </div>
+    </div>
+</section>
+
+<!-- ========== 8. histplot ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">histplot: 숫자가 어디에 몰려 있나</h2>
+    <div class="cols c2" style="gap:40px">
+        <div class="reveal">
+            <div class="cell"><div class="in">In [4]:</div><pre><code class="py">sns.histplot(data=df, x='Distance',
+             bins=20, kde=True)
+plt.show()
+
+df['Distance'].skew()   # 치우침 정도</code></pre></div>
+            <div class="cell"><div class="outp">Out:</div><pre class="out">1.32</pre></div>
+            <table class="tbl" style="margin-top:20px; font-size:24px">
+                <tr><th>skew 값</th><th>모양</th></tr>
+                <tr><td>약 0</td><td>좌우 대칭 (종 모양)</td></tr>
+                <tr class="hit"><td>양수 (+)</td><td>오른쪽 꼬리가 길다 → 큰 값이 드물게 있음</td></tr>
+                <tr><td>음수 (−)</td><td>왼쪽 꼬리가 길다</td></tr>
+            </table>
+        </div>
+        <div class="stack">
+            <div class="fig reveal">
+                <div class="cap">bins=20, kde=True</div>
+                <svg viewBox="0 0 640 330">
+                    <path class="ax" d="M50 20 V280 H620"/>
+                    <g class="b1o">
+                        <rect x="60" y="150" width="40" height="130"/><rect x="100" y="70" width="40" height="210"/><rect x="140" y="55" width="40" height="225"/>
+                        <rect x="180" y="95" width="40" height="185"/><rect x="220" y="140" width="40" height="140"/><rect x="260" y="175" width="40" height="105"/>
+                        <rect x="300" y="205" width="40" height="75"/><rect x="340" y="228" width="40" height="52"/><rect x="380" y="245" width="40" height="35"/>
+                        <rect x="420" y="258" width="40" height="22"/><rect x="460" y="266" width="40" height="14"/><rect x="540" y="272" width="40" height="8"/>
+                    </g>
+                    <path d="M60 200 C 100 40, 160 30, 220 120 S 380 250, 600 274" stroke="#d6402b" stroke-width="4" fill="none"/>
+                    <text class="lab" x="380" y="170">오른쪽 꼬리 →</text>
+                    <text class="lab" x="370" y="205">skew 1.32</text>
+                </svg>
+            </div>
+            <div class="callout tip reveal"><b class="h">언제 쓰나</b>치우친 컬럼의 결측치는 평균보다 <b>중앙값(median)</b>으로 채우는 게 안전해요. 큰 값 몇 개가 평균을 끌어올리거든요.</div>
+        </div>
+    </div>
+</section>
+
+<!-- ========== 9. kdeplot ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">kdeplot + hue: 그룹별 분포 겹쳐 보기</h2>
+    <div class="cols c2" style="gap:40px">
+        <div class="reveal">
+            <div class="cell"><div class="in">In [5]:</div><pre><code class="py">sns.kdeplot(data=df, x='tenure', hue='Churn')
+plt.show()
+
+sns.histplot(data=df, x='tenure', hue='Churn')
+plt.show()</code></pre></div>
+            <div class="card" style="margin-top:22px">
+                <span class="k">읽는 법</span>
+                <ul class="list" style="font-size:26px">
+                    <li>kde = 히스토그램을 부드러운 <b>곡선</b>으로 그린 것</li>
+                    <li><code>hue</code>로 나누면 두 그룹의 분포 차이가 보여요</li>
+                    <li>곡선이 <b>많이 다를수록</b> 그 컬럼이 타깃 예측에 쓸모 있어요</li>
+                </ul>
+            </div>
+        </div>
+        <div class="stack">
+            <div class="fig reveal">
+                <div class="cap">sns.kdeplot(data=df, x='tenure', hue='Churn')</div>
+                <svg viewBox="0 0 640 330">
+                    <path class="ax" d="M50 20 V280 H620"/>
+                    <path class="ln2" d="M55 280 C 70 40, 120 40, 180 180 S 300 270, 610 278 Z"/>
+                    <path class="ln1" d="M55 280 C 100 200, 180 190, 300 200 S 500 120, 560 140 S 600 260, 610 278 Z"/>
+                    <rect x="470" y="30" width="140" height="66" fill="#fffdf7" stroke="#1b2233" stroke-width="1.5"/>
+                    <rect x="482" y="45" width="24" height="12" class="b2"/><text x="514" y="57">Yes</text>
+                    <rect x="482" y="72" width="24" height="12" class="b1"/><text x="514" y="84">No</text>
+                    <text class="lab" x="190" y="110">가입 초반에 이탈이 몰림</text>
+                </svg>
+            </div>
+            <div class="callout exam reveal"><b class="h">해석형 문항</b>"이탈 고객은 사용 기간이 짧은 쪽에 몰려 있다 (O/X)" 같은 판단을 요구할 수 있어요.</div>
+        </div>
+    </div>
+    <div class="cols c2 reveal" style="gap:40px; margin-top:18px; font-size:24px">
+        <div class="callout tip" style="font-size:24px"><b class="h">hue에는 타깃을</b>분류 문제라면 <code>hue='Churn'</code>처럼 타깃을 넣어 보세요. 어떤 컬럼이 두 그룹을 가르는지 바로 보여요.</div>
+        <div class="callout warn" style="font-size:24px"><b class="h">숫자 컬럼에만</b>kdeplot·histplot의 x는 <b>숫자</b>여야 해요. 문자열 숫자(<code>'29.85'</code>)는 먼저 <code>astype(float)</code>로 바꾸세요.</div>
+    </div>
+</section>
+
+<!-- ========== 10. boxplot ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">boxplot 읽는 법: 상자 밖 점 = 이상치 후보</h2>
+    <div class="cols c46" style="gap:36px">
+        <div class="fig reveal">
+            <div class="cap">sns.boxplot(data=df, x='Speed_Per_Hour')</div>
+            <svg viewBox="0 0 600 470">
+                <line x1="40" y1="190" x2="140" y2="190" stroke="#1b2233" stroke-width="3"/>
+                <line x1="40" y1="150" x2="40" y2="230" stroke="#1b2233" stroke-width="3"/>
+                <rect class="box" x="140" y="130" width="170" height="120"/>
+                <line class="med" x1="215" y1="130" x2="215" y2="250"/>
+                <line x1="310" y1="190" x2="390" y2="190" stroke="#1b2233" stroke-width="3"/>
+                <line x1="390" y1="150" x2="390" y2="230" stroke="#1b2233" stroke-width="3"/>
+                <circle class="dot-r" cx="460" cy="190" r="11"/><circle class="dot-r" cx="510" cy="190" r="11"/><circle class="dot-r" cx="560" cy="190" r="11"/>
+                <text x="120" y="285" style="font-size:20px">Q1</text><text x="182" y="285" style="font-size:20px">중앙값</text><text x="295" y="285" style="font-size:20px">Q3</text>
+                <text x="18" y="130" style="font-size:20px">수염</text><text x="330" y="130" style="font-size:20px">수염 끝</text>
+                <path d="M140 320 H310" stroke="#2b59c3" stroke-width="3"/><path d="M140 310 V330 M310 310 V330" stroke="#2b59c3" stroke-width="3"/>
+                <text x="150" y="362" style="fill:#2b59c3; font-weight:700; font-size:21px">IQR = Q3 − Q1</text>
+                <text class="lab" x="440" y="140" style="font-size:36px">이상치!</text>
+                <text class="lab" x="40" y="430" style="font-size:34px">상자 = 가운데 50%의 데이터</text>
+            </svg>
+        </div>
+        <div class="stack reveal">
+            <table class="tbl" style="font-size:24px">
+                <tr><th>부분</th><th>뜻</th><th>예 (Speed)</th></tr>
+                <tr><td>상자 왼쪽 끝</td><td>Q1 (25%)</td><td>24.8</td></tr>
+                <tr><td>상자 안 선</td><td>중앙값 (50%)</td><td>27.8</td></tr>
+                <tr><td>상자 오른쪽 끝</td><td>Q3 (75%)</td><td>30.9</td></tr>
+                <tr><td>수염 끝</td><td>Q3 + 1.5×IQR 안의 최댓값</td><td>≈ 40.05 이하</td></tr>
+                <tr class="hit"><td>바깥 점</td><td><b>이상치 후보</b></td><td>310, 352, 420.5</td></tr>
+            </table>
+            <div class="cell"><div class="in">In [6]:</div><pre class="sm"><code class="py">sns.boxplot(data=df, x='Speed_Per_Hour')
+sns.boxplot(data=df, x='Churn', y='TotalCharges')
+plt.show()     # ↑ 그룹별로 상자를 나란히</code></pre></div>
+            <div class="callout tip"><b class="h">IQR 계산은 03 전처리에서</b>이 기준으로 이상치를 지우는 코드를 배워요.</div>
+        </div>
+    </div>
+</section>
+
+<!-- ========== 11. 퀴즈 ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">확인 문제 <small>분포</small></h2>
+    <div class="cols c2" style="gap:30px; margin-top:10px">
+        <div class="stack">
+            <div class="quiz reveal">
+                <div class="q">범주형 컬럼 <code>Weather</code>의 값별 개수를 막대로 그리는 코드는?</div>
+                <button class="show-a">정답 보기</button>
+                <div class="a"><code>sns.countplot(data=df, x='Weather')</code><br>범주의 <b>개수</b>는 countplot, 숫자의 <b>분포</b>는 histplot이에요.</div>
+            </div>
+            <div class="quiz reveal">
+                <div class="q">히스토그램의 오른쪽 꼬리가 길어요. 이 컬럼 결측치는 무엇으로 채우는 게 나을까요?</div>
+                <button class="show-a">정답 보기</button>
+                <div class="a"><b>중앙값(median)</b>이에요. 꼬리 쪽 큰 값들이 평균을 끌어올려서, 평균은 "보통 값"을 대표하지 못해요.</div>
+            </div>
+        </div>
+        <div class="stack">
+            <div class="quiz reveal">
+                <div class="q">boxplot에서 상자 오른쪽 바깥에 점이 3개 있어요. 무슨 뜻일까요?</div>
+                <button class="show-a">정답 보기</button>
+                <div class="a">Q3 + 1.5×IQR보다 큰 <b>이상치 후보</b>가 3개 있다는 뜻이에요. 진짜 오류인지(시속 400km)는 상식으로 판단해요.</div>
+            </div>
+            <div class="quiz reveal">
+                <div class="q"><code>sns.histplot(df, 'Distance')</code>를 실행했더니 원하는 그림이 안 나와요. 고치면?</div>
+                <button class="show-a">정답 보기</button>
+                <div class="a"><code>sns.histplot(data=df, x='Distance')</code><br>x를 <b>키워드 인자</b>로 넘겨야 해요. 두 번째 위치 인자는 x가 아니에요.</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========== 12. 섹션 ========== -->
+<section class="slide section">
+    <div class="no reveal">PART 3</div>
+    <h2 class="reveal">두 변수의 관계 보기</h2>
+    <p class="reveal">x와 y를 함께 놓고 "같이 움직이는가", "튀는 점이 있는가"를 봅니다. 시험 5번(jointplot)과 상관계수 해석 문제가 여기서 나와요.</p>
+</section>
+
+<!-- ========== 13. scatterplot ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">scatterplot: 점 하나 = 행 하나</h2>
+    <div class="cols c2" style="gap:40px">
+        <div class="reveal">
+            <div class="cell"><div class="in">In [7]:</div><pre><code class="py">sns.scatterplot(data=df, x='Distance',
+                y='Time_Driving')
+plt.show()
+
+sns.scatterplot(data=df, x='Distance',
+                y='Time_Driving', hue='Weather')</code></pre></div>
+            <div class="card" style="margin-top:22px">
+                <span class="k">패턴 읽기</span>
+                <table class="tbl" style="font-size:24px">
+                    <tr><th>점의 모양</th><th>해석</th></tr>
+                    <tr><td>↗ 오른쪽 위로</td><td>양의 상관 (거리↑ 시간↑)</td></tr>
+                    <tr><td>↘ 오른쪽 아래로</td><td>음의 상관</td></tr>
+                    <tr><td>동그랗게 퍼짐</td><td>관계 없음</td></tr>
+                </table>
+            </div>
+        </div>
+        <div class="fig reveal">
+            <div class="cap">x='Distance', y='Time_Driving'</div>
+            <svg viewBox="0 0 640 470">
+                <path class="ax" d="M60 20 V420 H620"/>
+                <g class="dot">
+                    <circle cx="90" cy="390" r="7"/><circle cx="110" cy="372" r="7"/><circle cx="125" cy="380" r="7"/><circle cx="140" cy="350" r="7"/><circle cx="160" cy="360" r="7"/>
+                    <circle cx="175" cy="335" r="7"/><circle cx="195" cy="320" r="7"/><circle cx="210" cy="330" r="7"/><circle cx="230" cy="300" r="7"/><circle cx="245" cy="310" r="7"/>
+                    <circle cx="265" cy="282" r="7"/><circle cx="285" cy="270" r="7"/><circle cx="300" cy="260" r="7"/><circle cx="320" cy="250" r="7"/><circle cx="345" cy="232" r="7"/>
+                    <circle cx="365" cy="220" r="7"/><circle cx="390" cy="200" r="7"/><circle cx="420" cy="185" r="7"/><circle cx="450" cy="160" r="7"/><circle cx="480" cy="150" r="7"/>
+                    <circle cx="520" cy="120" r="7"/><circle cx="560" cy="95" r="7"/><circle cx="150" cy="340" r="7"/><circle cx="330" cy="240" r="7"/><circle cx="270" cy="295" r="7"/>
+                </g>
+                <line x1="80" y1="400" x2="590" y2="90" class="pen-l"/>
+                <text x="300" y="455">Distance</text>
+                <text class="lab" x="330" y="330">거리가 멀수록</text>
+                <text class="lab" x="330" y="365">오래 걸린다 (r = 0.93)</text>
+            </svg>
+        </div>
+    </div>
+</section>
+
+<!-- ========== 14. jointplot ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">jointplot: 산점도 + 양쪽 히스토그램 <small>시험 5번</small></h2>
+    <div class="cols c2" style="gap:40px">
+        <div class="reveal">
+            <div class="cell"><div class="in">In [8]:</div><pre><code class="py">sns.jointplot(data=df, x='Time_Driving',
+              y='Speed_Per_Hour')
+plt.show()</code></pre></div>
+            <div class="callout exam" style="margin-top:20px"><b class="h">공식 샘플 5→6번 흐름</b>jointplot에서 <b>시속 300 이상</b>의 점이 따로 떨어져 있어요. 6번에서 "시속 300 이상 제거 → <code>df_temp</code>"를 시켜요.</div>
+            <div class="cell" style="margin-top:20px"><div class="in">In [9]:</div><pre><code class="py">(df['Speed_Per_Hour'] &gt;= 300).sum()
+df_temp = df[df['Speed_Per_Hour'] &lt; 300]
+len(df_temp)</code></pre></div>
+            <div class="cell"><div class="outp">Out:</div><pre class="out">3
+297</pre></div>
+        </div>
+        <div class="fig reveal">
+            <div class="cap">sns.jointplot(..., x='Time_Driving', y='Speed_Per_Hour')</div>
+            <svg viewBox="0 0 600 560">
+                <g class="b1o"><rect x="80" y="40" width="40" height="60"/><rect x="120" y="20" width="40" height="80"/><rect x="160" y="45" width="40" height="55"/><rect x="200" y="70" width="40" height="30"/><rect x="240" y="85" width="40" height="15"/></g>
+                <g class="b1o"><rect x="480" y="440" width="80" height="40"/><rect x="480" y="400" width="50" height="40"/><rect x="480" y="470" width="30" height="20"/></g>
+                <path class="ax" d="M70 110 V510 H470"/>
+                <g class="dot">
+                    <circle cx="100" cy="470" r="6"/><circle cx="120" cy="460" r="6"/><circle cx="135" cy="475" r="6"/><circle cx="150" cy="455" r="6"/><circle cx="165" cy="468" r="6"/>
+                    <circle cx="180" cy="452" r="6"/><circle cx="200" cy="472" r="6"/><circle cx="215" cy="458" r="6"/><circle cx="235" cy="466" r="6"/><circle cx="260" cy="455" r="6"/>
+                    <circle cx="140" cy="480" r="6"/><circle cx="190" cy="478" r="6"/><circle cx="110" cy="452" r="6"/><circle cx="300" cy="470" r="6"/><circle cx="330" cy="462" r="6"/>
+                </g>
+                <circle class="dot-r" cx="160" cy="200" r="9"/><circle class="dot-r" cx="230" cy="150" r="9"/><circle class="dot-r" cx="130" cy="185" r="9"/>
+                <line x1="70" y1="330" x2="470" y2="330" class="pen-l"/>
+                <text x="380" y="322">y = 300</text>
+                <text class="lab" x="250" y="210">혼자 떨어진 점 = 이상치</text>
+                <text x="210" y="545">Time_Driving</text>
+            </svg>
+        </div>
+    </div>
+</section>
+
+<!-- ========== 15. barplot ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">barplot: 그룹별 평균 비교</h2>
+    <div class="cols c2" style="gap:40px">
+        <div class="reveal">
+            <div class="cell"><div class="in">In [10]:</div><pre><code class="py">sns.barplot(data=df, x='Weather',
+            y='Time_Driving')
+plt.show()
+
+# 숫자로 보면 groupby와 같아요
+df.groupby('Weather')['Time_Driving'].mean()</code></pre></div>
+            <div class="cell"><div class="outp">Out:</div><pre class="out">Weather
+Rain     14.4
+Snow     11.7
+Sunny    14.8
+Name: Time_Driving, dtype: float64</pre></div>
+        </div>
+        <div class="stack">
+            <div class="fig reveal">
+                <div class="cap">막대 = 평균, 검은 선 = 신뢰구간</div>
+                <svg viewBox="0 0 640 300">
+                    <path class="ax" d="M60 20 V250 H620"/>
+                    <rect class="b1" x="110" y="70" width="110" height="180"/><rect class="b3" x="270" y="76" width="110" height="174"/><rect class="b4" x="430" y="108" width="110" height="142"/>
+                    <path d="M165 50 V95 M150 50 H180 M150 95 H180" stroke="#1b2233" stroke-width="3"/>
+                    <path d="M325 55 V100 M310 55 H340 M310 100 H340" stroke="#1b2233" stroke-width="3"/>
+                    <path d="M485 60 V160 M470 60 H500 M470 160 H500" stroke="#1b2233" stroke-width="3"/>
+                    <text x="135" y="276">Sunny</text><text x="305" y="276">Rain</text><text x="465" y="276">Snow</text>
+                    <text class="lab" x="420" y="40">표본이 적으면 선이 길어요</text>
+                </svg>
+            </div>
+            <div class="callout warn reveal"><b class="h">countplot과 헷갈리지 않기</b><code>countplot</code>은 y 없이 <b>개수</b>를, <code>barplot</code>은 y의 <b>평균</b>을 그려요.</div>
+        </div>
+    </div>
+    <div class="cell reveal" style="margin-top:24px"><div class="in">비교</div><pre class="sm"><code class="py">sns.countplot(data=df, x='Weather')                       # 날씨별 "건수"
+sns.barplot(data=df, x='Weather', y='Time_Driving')       # 날씨별 "평균 시간"
+sns.barplot(data=df, x='Weather', y='Time_Driving', hue='Address1')  # + 지역별</code></pre></div>
+</section>
+
+<!-- ========== 16. heatmap ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">heatmap + corr: 상관관계 한눈에</h2>
+    <div class="cols c2" style="gap:40px">
+        <div class="reveal">
+            <div class="cell"><div class="in">In [11]:</div><pre class="sm"><code class="py">corr = df.corr(numeric_only=True)   # 숫자 컬럼만
+corr.round(2)</code></pre></div>
+            <div class="cell"><div class="outp">Out:</div><pre class="out xs" style="font-size:18px; padding:16px 18px">                Distance  Speed_Per_Hour  Time_Driving
+Distance            1.00           -0.05          0.93
+Speed_Per_Hour     -0.05            1.00         -0.07
+Time_Driving        0.93           -0.07          1.00</pre></div>
+            <div class="cell"><div class="in">In [12]:</div><pre class="sm"><code class="py">plt.figure(figsize=(6, 5))
+sns.heatmap(corr, annot=True, fmt='.2f',
+            cmap='coolwarm')
+plt.show()</code></pre></div>
+        </div>
+        <div class="stack">
+            <div class="fig reveal">
+                <div class="cap">annot=True → 칸에 숫자 표시</div>
+                <svg viewBox="0 0 600 330" class="hm">
+                    <rect x="170" y="20" width="130" height="90" fill="#d6402b"/><rect x="300" y="20" width="130" height="90" fill="#e9e3e0"/><rect x="430" y="20" width="130" height="90" fill="#df6a55"/>
+                    <rect x="170" y="110" width="130" height="90" fill="#e9e3e0"/><rect x="300" y="110" width="130" height="90" fill="#d6402b"/><rect x="430" y="110" width="130" height="90" fill="#e6dfdf"/>
+                    <rect x="170" y="200" width="130" height="90" fill="#df6a55"/><rect x="300" y="200" width="130" height="90" fill="#e6dfdf"/><rect x="430" y="200" width="130" height="90" fill="#d6402b"/>
+                    <text x="215" y="72" style="fill:#fff">1.00</text><text x="342" y="72">-0.05</text><text x="475" y="72" style="fill:#fff">0.93</text>
+                    <text x="212" y="162">-0.05</text><text x="345" y="162" style="fill:#fff">1.00</text><text x="472" y="162">-0.07</text>
+                    <text x="215" y="252" style="fill:#fff">0.93</text><text x="342" y="252">-0.07</text><text x="475" y="252" style="fill:#fff">1.00</text>
+                    <text x="20" y="72">Distance</text><text x="20" y="162">Speed</text><text x="20" y="252">Time</text>
+                    <rect x="425" y="195" width="140" height="100" fill="none" stroke="#1b2233" stroke-width="5"/>
+                </svg>
+            </div>
+            <div class="callout warn reveal"><b class="h">문자열 컬럼이 있으면 에러</b><code>df.corr()</code> → <code>ValueError: could not convert string to float: 'Mapo'</code>. <code>numeric_only=True</code>를 넣으세요.</div>
+        </div>
+    </div>
+</section>
+
+<!-- ========== 17. 상관계수 읽기 ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">상관계수(r) 읽는 법</h2>
+    <div class="reveal" style="margin-top:20px">
+        <div class="scale-bar"></div>
+        <div class="scale-lab"><span>−1 완벽한 반비례</span><span>0 관계 없음</span><span>+1 완벽한 정비례</span></div>
+    </div>
+    <div class="cols c2" style="gap:40px; margin-top:34px">
+        <table class="tbl reveal">
+            <tr><th>|r| 크기</th><th>해석 (관례)</th></tr>
+            <tr><td>0.7 이상</td><td><b>강한</b> 상관</td></tr>
+            <tr><td>0.3 ~ 0.7</td><td>중간 상관</td></tr>
+            <tr><td>0.3 미만</td><td>약하거나 거의 없음</td></tr>
+        </table>
+        <div class="stack reveal">
+            <div class="callout exam"><b class="h">자주 나오는 질문</b>"타깃과 상관계수의 <b>절댓값</b>이 가장 큰 컬럼은?" → 부호 말고 크기로 비교하세요. −0.8이 0.5보다 강해요.</div>
+            <div class="cell"><div class="in">In [13]:</div><pre class="sm"><code class="py">corr['Time_Driving'].abs().sort_values(
+    ascending=False)</code></pre></div>
+        </div>
+    </div>
+    <div class="cols c3 reveal" style="gap:24px; margin-top:24px">
+        <div class="fig"><div class="cap">r ≈ +0.9</div><svg viewBox="0 0 300 150"><path class="ax" d="M20 10 V140 H290"/><g class="dot"><circle cx="40" cy="128" r="6"/><circle cx="70" cy="115" r="6"/><circle cx="95" cy="104" r="6"/><circle cx="120" cy="96" r="6"/><circle cx="145" cy="80" r="6"/><circle cx="170" cy="72" r="6"/><circle cx="195" cy="60" r="6"/><circle cx="220" cy="50" r="6"/><circle cx="245" cy="36" r="6"/><circle cx="270" cy="24" r="6"/><circle cx="110" cy="108" r="6"/><circle cx="200" cy="45" r="6"/></g></svg></div>
+        <div class="fig"><div class="cap">r ≈ 0</div><svg viewBox="0 0 300 150"><path class="ax" d="M20 10 V140 H290"/><g class="dot"><circle cx="40" cy="60" r="6"/><circle cx="70" cy="120" r="6"/><circle cx="95" cy="40" r="6"/><circle cx="120" cy="100" r="6"/><circle cx="145" cy="70" r="6"/><circle cx="170" cy="30" r="6"/><circle cx="195" cy="118" r="6"/><circle cx="220" cy="80" r="6"/><circle cx="245" cy="50" r="6"/><circle cx="270" cy="110" r="6"/><circle cx="110" cy="72" r="6"/><circle cx="200" cy="56" r="6"/></g></svg></div>
+        <div class="fig"><div class="cap">r ≈ −0.9</div><svg viewBox="0 0 300 150"><path class="ax" d="M20 10 V140 H290"/><g class="dot"><circle cx="40" cy="24" r="6"/><circle cx="70" cy="36" r="6"/><circle cx="95" cy="50" r="6"/><circle cx="120" cy="58" r="6"/><circle cx="145" cy="72" r="6"/><circle cx="170" cy="82" r="6"/><circle cx="195" cy="96" r="6"/><circle cx="220" cy="104" r="6"/><circle cx="245" cy="116" r="6"/><circle cx="270" cy="128" r="6"/><circle cx="110" cy="45" r="6"/><circle cx="200" cy="108" r="6"/></g></svg></div>
+    </div>
+    <p class="small dim reveal" style="margin-top:14px">상관은 "같이 움직인다"일 뿐, 원인과 결과를 뜻하지 않아요. 또 직선 관계만 잡아내요.</p>
+</section>
+
+<!-- ========== 18. pairplot / subplots ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">pairplot과 여러 그래프 나란히 <small>가볍게</small></h2>
+    <div class="cols c2" style="gap:40px">
+        <div class="reveal">
+            <div class="cell"><div class="in">In [14]:</div><pre><code class="py"># 숫자 컬럼끼리 모든 조합의 산점도
+cols = ['Distance', 'Speed_Per_Hour',
+        'Time_Driving']
+sns.pairplot(df[cols])
+plt.show()</code></pre></div>
+            <div class="callout warn" style="margin-top:20px"><b class="h">시험에선 느릴 수 있어요</b>컬럼이 많으면 그리는 데 오래 걸려요. 필요한 컬럼만 골라서 넣으세요.</div>
+            <div class="fig" style="margin-top:20px">
+                <div class="cap">3×3 격자: 대각선 = 히스토그램, 나머지 = 산점도</div>
+                <svg viewBox="0 0 640 200">
+                    <rect x="10" y="10" width="200" height="60" fill="rgba(43,89,195,.15)" stroke="#1b2233"/><rect x="220" y="10" width="200" height="60" fill="none" stroke="#1b2233"/><rect x="430" y="10" width="200" height="60" fill="none" stroke="#1b2233"/>
+                    <rect x="10" y="75" width="200" height="60" fill="none" stroke="#1b2233"/><rect x="220" y="75" width="200" height="60" fill="rgba(43,89,195,.15)" stroke="#1b2233"/><rect x="430" y="75" width="200" height="60" fill="none" stroke="#1b2233"/>
+                    <rect x="10" y="140" width="200" height="55" fill="none" stroke="#1b2233"/><rect x="220" y="140" width="200" height="55" fill="none" stroke="#1b2233"/><rect x="430" y="140" width="200" height="55" fill="rgba(43,89,195,.15)" stroke="#1b2233"/>
+                    <g class="dot"><circle cx="460" cy="60" r="4"/><circle cx="500" cy="50" r="4"/><circle cx="540" cy="38" r="4"/><circle cx="580" cy="26" r="4"/><circle cx="40" cy="185" r="4"/><circle cx="80" cy="172" r="4"/><circle cx="120" cy="160" r="4"/><circle cx="170" cy="150" r="4"/><circle cx="250" cy="100" r="4"/><circle cx="300" cy="110" r="4"/><circle cx="350" cy="95" r="4"/><circle cx="390" cy="105" r="4"/></g>
+                </svg>
+            </div>
+        </div>
+        <div class="reveal">
+            <div class="cell"><div class="in">In [15]:</div><pre><code class="py">fig, ax = plt.subplots(1, 2, figsize=(12, 4))
+sns.countplot(data=df, x='Weather', ax=ax[0])
+sns.histplot(data=df, x='Distance', ax=ax[1])
+plt.show()</code></pre></div>
+            <div class="fig" style="margin-top:20px">
+                <div class="cap">plt.subplots(1, 2) → 1행 2열</div>
+                <svg viewBox="0 0 640 170">
+                    <rect x="10" y="10" width="300" height="150" fill="none" stroke="#1b2233" stroke-width="2"/>
+                    <rect x="330" y="10" width="300" height="150" fill="none" stroke="#1b2233" stroke-width="2"/>
+                    <rect class="b1" x="50" y="40" width="50" height="110"/><rect class="b1" x="130" y="100" width="50" height="50"/><rect class="b1" x="210" y="130" width="50" height="20"/>
+                    <g class="b1o"><rect x="350" y="80" width="40" height="70"/><rect x="390" y="40" width="40" height="110"/><rect x="430" y="70" width="40" height="80"/><rect x="470" y="110" width="40" height="40"/><rect x="510" y="135" width="40" height="15"/></g>
+                    <text x="130" y="30">ax[0]</text><text x="560" y="30">ax[1]</text>
+                </svg>
+            </div>
+            <div class="callout tip" style="margin-top:20px"><b class="h">ax= 로 자리 지정</b><code>plt.subplots(행, 열)</code>은 도화지(<code>fig</code>)와 칸 목록(<code>ax</code>)을 돌려줘요. seaborn 함수에 <code>ax=ax[0]</code>을 넘기면 그 칸에 그려져요.</div>
+        </div>
+    </div>
+</section>
+
+<!-- ========== 19. 어떤 그래프를 언제 ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">어떤 그래프를 언제 쓰나</h2>
+    <table class="tbl reveal" style="margin-top:10px">
+        <tr><th>알고 싶은 것</th><th>변수 타입</th><th>그래프</th><th>코드</th></tr>
+        <tr><td>범주별 개수, 잘못된 범주</td><td>범주 1개</td><td>countplot</td><td><code>sns.countplot(data=df, x='c')</code></td></tr>
+        <tr><td>숫자 분포, 치우침</td><td>숫자 1개</td><td>histplot / kdeplot</td><td><code>sns.histplot(data=df, x='n', bins=20)</code></td></tr>
+        <tr><td>이상치</td><td>숫자 1개 (+범주)</td><td>boxplot</td><td><code>sns.boxplot(data=df, x='c', y='n')</code></td></tr>
+        <tr><td>두 숫자의 관계</td><td>숫자 2개</td><td>scatterplot</td><td><code>sns.scatterplot(data=df, x='a', y='b')</code></td></tr>
+        <tr class="hit"><td>관계 + 각각의 분포</td><td>숫자 2개</td><td>jointplot</td><td><code>sns.jointplot(data=df, x='a', y='b')</code></td></tr>
+        <tr><td>그룹별 평균</td><td>범주 + 숫자</td><td>barplot</td><td><code>sns.barplot(data=df, x='c', y='n')</code></td></tr>
+        <tr><td>여러 숫자 간 상관</td><td>숫자 여러 개</td><td>heatmap</td><td><code>sns.heatmap(df.corr(numeric_only=True), annot=True)</code></td></tr>
+        <tr><td>학습 곡선</td><td>리스트</td><td>plt.plot</td><td><code>plt.plot(history.history['loss'])</code></td></tr>
+    </table>
+</section>
+
+<!-- ========== 20. 해석 문항 대비 ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">그래프 해석 문항 대비</h2>
+    <p class="lead reveal">해석 문항은 보통 "답을 변수에 저장하라"는 형식이에요. 예: <code>answer = 'Distance'</code>, <code>answer = 3</code>. <b>따옴표와 철자</b>까지 정확해야 해요.</p>
+    <div class="cols c4 reveal" style="gap:22px">
+        <div class="card blue"><span class="k">분포</span><h3>치우침</h3><p class="small">오른쪽 꼬리가 길면 <b>skew &gt; 0</b>, 결측은 median으로 채워요.</p></div>
+        <div class="card red"><span class="k">이상치</span><h3>튀는 점</h3><p class="small">boxplot 바깥 점, jointplot에서 떨어진 점. 기준값을 문제에서 알려줘요.</p></div>
+        <div class="card green"><span class="k">불균형</span><h3>한쪽 쏠림</h3><p class="small">타깃 countplot이 7:3보다 치우치면 <code>stratify</code>나 SMOTE를 고려해요.</p></div>
+        <div class="card yellow"><span class="k">상관</span><h3>같이 움직임</h3><p class="small">|r|이 가장 큰 컬럼이 타깃과 가장 관련 있어요. 1.0인 대각선은 빼고 보세요.</p></div>
+    </div>
+    <div class="cols c2 reveal" style="gap:28px; margin-top:28px">
+        <div class="cell"><div class="in">예시</div><pre class="sm"><code class="py"># Q. Time_Driving과 상관이 가장 큰 컬럼은?
+answer = 'Distance'      # 0.93</code></pre></div>
+        <div class="callout tip"><b class="h">숫자를 눈으로 읽지 말고 계산</b>그래프를 보고 어림하기보다 <code>value_counts()</code>, <code>corr()</code>로 숫자를 확인한 뒤 답하세요.</div>
+    </div>
+</section>
+
+<!-- ========== 21. 자주 나는 에러 ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">시각화에서 자주 나는 문제</h2>
+    <table class="tbl reveal" style="margin-top:10px; font-size:27px">
+        <tr><th style="width:32%">증상</th><th style="width:30%">원인</th><th>해결</th></tr>
+        <tr><td><code>ValueError: could not convert string to float</code></td><td>문자열 컬럼까지 corr 계산</td><td><code>df.corr(numeric_only=True)</code></td></tr>
+        <tr><td><code>TypeError: … multiple values for argument 'data'</code></td><td>x를 위치 인자로 넘김 (옛날 문법)</td><td><code>sns.countplot(data=df, x='col')</code></td></tr>
+        <tr><td><code>KeyError: 'Adress1'</code></td><td>컬럼 이름 오타</td><td><code>df.columns</code>로 철자 확인</td></tr>
+        <tr><td>그래프 두 개가 한 그림에 겹침</td><td>한 셀에서 연달아 그림</td><td>그래프마다 <code>plt.show()</code> 또는 <code>plt.figure()</code></td></tr>
+        <tr><td>한글 제목이 □□□로 깨짐</td><td>기본 글꼴에 한글 없음</td><td>시험에선 <b>영어</b>로 쓰기 (제목·축은 문제에 적힌 대로)</td></tr>
+        <tr><td>그림이 안 나오고 객체만 출력</td><td>마지막 줄에 <code>plt.show()</code> 없음</td><td>셀 끝에 <code>plt.show()</code></td></tr>
+    </table>
+    <div class="callout tip reveal" style="margin-top:24px"><b class="h">에러 메시지는 맨 아래 줄부터</b>긴 빨간 글씨 중 <b>마지막 줄</b>(에러 종류 + 메시지)만 읽어도 원인의 90%가 보여요. 그다음 화살표(<code>----&gt;</code>)가 가리키는 내 코드 줄을 확인하세요.</div>
+</section>
+
+<!-- ========== 22. 퀴즈 ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">확인 문제 <small>관계 · 해석</small></h2>
+    <div class="cols c2" style="gap:30px; margin-top:10px">
+        <div class="stack">
+            <div class="quiz reveal">
+                <div class="q"><code>Time_Driving</code>(x)과 <code>Speed_Per_Hour</code>(y)의 관계와 각각의 분포를 한 번에 보는 그래프를 그리세요.</div>
+                <button class="show-a">정답 보기</button>
+                <div class="a"><code>sns.jointplot(data=df, x='Time_Driving', y='Speed_Per_Hour')</code></div>
+            </div>
+            <div class="quiz reveal">
+                <div class="q">상관계수가 −0.82, 0.45, 0.10인 세 컬럼 중 타깃과 가장 관련 깊은 것은?</div>
+                <button class="show-a">정답 보기</button>
+                <div class="a"><b>−0.82</b>예요. 절댓값이 가장 커요. 음수는 "반대 방향으로 강하게" 같이 움직인다는 뜻이에요.</div>
+            </div>
+        </div>
+        <div class="stack">
+            <div class="quiz reveal">
+                <div class="q">숫자 컬럼들의 상관관계를 숫자가 적힌 히트맵으로 그리세요. (문자열 컬럼이 섞여 있어요)</div>
+                <button class="show-a">정답 보기</button>
+                <div class="a"><code>sns.heatmap(df.corr(numeric_only=True), annot=True)</code></div>
+            </div>
+            <div class="quiz reveal">
+                <div class="q">날씨별 평균 주행시간을 막대로 비교하는 seaborn 함수는?</div>
+                <button class="show-a">정답 보기</button>
+                <div class="a"><code>sns.barplot(data=df, x='Weather', y='Time_Driving')</code><br>개수를 셀 때만 countplot이에요.</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========== 23. 요약 ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">02 요약 <small>이것만은 손에 익히기</small></h2>
+    <div class="cols c2" style="gap:30px 50px">
+        <div class="reveal">
+            <pre style="font-size:25px"><code class="py">import seaborn as sns
+import matplotlib.pyplot as plt
+
+sns.countplot(data=df, x='c')
+sns.histplot(data=df, x='n', bins=20, kde=True)
+sns.boxplot(data=df, x='n')
+sns.scatterplot(data=df, x='a', y='b')
+sns.jointplot(data=df, x='a', y='b')
+sns.barplot(data=df, x='c', y='n')
+sns.heatmap(df.corr(numeric_only=True), annot=True)
+plt.title('T'); plt.xlabel('X'); plt.ylabel('Y')
+plt.legend(['a', 'b']); plt.show()</code></pre>
+        </div>
+        <div class="stack reveal">
+            <ol class="list" style="font-size:29px">
+                <li>seaborn은 <code>data=</code>, <code>x=</code>, <code>y=</code>, <code>hue=</code>를 <b>키워드로</b> 넘겨요.</li>
+                <li>잘못된 범주는 countplot, 이상치는 boxplot·jointplot으로 찾아요.</li>
+                <li>상관은 <b>절댓값</b>으로 비교하고, <code>numeric_only=True</code>를 넣어요.</li>
+                <li>해석 답은 <code>value_counts()</code>, <code>corr()</code>로 숫자를 확인한 뒤 써요.</li>
+            </ol>
+            <span class="practice">실습 <code>notebooks/02_EDA_시각화_실습.ipynb</code></span>
+            <span class="practice">다음 <code>slides/03_데이터_전처리.html</code></span>
+        </div>
+    </div>
+</section>
+</main>
+</div>
+
+<nav class="deck-controls" aria-label="슬라이드 이동">
+    <a href="../index.html" title="학습 홈으로">⌂ 홈</a>
+    <button id="prevBtn" aria-label="이전 슬라이드">←</button>
+    <span class="count" id="count">1 / 1</span>
+    <button id="nextBtn" aria-label="다음 슬라이드">→</button>
+</nav>
+
+<script>
+/* ===========================================
+   INLINE EDITOR
+   - E 키 / 왼쪽 위 모서리 ✏️ 버튼으로 편집 모드
+   - 수정 내용은 브라우저(localStorage)에 자동 저장
+   - Ctrl+S(⌘+S): 수정된 HTML 파일 다운로드
+   =========================================== */
+class InlineEditor {
+    constructor() {
+        this.isActive = false;
+        const st = document.getElementById('deckStage');
+        this.key = 'aice-deck-edit:' + (st.dataset.deck || location.pathname) + ':' + (st.dataset.ver || '');
+        this.targets = () => document.querySelectorAll('.slide h1, .slide h2, .slide h3, .slide p, .slide li, .slide td, .slide th, .slide .pen, .slide .callout, .slide .q, .slide .a');
+        this.restore();
+    }
+    toggleEditMode() {
+        this.isActive = !this.isActive;
+        document.body.classList.toggle('editing', this.isActive);
+        document.getElementById('editToggle').classList.toggle('active', this.isActive);
+        this.targets().forEach(el => el.setAttribute('contenteditable', this.isActive ? 'true' : 'false'));
+        if (!this.isActive) this.save();
+    }
+    save() {
+        try {
+            const clone = document.getElementById('deckStage').cloneNode(true);
+            clone.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+            clone.querySelectorAll('.slide').forEach(el => el.classList.remove('active', 'visible'));
+            localStorage.setItem(this.key, clone.innerHTML);
+        } catch (e) { /* storage unavailable */ }
+    }
+    restore() {
+        try {
+            const saved = localStorage.getItem(this.key);
+            if (saved) { document.getElementById('deckStage').innerHTML = saved; }
+        } catch (e) { /* storage unavailable */ }
+    }
+    download() {
+        this.targets().forEach(el => el.removeAttribute('contenteditable'));
+        const html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
+        a.download = (location.pathname.split('/').pop() || 'deck.html');
+        a.click();
+        if (this.isActive) this.targets().forEach(el => el.setAttribute('contenteditable', 'true'));
+    }
+}
+const editor = new InlineEditor();   /* 저장된 편집본이 있으면 먼저 복원 */
+
+/* ===========================================
+   PYTHON SYNTAX HIGHLIGHTER (의존성 없음)
+   <pre><code class="py"> 안의 텍스트를 토큰 단위로 색칠합니다.
+   ▸ 코드 안에 ⟦...⟧ 로 감싼 부분은 노란 박스로 강조됩니다. (pandas 의 df[['a']] 와 겹치지 않게)
+   =========================================== */
+(function highlightPython() {
+    const KW = new Set('import from as def return if elif else for in while not and or is None True False lambda with class try except finally pass break continue global print'.split(' '));
+    const BI = new Set('len range type list dict set tuple int float str zip enumerate sorted round sum min max abs'.split(' '));
+    const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const re = /(#[^\n]*)|([fFrRbB]?'''[\s\S]*?'''|[fFrRbB]?"""[\s\S]*?"""|[fFrRbB]?'(?:\\.|[^'\\\n])*'|[fFrRbB]?"(?:\\.|[^"\\\n])*")|(\b\d+(?:\.\d+)?(?:e-?\d+)?\b)|([A-Za-z_][A-Za-z0-9_]*)(?=\s*\()|([A-Za-z_][A-Za-z0-9_]*)(?=\s*=(?!=))|([A-Za-z_][A-Za-z0-9_]*)/g;
+    function tokenize(src) {
+        let out = '', last = 0, m;
+        re.lastIndex = 0;
+        while ((m = re.exec(src))) {
+            out += esc(src.slice(last, m.index));
+            const [t, com, str, num, fn, kwarg, word] = m;
+            if (com) out += `<span class="tk-com">${esc(com)}</span>`;
+            else if (str) out += `<span class="tk-str">${esc(str)}</span>`;
+            else if (num) out += `<span class="tk-num">${num}</span>`;
+            else if (fn) out += KW.has(fn) ? `<span class="tk-kw">${fn}</span>` : `<span class="${BI.has(fn) ? 'tk-bi' : 'tk-fn'}">${fn}</span>`;
+            else if (kwarg) out += KW.has(kwarg) ? `<span class="tk-kw">${kwarg}</span>` : `<span class="tk-arg">${kwarg}</span>`;
+            else if (word) out += KW.has(word) ? `<span class="tk-kw">${word}</span>` : word;
+            last = m.index + t.length;
+        }
+        return out + esc(src.slice(last));
+    }
+    document.querySelectorAll('pre code.py').forEach(el => {
+        // ⟦...⟧ 마커를 보존하면서 하이라이트
+        const raw = el.textContent;
+        const parts = raw.split(/(⟦[\s\S]*?⟧)/);
+        el.innerHTML = parts.map(p => p.startsWith('⟦') && p.endsWith('⟧')
+            ? `<span class="hl">${tokenize(p.slice(1, -1))}</span>`
+            : tokenize(p)).join('');
+    });
+})();
+
+/* ===========================================
+   SLIDE PRESENTATION CONTROLLER
+   - 키보드: ← → ↑ ↓, Space, PageUp/PageDown, Home/End
+   - 마우스 휠, 터치 스와이프
+   - URL 해시(#5)로 특정 슬라이드 바로가기
+   =========================================== */
+class SlidePresentation {
+    constructor() {
+        this.stage = document.getElementById('deckStage');
+        this.slides = Array.from(document.querySelectorAll('.slide'));
+        this.count = document.getElementById('count');
+        this.progress = document.getElementById('progress');
+        this.current = 0;
+        this.fillHeaders();
+        this.setupStageScale();
+        this.setupKeyboardNav();
+        this.setupWheelNav();
+        this.setupTouchNav();
+        this.setupButtons();
+        this.setupQuizzes();
+        const fromHash = parseInt((location.hash || '').replace('#', ''), 10);
+        this.show(Number.isFinite(fromHash) ? fromHash - 1 : 0);
+        window.addEventListener('hashchange', () => {
+            const n = parseInt(location.hash.replace('#', ''), 10);
+            if (Number.isFinite(n) && n - 1 !== this.current) this.show(n - 1);
+        });
+    }
+
+    /* 각 슬라이드 헤더에 "섹션 태그"와 "페이지 번호"를 자동으로 채움 */
+    fillHeaders() {
+        const total = this.slides.length;
+        const tag = this.stage.dataset.tag || '';
+        this.slides.forEach((s, i) => {
+            const hd = s.querySelector('.hd');
+            if (!hd) return;
+            if (!hd.querySelector('.tag')) hd.insertAdjacentHTML('afterbegin', `<span class="tag">${tag}</span>`);
+            if (!hd.querySelector('.pg')) hd.insertAdjacentHTML('beforeend', '<span class="pg"></span>');
+            hd.querySelector('.pg').dataset.pg = `${String(i + 1).padStart(2, '0')} / ${String(total).padStart(2, '0')}`;
+        });
+    }
+
+    setupStageScale() {
+        const scale = () => {
+            const f = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+            const x = (window.innerWidth - 1920 * f) / 2;
+            const y = (window.innerHeight - 1080 * f) / 2;
+            this.stage.style.transform = `translate(${x}px, ${y}px) scale(${f})`;
+        };
+        scale();
+        window.addEventListener('resize', scale);
+    }
+
+    setupKeyboardNav() {
+        document.addEventListener('keydown', e => {
+            if (document.body.classList.contains('editing')) return;
+            if (['ArrowRight', 'ArrowDown', 'PageDown', ' '].includes(e.key)) { e.preventDefault(); this.next(); }
+            else if (['ArrowLeft', 'ArrowUp', 'PageUp'].includes(e.key)) { e.preventDefault(); this.prev(); }
+            else if (e.key === 'Home') this.show(0);
+            else if (e.key === 'End') this.show(this.slides.length - 1);
+        });
+    }
+
+    setupWheelNav() {
+        let lock = false;
+        window.addEventListener('wheel', e => {
+            if (document.body.classList.contains('editing') || lock || Math.abs(e.deltaY) < 30) return;
+            lock = true;
+            e.deltaY > 0 ? this.next() : this.prev();
+            setTimeout(() => { lock = false; }, 650);
+        }, { passive: true });
+    }
+
+    setupTouchNav() {
+        let sx = 0, sy = 0;
+        window.addEventListener('touchstart', e => { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, { passive: true });
+        window.addEventListener('touchend', e => {
+            const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
+            if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) dx < 0 ? this.next() : this.prev();
+        }, { passive: true });
+    }
+
+    setupButtons() {
+        document.getElementById('prevBtn').addEventListener('click', () => this.prev());
+        document.getElementById('nextBtn').addEventListener('click', () => this.next());
+    }
+
+    /* 퀴즈: "정답 보기" 버튼 클릭 시 정답 펼치기 */
+    setupQuizzes() {
+        document.querySelectorAll('.quiz').forEach(q => {
+            const btn = q.querySelector('.show-a');
+            if (!btn) return;
+            btn.addEventListener('click', ev => {
+                ev.stopPropagation();
+                q.classList.toggle('open');
+                btn.textContent = q.classList.contains('open') ? '정답 숨기기' : '정답 보기';
+            });
+        });
+    }
+
+    next() { this.show(this.current + 1); }
+    prev() { this.show(this.current - 1); }
+
+    show(i) {
+        this.current = Math.max(0, Math.min(i, this.slides.length - 1));
+        this.slides.forEach((s, k) => {
+            s.classList.toggle('active', k === this.current);
+            s.classList.toggle('visible', k === this.current);
+        });
+        const n = this.current + 1, total = this.slides.length;
+        this.count.textContent = `${n} / ${total}`;
+        this.progress.style.width = `${(n / total) * 100}%`;
+        if (location.hash !== `#${n}`) history.replaceState(null, '', `#${n}`);
+    }
+}
+const deck = new SlidePresentation();
+
+(function wireEditor() {
+    const toggle = document.getElementById('editToggle');
+    const hot = document.querySelector('.edit-hotzone');
+    let hideT = null;
+    const hideSoon = () => { hideT = setTimeout(() => { if (!editor.isActive) toggle.classList.remove('show'); }, 400); };
+    toggle.addEventListener('click', () => editor.toggleEditMode());
+    hot.addEventListener('click', () => editor.toggleEditMode());
+    hot.addEventListener('mouseenter', () => { clearTimeout(hideT); toggle.classList.add('show'); });
+    hot.addEventListener('mouseleave', hideSoon);
+    toggle.addEventListener('mouseenter', () => clearTimeout(hideT));
+    toggle.addEventListener('mouseleave', hideSoon);
+    document.addEventListener('keydown', e => {
+        const inEdit = e.target.getAttribute && e.target.getAttribute('contenteditable') === 'true';
+        if ((e.key === 'e' || e.key === 'E') && !inEdit && !e.metaKey && !e.ctrlKey) editor.toggleEditMode();
+        if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 's') { e.preventDefault(); editor.save(); editor.download(); }
+        if (e.key === 'Escape' && editor.isActive) editor.toggleEditMode();
+    });
+})();
+</script>
+</body>
+</html>

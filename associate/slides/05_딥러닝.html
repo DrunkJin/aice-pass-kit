@@ -1,0 +1,1565 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>딥러닝 (PyTorch)</title>
+
+<!-- ===========================================
+     FONTS (Google Fonts)
+     - Black Han Sans   : 제목용 한글 디스플레이
+     - IBM Plex Sans KR : 본문
+     - JetBrains Mono   : 코드
+     - Nanum Pen Script : 빨간 채점펜 손글씨 주석
+     =========================================== -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=IBM+Plex+Sans+KR:wght@300;400;500;700&family=JetBrains+Mono:wght@400;700&family=Nanum+Pen+Script&display=swap" rel="stylesheet">
+
+<style>
+/* ===========================================
+   THEME — 이 변수만 바꾸면 전체 색/글꼴이 바뀝니다
+   콘셉트: 시험지(크림 모눈종이) + Jupyter 셀 + 빨간 채점펜
+   =========================================== */
+:root {
+    --stage-bg: #23283a;          /* 슬라이드 바깥 여백 색 */
+    --slide-bg: #f3eee3;          /* 종이 */
+    --paper-2: #e9e1cf;           /* 진한 종이 (카드 배경) */
+    --ink: #1b2233;               /* 본문 잉크 */
+    --ink-2: #4b546b;             /* 보조 텍스트 */
+    --ink-3: #7d8497;             /* 흐린 텍스트 */
+    --rule: rgba(27, 34, 51, 0.07); /* 모눈 선 */
+    --red: #d6402b;               /* 채점펜 / 강조 */
+    --red-soft: rgba(214, 64, 43, 0.10);
+    --blue: #2b59c3;              /* Jupyter In[] 프롬프트 */
+    --blue-soft: rgba(43, 89, 195, 0.10);
+    --green: #23845a;             /* 정답 / OK */
+    --green-soft: rgba(35, 132, 90, 0.11);
+    --yellow: #f4cf55;            /* 형광펜 */
+    --code-bg: #1d2232;           /* 코드 셀 배경 */
+    --code-fg: #e8e3d7;
+
+    --font-display: 'Black Han Sans', sans-serif;
+    --font-body: 'IBM Plex Sans KR', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    --font-pen: 'Nanum Pen Script', cursive;
+
+    --pad-x: 120px;               /* 좌우 여백 (왼쪽 빨간 여백선 고려) */
+    --pad-y: 72px;
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* ===========================================
+   VIEWPORT BASE (frontend-slides 필수 CSS — 전체 포함)
+   =========================================== */
+html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    background: var(--stage-bg, #000);
+}
+.deck-viewport {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    background: var(--stage-bg, #000);
+}
+.deck-stage {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 1920px;
+    height: 1080px;
+    overflow: hidden;
+    transform-origin: 0 0;
+    background: var(--slide-bg, #fff);
+}
+.slide {
+    position: absolute;
+    inset: 0;
+    width: 1920px;
+    height: 1080px;
+    overflow: hidden;
+    display: block;
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    background: var(--slide-bg, #fff);
+}
+.slide.active,
+.slide.visible {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+    z-index: 1;
+}
+img, video, canvas, svg { max-width: 100%; max-height: 100%; }
+.deck-controls {
+    position: fixed;
+    left: 50%;
+    bottom: 22px;
+    transform: translateX(-50%);
+    z-index: 1000;
+}
+@media print {
+    html, body { width: 1920px; height: auto; overflow: visible; background: #fff; }
+    .deck-viewport { position: static; overflow: visible; background: #fff; }
+    .deck-stage { position: static; width: auto; height: auto; transform: none !important; background: none; }
+    .slide {
+        position: relative; display: block !important; visibility: visible !important;
+        opacity: 1 !important; pointer-events: auto !important;
+        width: 1920px; height: 1080px; break-after: page; page-break-after: always;
+    }
+    .slide:last-child { break-after: auto; page-break-after: auto; }
+    .deck-controls { display: none !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.2s !important;
+    }
+}
+
+/* ===========================================
+   PAPER BACKGROUND — 모눈 + 왼쪽 빨간 여백선 (시험지 느낌)
+   =========================================== */
+.slide {
+    font-family: var(--font-body);
+    color: var(--ink);
+    font-size: 30px;
+    line-height: 1.55;
+    background-color: var(--slide-bg);
+    background-image:
+        linear-gradient(var(--rule) 1px, transparent 1px),
+        linear-gradient(90deg, var(--rule) 1px, transparent 1px);
+    background-size: 48px 48px;
+    background-position: -1px -1px;
+    padding: var(--pad-y) var(--pad-x) 64px;
+    word-break: keep-all;          /* 한글 단어 중간에서 줄바꿈 방지 */
+}
+.slide::before {               /* 빨간 여백선 */
+    content: "";
+    position: absolute;
+    top: 0; bottom: 0; left: 72px;
+    width: 2px;
+    background: var(--red);
+    opacity: .55;
+}
+.slide::after {                /* 펀치 구멍 3개 */
+    content: "";
+    position: absolute;
+    left: 22px; top: 50%;
+    width: 22px; height: 22px;
+    margin-top: -11px;
+    border-radius: 50%;
+    background: var(--stage-bg);
+    opacity: .16;
+    box-shadow: 0 -300px 0 var(--stage-bg), 0 300px 0 var(--stage-bg);
+}
+
+/* ===========================================
+   SLIDE HEADER — 섹션 태그 + 페이지 번호 (JS가 자동 기입)
+   =========================================== */
+.hd {
+    position: absolute;
+    top: 30px; left: var(--pad-x); right: 72px;
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: var(--font-mono);
+    font-size: 20px;
+    letter-spacing: .04em;
+    color: var(--ink-3);
+}
+.hd .tag { color: var(--red); font-weight: 700; }
+.hd .pg::before { content: attr(data-pg); }
+
+/* ===========================================
+   TYPOGRAPHY
+   =========================================== */
+h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing: -.01em; line-height: 1.15; }
+h2.t { font-size: 64px; margin-top: 18px; margin-bottom: 14px; }
+h2.t small { font-family: var(--font-body); font-size: 30px; color: var(--ink-3); margin-left: 16px; font-weight: 400; letter-spacing: 0; }
+h3 { font-size: 36px; margin-bottom: 10px; }
+.lead { font-size: 31px; color: var(--ink-2); margin-bottom: 28px; max-width: 1560px; }
+p + p { margin-top: 12px; }
+b, strong { font-weight: 700; }
+code, .mono { font-family: var(--font-mono); font-size: .86em; }
+pre, code, kbd, .mono, .hd, .chip, .k { font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; }  /* != 가 ≠ 로 바뀌지 않게 (초보자 오타 방지) */
+:not(pre) > code {
+    background: rgba(27, 34, 51, .08);
+    padding: 1px 8px; border-radius: 6px;
+}
+mark {                                  /* 형광펜 */
+    background: linear-gradient(transparent 52%, var(--yellow) 52%, var(--yellow) 92%, transparent 92%);
+    color: inherit; padding: 0 2px;
+}
+.red { color: var(--red); }
+.blue { color: var(--blue); }
+.green { color: var(--green); }
+.dim { color: var(--ink-3); }
+.small { font-size: 24px; }
+.xs { font-size: 21px; }
+ul.list, ol.list { padding-left: 1.2em; }
+ul.list li, ol.list li { margin: 6px 0; }
+ul.list li::marker { color: var(--red); }
+ol.list li::marker { color: var(--red); font-family: var(--font-mono); font-weight: 700; }
+
+/* ===========================================
+   LAYOUT GRIDS
+   =========================================== */
+.cols { display: grid; gap: 40px; align-items: start; }
+.c2 { grid-template-columns: 1fr 1fr; }
+.c3 { grid-template-columns: repeat(3, 1fr); }
+.c4 { grid-template-columns: repeat(4, 1fr); }
+.c37 { grid-template-columns: 3fr 7fr; }
+.c46 { grid-template-columns: 4fr 6fr; }
+.c64 { grid-template-columns: 6fr 4fr; }
+.c73 { grid-template-columns: 7fr 3fr; }
+.stack > * + * { margin-top: 22px; }
+.center-y { align-items: center; }
+
+/* ===========================================
+   CARDS — 종이 위에 올린 메모 카드
+   =========================================== */
+.card {
+    background: rgba(255, 253, 247, .82);
+    border: 2px solid var(--ink);
+    border-radius: 14px;
+    padding: 26px 30px;
+    box-shadow: 6px 6px 0 rgba(27, 34, 51, .12);
+}
+.card h3 { font-size: 34px; }
+.card.red, .card.blue, .card.green, .card.yellow { color: var(--ink); }  /* 테두리 색이 글자색에 번지지 않게 */
+.card.red   { border-top: 10px solid var(--red); }
+.card.blue  { border-top: 10px solid var(--blue); }
+.card.green { border-top: 10px solid var(--green); }
+.card.yellow{ border-top: 10px solid var(--yellow); }
+.card .k {                              /* 카드 안의 작은 라벨 */
+    font-family: var(--font-mono); font-size: 19px; letter-spacing: .08em;
+    color: var(--ink-3); text-transform: uppercase; display: block; margin-bottom: 6px;
+}
+
+/* ===========================================
+   JUPYTER CELL — In [ ]: 프롬프트 + 다크 코드 블록 + Out
+   =========================================== */
+.cell { display: grid; grid-template-columns: 112px 1fr; gap: 0 14px; align-items: start; }
+.cell + .cell { margin-top: 16px; }
+.cell .in, .cell .outp {
+    font-family: var(--font-mono); font-size: 20px; text-align: right;
+    padding-top: 18px; white-space: nowrap;
+}
+.cell .in { color: var(--blue); }
+.cell .outp { color: var(--red); }
+pre {
+    font-family: var(--font-mono);
+    font-size: 24px;
+    line-height: 1.5;
+    background: var(--code-bg);
+    color: var(--code-fg);
+    border-radius: 12px;
+    padding: 16px 24px;
+    overflow: hidden;
+    white-space: pre;
+    tab-size: 4;
+    border-left: 6px solid var(--blue);
+}
+pre.out {                               /* 출력 결과: 밝은 종이 위 */
+    background: rgba(255, 253, 247, .9);
+    color: var(--ink);
+    border: 1.5px dashed var(--ink-3);
+    border-left: 6px solid var(--red);
+    font-size: 21px;
+}
+pre.sm { font-size: 21px; }
+pre.xs { font-size: 19px; line-height: 1.45; }
+pre.bad { border-left-color: var(--red); }
+pre.good { border-left-color: var(--green); }
+/* 문법 강조 (JS 하이라이터가 넣는 span) */
+.tk-kw { color: #ff9a7a; font-weight: 700; }
+.tk-str { color: #b8dc8c; }
+.tk-com { color: #8a92a8; font-style: italic; }
+.tk-num { color: #f4cf55; }
+.tk-fn { color: #92c0ff; }
+.tk-bi { color: #e4a8ff; }
+.tk-arg { color: #ffd2a1; }
+pre .hl {                               /* 코드 안에서 특정 부분 강조 */
+    background: rgba(244, 207, 85, .22);
+    outline: 2px solid rgba(244, 207, 85, .55);
+    border-radius: 4px;
+}
+
+/* ===========================================
+   TABLE
+   =========================================== */
+table.tbl { width: 100%; border-collapse: collapse; font-size: 25px; background: rgba(255,253,247,.85); }
+.tbl th, .tbl td { border: 1.5px solid rgba(27,34,51,.25); padding: 10px 16px; text-align: left; vertical-align: top; }
+.tbl th { background: var(--ink); color: var(--slide-bg); font-weight: 500; font-size: 23px; }
+.tbl td code { font-size: .85em; }
+.tbl tr.hit td { background: rgba(244, 207, 85, .28); }
+
+/* ===========================================
+   CALLOUTS — 함정 / 팁 / 시험 포인트
+   =========================================== */
+.callout {
+    border-radius: 12px; padding: 18px 24px 18px 88px; position: relative;
+    font-size: 26px; line-height: 1.5;
+}
+.callout::before {
+    position: absolute; left: 22px; top: 14px; font-size: 40px; line-height: 1;
+}
+.callout b.h { display: block; font-family: var(--font-display); font-weight: 400; font-size: 30px; margin-bottom: 4px; }
+.callout.warn { background: var(--red-soft); border: 2px solid var(--red); }
+.callout.warn::before { content: "⚠️"; }
+.callout.tip { background: var(--green-soft); border: 2px solid var(--green); }
+.callout.tip::before { content: "💡"; }
+.callout.exam { background: var(--blue-soft); border: 2px solid var(--blue); }
+.callout.exam::before { content: "📝"; }
+
+/* ===========================================
+   RED-PEN NOTE — 채점펜 손글씨 주석
+   =========================================== */
+.pen {
+    font-family: var(--font-pen);
+    color: var(--red);
+    font-size: 46px;
+    line-height: 1.05;
+    transform: rotate(-3deg);
+    display: inline-block;
+}
+.pen.abs { position: absolute; }
+.circle {                               /* 빨간 동그라미 표시 */
+    display: inline-block; padding: 0 10px;
+    border: 3px solid var(--red); border-radius: 50% 46% 52% 48%;
+    transform: rotate(-2deg);
+}
+
+/* ===========================================
+   FLOW — 단계 흐름 (1 → 2 → 3 ...)
+   =========================================== */
+.flow { list-style: none; display: flex; gap: 14px; flex-wrap: wrap; }
+.flow li {
+    flex: 1; min-width: 0;
+    background: rgba(255,253,247,.9); border: 2px solid var(--ink); border-radius: 12px;
+    padding: 16px 16px 14px; position: relative; font-size: 23px; line-height: 1.35;
+}
+.flow li b {
+    display: block; font-family: var(--font-mono); font-size: 20px; color: var(--red); margin-bottom: 6px;
+}
+.flow li:not(:last-child)::after {
+    content: "→"; position: absolute; right: -16px; top: 50%; transform: translate(50%, -50%);
+    font-size: 28px; color: var(--ink-3); z-index: 2;
+}
+.flow li.on { background: var(--ink); color: var(--slide-bg); }
+.flow li.on b { color: var(--yellow); }
+
+/* ===========================================
+   QUIZ — 클릭하면 정답이 보이는 문제 카드
+   =========================================== */
+.quiz {
+    background: rgba(255,253,247,.9); border: 2px dashed var(--blue); border-radius: 14px;
+    padding: 22px 28px; font-size: 27px;
+}
+.quiz .q { font-weight: 500; }
+.quiz .q::before {
+    content: "Q"; font-family: var(--font-display); color: var(--blue);
+    font-size: 34px; margin-right: 12px;
+}
+.quiz button.show-a {
+    margin-top: 14px; font-family: var(--font-body); font-size: 22px; cursor: pointer;
+    background: var(--blue); color: #fff; border: 0; border-radius: 999px; padding: 8px 22px;
+}
+.quiz .a { display: none; margin-top: 14px; border-top: 1.5px dashed var(--ink-3); padding-top: 14px; }
+.quiz.open .a { display: block; animation: pop .35s var(--ease-out-expo); }
+.quiz.open button.show-a { background: var(--ink-3); }
+@keyframes pop { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* ===========================================
+   SMALL BITS — chips, kbd, practice link, big number
+   =========================================== */
+.chips { display: flex; flex-wrap: wrap; gap: 10px; }
+.chip {
+    font-family: var(--font-mono); font-size: 20px; padding: 6px 14px; border-radius: 999px;
+    border: 1.5px solid var(--ink); background: rgba(255,253,247,.8);
+}
+.chip.r { border-color: var(--red); color: var(--red); }
+.chip.b { border-color: var(--blue); color: var(--blue); }
+.chip.g { border-color: var(--green); color: var(--green); }
+kbd {
+    font-family: var(--font-mono); font-size: .8em; padding: 2px 10px; border-radius: 6px;
+    border: 1.5px solid var(--ink-2); border-bottom-width: 4px; background: #fffdf7;
+}
+.practice {
+    display: inline-flex; align-items: center; gap: 14px;
+    background: var(--ink); color: var(--slide-bg); border-radius: 12px;
+    padding: 12px 22px; font-size: 24px;
+}
+.practice::before { content: "✍️"; }
+.practice code { background: rgba(255,255,255,.12); color: var(--yellow); }
+.bignum { font-family: var(--font-display); font-size: 120px; line-height: 1; color: var(--red); }
+.bignum small { font-size: 40px; color: var(--ink-2); margin-left: 6px; }
+.foot {                                  /* 슬라이드 하단 메모 */
+    position: absolute; left: var(--pad-x); right: 72px; bottom: 34px;
+    font-size: 21px; color: var(--ink-3);
+}
+
+/* ===========================================
+   TITLE SLIDE
+   =========================================== */
+.slide.title { padding-top: 150px; }
+.slide.title .deckno {
+    position: absolute; right: 70px; top: 40px;
+    font-family: var(--font-display); font-size: 520px; line-height: 1;
+    color: transparent; -webkit-text-stroke: 3px rgba(27,34,51,.14);
+}
+.slide.title .kicker {
+    font-family: var(--font-mono); font-size: 24px; letter-spacing: .14em; color: var(--red); font-weight: 700;
+}
+.slide.title h1 { font-size: 132px; margin: 20px 0 26px; max-width: 1400px; }
+.slide.title h1 em { font-style: normal; color: var(--red); }
+.slide.title .sub { font-size: 36px; color: var(--ink-2); max-width: 1250px; }
+.slide.title .meta { position: absolute; left: var(--pad-x); bottom: 80px; right: 72px; }
+.stamp {                                  /* 합격 도장 */
+    position: absolute; right: 150px; bottom: 120px;
+    width: 250px; height: 250px; border-radius: 50%;
+    border: 7px solid var(--red); color: var(--red);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    font-family: var(--font-display); font-size: 62px; line-height: 1;
+    transform: rotate(-14deg); opacity: .85;
+    box-shadow: inset 0 0 0 8px var(--slide-bg), inset 0 0 0 11px var(--red);
+}
+.stamp small { font-family: var(--font-mono); font-size: 18px; margin-top: 10px; letter-spacing: .1em; }
+
+/* ===========================================
+   SECTION DIVIDER
+   =========================================== */
+.slide.section { display: block; padding-top: 260px; }
+.slide.section .no {
+    font-family: var(--font-mono); font-size: 34px; color: var(--red); font-weight: 700; letter-spacing: .1em;
+}
+.slide.section h2 { font-size: 120px; margin: 16px 0 24px; }
+.slide.section p { font-size: 36px; color: var(--ink-2); max-width: 1300px; }
+
+/* ===========================================
+   ANIMATIONS — 슬라이드가 보일 때 순서대로 등장
+   =========================================== */
+.reveal {
+    opacity: 0; transform: translateY(26px);
+    transition: opacity .6s var(--ease-out-expo), transform .6s var(--ease-out-expo);
+}
+.slide.visible .reveal { opacity: 1; transform: none; }
+.slide.visible .reveal:nth-child(2) { transition-delay: .08s; }
+.slide.visible .reveal:nth-child(3) { transition-delay: .16s; }
+.slide.visible .reveal:nth-child(4) { transition-delay: .24s; }
+.slide.visible .reveal:nth-child(5) { transition-delay: .32s; }
+.slide.visible .reveal:nth-child(6) { transition-delay: .40s; }
+.slide.visible .reveal:nth-child(7) { transition-delay: .48s; }
+.stamp.reveal { transform: rotate(-14deg) scale(1.6); }
+.slide.visible .stamp.reveal { transform: rotate(-14deg) scale(1); transition-delay: .5s; }
+
+/* ===========================================
+   DECK CHROME — 진행바, 페이지 표시, 목차 버튼 (슬라이드 바깥)
+   =========================================== */
+.progress {
+    position: fixed; left: 0; top: 0; height: 4px; background: var(--red);
+    z-index: 1001; transition: width .3s ease;
+}
+.deck-controls {
+    left: auto; right: 18px; bottom: 14px; transform: none;   /* 오른쪽 아래 구석: 슬라이드 내용과 겹치지 않게 */
+    display: flex; gap: 8px; align-items: center;
+    background: rgba(20, 24, 36, .82); backdrop-filter: blur(6px);
+    padding: 6px 8px; border-radius: 999px;
+    font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #e8e3d7;
+    opacity: .25; transition: opacity .25s;
+}
+.deck-controls:hover { opacity: 1; }
+.deck-controls button, .deck-controls a {
+    background: transparent; color: inherit; border: 0; cursor: pointer;
+    font: inherit; padding: 6px 12px; border-radius: 999px; text-decoration: none;
+}
+.deck-controls button:hover, .deck-controls a:hover { background: rgba(255,255,255,.12); }
+.deck-controls .count { padding: 0 6px; min-width: 64px; text-align: center; }
+
+/* ===========================================
+   INLINE EDITING — E 키 또는 왼쪽 위 모서리에 마우스
+   =========================================== */
+.edit-hotzone { position: fixed; top: 0; left: 0; width: 80px; height: 80px; z-index: 10000; cursor: pointer; }
+.edit-toggle {
+    position: fixed; top: 16px; left: 16px; z-index: 10001;
+    width: 44px; height: 44px; border-radius: 50%; border: 0; cursor: pointer;
+    background: #f3eee3; font-size: 20px; box-shadow: 0 4px 14px rgba(0,0,0,.3);
+    opacity: 0; pointer-events: none; transition: opacity .3s ease;
+}
+.edit-toggle.show, .edit-toggle.active { opacity: 1; pointer-events: auto; }
+.edit-toggle.active { background: var(--red); }
+body.editing [contenteditable="true"] { outline: 2px dashed rgba(214,64,43,.5); outline-offset: 4px; }
+.edit-banner {
+    position: fixed; top: 16px; left: 50%; transform: translateX(-50%); z-index: 10001;
+    background: var(--red); color: #fff; font: 14px 'IBM Plex Sans KR', sans-serif;
+    padding: 6px 16px; border-radius: 999px; display: none;
+}
+body.editing .edit-banner { display: block; }
+
+/* ===========================================
+   DECK-SPECIFIC STYLES (덱마다 추가)
+   =========================================== */
+/* 덱 05 전용 */
+.fig { background: rgba(255,253,247,.9); border: 2px solid var(--ink); border-radius: 14px; padding: 16px; }
+.fig svg { display: block; width: 100%; height: auto; }
+.fig text { font-family: 'IBM Plex Sans KR', sans-serif; }
+.steps6 { display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; }
+.steps6 .s { border: 2px solid var(--ink); border-radius: 12px; padding: 16px 16px; background: rgba(255,253,247,.9); }
+.steps6 .s b { font-family: var(--font-display); font-weight: 400; font-size: 40px; color: var(--red); display: block; line-height: 1; }
+.steps6 .s span { display: block; font-size: 25px; font-weight: 700; margin: 8px 0 4px; }
+.steps6 .s code { font-size: 18px; }
+.steps6 .s p { font-size: 20px; color: var(--ink-2); line-height: 1.4; margin-top: 6px; }
+.big3 { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 26px; }
+.big3 th, .big3 td { padding: 18px 20px; border-bottom: 2px solid rgba(27,34,51,.18); text-align: left; vertical-align: middle; }
+.big3 th { font-family: var(--font-display); font-weight: 400; font-size: 30px; background: var(--ink); color: var(--slide-bg); }
+.big3 th:first-child { border-radius: 12px 0 0 0; } .big3 th:last-child { border-radius: 0 12px 0 0; }
+.big3 td { background: rgba(255,253,247,.92); }
+.big3 td:first-child { font-family: var(--font-display); font-size: 32px; }
+.big3 td code { font-size: 22px; }
+.big3 tr.r td:first-child { color: var(--red); } .big3 tr.b td:first-child { color: var(--blue); } .big3 tr.g td:first-child { color: var(--green); }
+pre.summary { font-size: 19px; line-height: 1.42; }
+.trio { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+.err td:first-child code { font-size: 18px; white-space: normal; }
+.err { font-size: 22px; }
+.act { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.act .card { padding: 20px 24px; }
+.act svg { width: 100%; height: 150px; display: block; margin: 6px 0 10px; }
+.loop5 { list-style: none; display: grid; gap: 12px; }
+.loop5 li { display: grid; grid-template-columns: 56px 1fr; gap: 14px; align-items: center; background: rgba(255,253,247,.92); border: 2px solid var(--ink); border-radius: 12px; padding: 12px 18px; font-size: 24px; }
+.loop5 li b { font-family: var(--font-display); font-weight: 400; font-size: 38px; color: var(--red); line-height: 1; text-align: center; }
+.loop5 li code { font-size: 22px; }
+.loop5 li span.d { display: block; font-size: 20px; color: var(--ink-2); }
+.mode { font-size: 24px; }
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<div class="edit-hotzone" aria-hidden="true"></div>
+<button class="edit-toggle" id="editToggle" title="편집 모드 (E)">✏️</button>
+<div class="edit-banner">편집 모드 · 텍스트를 클릭해 수정 · Ctrl+S 로 파일 저장 · E 로 종료</div>
+
+<div class="deck-viewport">
+<main class="deck-stage" id="deckStage" data-deck="05" data-ver="89ecb52178" data-tag="05 · 딥러닝">
+<!-- ========== 1. 표지 ========== -->
+<section class="slide active visible title">
+    <div class="deckno">05</div>
+    <div class="kicker reveal">AICE ASSOCIATE · 13~14번 문항</div>
+    <h1 class="reveal">딥러닝은<br><em>텐서·모델·학습 루프</em></h1>
+    <p class="sub reveal">PyTorch로 데이터를 텐서로 바꾸고, 층을 쌓고, 학습 루프를 직접 돌려 history를 기록합니다. 출력층과 손실함수의 "짝"과 루프 5줄만 손에 익히면 13~14번은 공식이에요.</p>
+    <div class="meta reveal">
+        <div class="chips">
+            <span class="chip">torch.tensor</span><span class="chip">DataLoader</span><span class="chip">nn.Sequential</span>
+            <span class="chip">BCEWithLogitsLoss</span><span class="chip">zero_grad · backward · step</span><span class="chip r">시험형 템플릿</span>
+        </div>
+    </div>
+</section>
+
+<!-- ========== 2. 6단계 ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">PyTorch 딥러닝은 6단계예요</h2>
+    <p class="lead reveal">sklearn이 "4줄"이었다면, PyTorch는 <b>데이터 모양을 맞추고 학습 루프를 직접 쓰는</b> 단계가 더 있어요. 순서는 언제나 같아요.</p>
+    <div class="steps6 reveal">
+        <div class="s"><b>1</b><span>텐서</span><code>torch.tensor(X)</code><p>float32 로 변환</p></div>
+        <div class="s"><b>2</b><span>배치</span><code>DataLoader(...)</code><p>32개씩 잘라 주기</p></div>
+        <div class="s"><b>3</b><span>모델</span><code>nn.Sequential(...)</code><p>층을 순서대로 쌓기</p></div>
+        <div class="s"><b>4</b><span>손실·옵티마이저</span><code>nn.MSELoss()</code><br><code>optim.Adam(...)</code><p>무엇을 줄이고, 어떻게</p></div>
+        <div class="s"><b>5</b><span>학습 루프</span><code>for epoch ...</code><p>history 에 loss 기록</p></div>
+        <div class="s"><b>6</b><span>예측·시각화</span><code>model.eval()</code><p>지표 계산 · 학습 곡선</p></div>
+    </div>
+    <div class="cols c3" style="margin-top:34px">
+        <div class="callout exam reveal"><b class="h">13번 = 3 + 4 + 5</b>지정된 구조로 모델을 만들고, 학습하면서 <code>history</code>에 loss / val_loss를 기록해요.</div>
+        <div class="callout exam reveal"><b class="h">14번 = 6</b><code>history</code>로 학습 곡선을 그리고, 검증 데이터로 지표(MAE, 정확도)를 계산해요.</div>
+        <div class="callout tip reveal"><b class="h">입력은 전처리 그대로</b>ML에서 쓰던 <code>X_train, X_valid, y_train, y_valid</code>를 텐서로 바꿔 넣으면 돼요.</div>
+    </div>
+    <span class="pen abs reveal" style="right:150px; bottom:90px">템플릿 하나만 외우면 끝!</span>
+</section>
+
+<!-- ========== 3. 섹션 1 ========== -->
+<section class="slide section">
+    <div class="no reveal">PART 1</div>
+    <h2 class="reveal">데이터를 텐서로</h2>
+    <p class="reveal">PyTorch는 pandas DataFrame을 직접 먹지 못해요. 숫자 배열을 텐서로 바꾸고, dtype과 모양을 손실함수에 맞추는 게 첫 단계예요.</p>
+    <span class="pen abs reveal" style="right:200px; top:650px">dtype · shape 에러가 제일 흔해요</span>
+</section>
+
+<!-- ========== 4. 텐서 기초 ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">텐서 = GPU에도 올라가는 numpy 배열</h2>
+    <div class="cols c2" style="gap:36px">
+        <div class="reveal">
+            <div class="cell"><div class="in">In [1]:</div><pre><code class="py">import torch
+t = torch.tensor([[1.5, 2.0], [3.0, 4.0]])
+print(t)
+print(t.dtype, t.shape)</code></pre></div>
+            <div class="cell"><div class="outp">Out:</div><pre class="out">tensor([[1.5000, 2.0000],
+        [3.0000, 4.0000]])
+torch.float32 torch.Size([2, 2])</pre></div>
+            <div class="cell"><div class="in">In [2]:</div><pre><code class="py">print(torch.tensor([0, 1, 1]).dtype)  # 정수로 만들면
+print(t.sum().item())                 # 숫자 하나 꺼내기
+print(t.numpy())                      # 텐서 → numpy</code></pre></div>
+            <div class="cell"><div class="outp">Out:</div><pre class="out">torch.int64
+10.5
+[[1.5 2. ]
+ [3.  4. ]]</pre></div>
+        </div>
+        <div class="stack reveal">
+            <table class="tbl">
+                <tr><th>하고 싶은 것</th><th>코드</th></tr>
+                <tr><td>numpy → 텐서</td><td><code>torch.tensor(X, dtype=torch.float32)</code></td></tr>
+                <tr><td>텐서 → numpy</td><td><code>t.numpy()</code></td></tr>
+                <tr><td>숫자 1개 꺼내기</td><td><code>loss.item()</code></td></tr>
+                <tr><td>모양 바꾸기</td><td><code>t.reshape(-1, 1)</code></td></tr>
+                <tr><td>모양 · 타입 확인</td><td><code>t.shape</code>, <code>t.dtype</code></td></tr>
+            </table>
+            <div class="callout warn"><b class="h">int64 = torch.long</b>정수 리스트로 만들면 자동으로 <code>torch.int64</code>(= <code>torch.long</code>)가 돼요. 다중분류 정답은 이 타입이어야 해요.</div>
+        </div>
+    </div>
+</section>
+
+<!-- ========== 5. dtype/shape 규칙 ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">X와 y를 텐서로 바꾸는 규칙</h2>
+    <p class="lead reveal">입력 X는 항상 <b>float32</b>예요. 정답 y는 문제 유형에 따라 <b>dtype과 모양</b>이 달라요. 이 표가 에러의 절반을 막아줘요.</p>
+    <table class="big3 reveal">
+        <tr><th>문제</th><th>정답 y의 dtype</th><th>y의 모양</th><th>변환 코드</th></tr>
+        <tr class="g"><td>회귀</td><td><code>torch.float32</code></td><td><code>(N, 1)</code></td><td><code>torch.tensor(y.to_numpy(), dtype=torch.float32).reshape(-1, 1)</code></td></tr>
+        <tr class="b"><td>이진분류</td><td><code>torch.float32</code></td><td><code>(N, 1)</code></td><td><code>torch.tensor(y.to_numpy(), dtype=torch.float32).reshape(-1, 1)</code></td></tr>
+        <tr class="r"><td>다중분류</td><td><code>torch.long</code></td><td><code>(N,)</code></td><td><code>torch.tensor(y.to_numpy(), dtype=torch.long)</code></td></tr>
+    </table>
+    <div class="cols c2" style="margin-top:30px; gap:30px">
+        <div class="reveal">
+            <div class="cell"><div class="in">In [3]:</div><pre class="sm"><code class="py">Xtr = torch.tensor(X_train, dtype=⟦torch.float32⟧)
+ytr = torch.tensor(y_train.to_numpy(),
+                   dtype=torch.float32).⟦reshape(-1, 1)⟧
+print(X_train.dtype, '-&gt;', Xtr.dtype, tuple(Xtr.shape))
+print(tuple(ytr.shape), ytr.dtype)</code></pre></div>
+            <div class="cell"><div class="outp">Out:</div><pre class="out">float64 -&gt; torch.float32 (2381, 33)
+(2381, 1) torch.float32</pre></div>
+        </div>
+        <div class="stack reveal">
+            <div class="callout warn"><b class="h">왜 float32?</b>sklearn 스케일러는 <b>float64</b>를 돌려주는데, 모델 가중치는 float32예요. 그대로 넣으면 <code>must have the same dtype</code> 에러가 나요.</div>
+            <div class="callout tip"><b class="h">-1의 뜻</b><code>reshape(-1, 1)</code>은 "열은 1개, 행 수는 알아서"예요. 모델 출력 <code>(N, 1)</code>과 모양을 맞추는 거예요.</div>
+        </div>
+    </div>
+</section>
+
+<!-- ========== 6. DataLoader ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">TensorDataset + DataLoader <small>급식 배식기</small></h2>
+    <div class="cols c2" style="gap:36px">
+        <div class="reveal">
+            <div class="cell"><div class="in">In [4]:</div><pre><code class="py">from torch.utils.data import (TensorDataset,
+                              DataLoader)
+
+train_ds = TensorDataset(Xtr, ytr)   # X·y 짝짓기
+train_loader = DataLoader(train_ds, ⟦batch_size=32⟧,
+                          ⟦shuffle=True⟧)
+
+xb, yb = next(iter(train_loader))    # 첫 배치
+print(len(train_ds), len(train_loader),
+      tuple(xb.shape), tuple(yb.shape))</code></pre></div>
+            <div class="cell"><div class="outp">Out:</div><pre class="out">2381 75 (32, 33) (32, 1)</pre></div>
+        </div>
+        <div class="stack reveal">
+            <p><b>비유</b>: 학생 2,381명에게 급식을 한 번에 줄 수 없으니 <b>32명씩 75번</b> 나눠 배식해요. 매일(매 epoch) 줄 서는 순서를 섞는 게 <code>shuffle=True</code>예요.</p>
+            <table class="tbl">
+                <tr><th>용어</th><th>뜻</th></tr>
+                <tr><td><b>batch</b></td><td>한 번에 학습하는 묶음 (32개)</td></tr>
+                <tr><td><b>step</b></td><td>배치 1개로 가중치를 1번 고치는 것</td></tr>
+                <tr><td><b>epoch</b></td><td>전체 데이터를 한 바퀴 (= 75 step)</td></tr>
+            </table>
+            <div class="callout exam"><b class="h">batch_size는 문제에 적힌 대로</b>"batch_size=16"이라고 나오면 <code>DataLoader(..., batch_size=16)</code>으로 그대로 옮겨요.</div>
+        </div>
+    </div>
+</section>
+
+<!-- ========== 7. 섹션 2 ========== -->
+<section class="slide section">
+    <div class="no reveal">PART 2</div>
+    <h2 class="reveal">모델 쌓기</h2>
+    <p class="reveal">뉴런 하나가 하는 일, 층을 쌓는 법, 그리고 마지막 층(출력층)과 손실함수를 문제 유형에 맞추는 법을 봅니다.</p>
+    <span class="pen abs reveal" style="right:200px; top:650px">출력층 + 손실 짝꿍이 핵심!</span>
+</section>
+
+<!-- ========== 8. 뉴런 ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">뉴런 하나 = 가중합 + 활성화</h2>
+    <div class="cols c64 center-y" style="gap:44px">
+        <div class="fig reveal">
+            <svg viewBox="0 0 980 480" role="img" aria-label="입력 3개에 가중치를 곱해 더한 뒤 활성화 함수를 거쳐 출력하는 뉴런 그림">
+                <defs><marker id="a5" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1b2233"/></marker></defs>
+                <g font-size="26" font-weight="700" text-anchor="middle">
+                    <circle cx="110" cy="100" r="50" fill="#fffdf7" stroke="#1b2233" stroke-width="3"/><text x="110" y="109" fill="#1b2233">tenure</text>
+                    <circle cx="110" cy="240" r="50" fill="#fffdf7" stroke="#1b2233" stroke-width="3"/><text x="110" y="249" fill="#1b2233" font-size="22">요금</text>
+                    <circle cx="110" cy="380" r="50" fill="#fffdf7" stroke="#1b2233" stroke-width="3"/><text x="110" y="389" fill="#1b2233" font-size="22">계약</text>
+                    <line x1="160" y1="110" x2="440" y2="225" stroke="#1b2233" stroke-width="3" marker-end="url(#a5)"/>
+                    <line x1="160" y1="240" x2="440" y2="240" stroke="#1b2233" stroke-width="3" marker-end="url(#a5)"/>
+                    <line x1="160" y1="370" x2="440" y2="255" stroke="#1b2233" stroke-width="3" marker-end="url(#a5)"/>
+                    <text x="300" y="150" fill="#2b59c3" font-size="24">× w₁</text><text x="300" y="228" fill="#2b59c3" font-size="24">× w₂</text><text x="300" y="342" fill="#2b59c3" font-size="24">× w₃</text>
+                    <circle cx="520" cy="240" r="75" fill="#1b2233"/><text x="520" y="232" fill="#f3eee3" font-size="36">Σ + b</text><text x="520" y="268" fill="#f4cf55" font-size="19">nn.Linear</text>
+                    <line x1="595" y1="240" x2="680" y2="240" stroke="#1b2233" stroke-width="3" marker-end="url(#a5)"/>
+                    <rect x="690" y="190" width="150" height="100" rx="16" fill="#d6402b"/><text x="765" y="234" fill="#fff" font-size="26">활성화</text><text x="765" y="268" fill="#fff" font-size="20">nn.ReLU</text>
+                    <line x1="840" y1="240" x2="920" y2="240" stroke="#1b2233" stroke-width="3" marker-end="url(#a5)"/>
+                    <text x="950" y="249" fill="#1b2233">출력</text>
+                </g>
+            </svg>
+            <div style="font-family:var(--font-mono); font-size:24px; text-align:center; margin-top:10px; padding:12px; border-top:1.5px dashed var(--ink-3)">출력 = relu(w₁·tenure + w₂·요금 + w₃·계약 + b)</div>
+        </div>
+        <div class="stack reveal">
+            <p><b>비유</b>: 심사위원 한 명이 여러 항목 점수에 <b>자기만의 가중치(w)</b>를 곱해 더하고, 기준(b)을 넘으면 손을 드는 것과 같아요.</p>
+            <ul class="list small">
+                <li><b>w, b</b>는 학습으로 자동으로 정해져요. 우리가 정하는 건 <b>뉴런 수와 층 수</b>예요.</li>
+                <li><code>nn.Linear(33, 64)</code> = 이런 뉴런 64개가 입력 33개와 모두 연결된 층이에요.</li>
+                <li>활성화 함수가 없으면 층을 아무리 쌓아도 직선(선형) 모델이에요.</li>
+            </ul>
+            <div class="callout tip"><b class="h">PyTorch는 활성화도 층이에요</b>가중합은 <code>nn.Linear</code>, 활성화는 <code>nn.ReLU()</code>로 <b>따로</b> 넣어요.</div>
+        </div>
+    </div>
+</section>
+
+<!-- ========== 9. 층 쌓기 그림 ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">층을 쌓으면 신경망이에요</h2>
+    <div class="fig reveal" style="padding:10px 20px">
+        <svg viewBox="0 0 1640 470" role="img" aria-label="입력 33개, 은닉층 64와 32, 출력 1개로 이루어진 신경망 그림">
+            <g stroke="rgba(27,34,51,.22)" stroke-width="1.5">
+                <line x1="210" y1="110" x2="610" y2="80"/><line x1="210" y1="110" x2="610" y2="200"/><line x1="210" y1="110" x2="610" y2="320"/>
+                <line x1="210" y1="230" x2="610" y2="80"/><line x1="210" y1="230" x2="610" y2="200"/><line x1="210" y1="230" x2="610" y2="320"/>
+                <line x1="210" y1="350" x2="610" y2="80"/><line x1="210" y1="350" x2="610" y2="200"/><line x1="210" y1="350" x2="610" y2="320"/>
+                <line x1="610" y1="80" x2="1010" y2="150"/><line x1="610" y1="80" x2="1010" y2="270"/>
+                <line x1="610" y1="200" x2="1010" y2="150"/><line x1="610" y1="200" x2="1010" y2="270"/>
+                <line x1="610" y1="320" x2="1010" y2="150"/><line x1="610" y1="320" x2="1010" y2="270"/>
+                <line x1="1010" y1="150" x2="1400" y2="210"/><line x1="1010" y1="270" x2="1400" y2="210"/>
+            </g>
+            <g fill="#fffdf7" stroke="#1b2233" stroke-width="3">
+                <circle cx="210" cy="110" r="30"/><circle cx="210" cy="230" r="30"/><circle cx="210" cy="350" r="30"/>
+                <circle cx="610" cy="80" r="30"/><circle cx="610" cy="200" r="30"/><circle cx="610" cy="320" r="30"/>
+                <circle cx="1010" cy="150" r="30"/><circle cx="1010" cy="270" r="30"/>
+            </g>
+            <circle cx="1400" cy="210" r="36" fill="#d6402b"/>
+            <g font-size="30" fill="#7d8497" text-anchor="middle"><text x="210" y="300">⋮</text><text x="610" y="270">⋮</text><text x="1010" y="220">⋮</text></g>
+            <g font-size="26" font-weight="700" text-anchor="middle" fill="#1b2233">
+                <text x="210" y="420">입력 33개</text><text x="610" y="400">Linear(33, 64) + ReLU</text><text x="1010" y="350">Linear(64, 32) + ReLU</text><text x="1400" y="290">Linear(32, 1)</text>
+            </g>
+            <g font-size="22" text-anchor="middle" fill="#2b59c3">
+                <text x="210" y="452">X_train.shape[1]</text><text x="610" y="432">은닉층 1</text><text x="1010" y="382">은닉층 2</text><text x="1400" y="322">출력층 · 로짓 1개</text>
+            </g>
+        </svg>
+    </div>
+    <div class="cols c3" style="margin-top:22px">
+        <div class="card blue reveal"><span class="k">입력 수</span><p class="small">첫 <code>nn.Linear</code>의 입력 수 = 특성 수 = <code>X_train.shape[1]</code>. 그다음부터는 <b>앞 층 출력 수 = 다음 층 입력 수</b>예요.</p></div>
+        <div class="card reveal"><span class="k">은닉층</span><p class="small">뉴런 수와 층 수는 <b>문제가 정해줘요</b>. 보통 128 → 64 → 32처럼 점점 줄여요. 활성화는 거의 항상 <code>nn.ReLU()</code>예요.</p></div>
+        <div class="card red reveal"><span class="k">출력층</span><p class="small"><b>문제 유형이 결정해요</b>. 회귀·이진분류는 1개, 다중분류는 클래스 수만큼이에요. sigmoid·softmax는 <b>넣지 않아요</b>.</p></div>
+    </div>
+</section>
+
+<!-- ========== 10. nn.Sequential 코드 ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">코드로 쌓기 <small>nn.Sequential</small></h2>
+    <div class="cols c2" style="gap:36px">
+        <div class="reveal">
+            <div class="cell"><div class="in">In [5]:</div><pre><code class="py">import torch.nn as nn
+
+torch.manual_seed(42)               # 결과 재현용
+model = nn.Sequential(
+    nn.Linear(⟦n_features⟧, 64),
+    nn.ReLU(),
+    nn.Dropout(0.3),               # 과적합 방지
+    nn.Linear(64, 32),
+    nn.ReLU(),
+    nn.Linear(32, ⟦1⟧),              # 출력: 로짓 1개
+)
+print(model)
+sum(p.numel() for p in model.parameters())</code></pre></div>
+        </div>
+        <div class="stack reveal">
+            <div class="cell"><div class="outp">Out:</div><pre class="out xs">Sequential(
+  (0): Linear(in_features=33, out_features=64, bias=True)
+  (1): ReLU()
+  (2): Dropout(p=0.3, inplace=False)
+  (3): Linear(in_features=64, out_features=32, bias=True)
+  (4): ReLU()
+  (5): Linear(in_features=32, out_features=1, bias=True)
+)
+4289</pre></div>
+            <div class="callout tip"><b class="h">Dropout(0.3)</b>학습할 때마다 뉴런 30%를 랜덤으로 쉬게 해요. 문제 하나만 달달 외우지 않게 해서 <b>과적합을 막아요</b>.</div>
+            <div class="callout exam"><b class="h">파라미터 수 검산</b>33×64+64 = 2,176 · 64×32+32 = 2,080 · 32×1+1 = 33 → 합계 <b>4,289</b>개예요.</div>
+        </div>
+    </div>
+</section>
+
+<!-- ========== 11. nn.Module 클래스 ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">클래스로 쌓기 <small>nn.Module + forward</small></h2>
+    <div class="cols c2" style="gap:36px">
+        <div class="reveal">
+            <div class="cell"><div class="in">In [6]:</div><pre class="sm"><code class="py">class Net(nn.Module):
+    def __init__(self, n):
+        super().__init__()
+        self.fc1 = nn.Linear(n, 64)
+        self.fc2 = nn.Linear(64, 32)
+        self.out = nn.Linear(32, 1)
+        self.drop = nn.Dropout(0.3)
+
+    def ⟦forward⟧(self, x):           # 데이터가 지나가는 길
+        x = self.drop(torch.relu(self.fc1(x)))
+        x = torch.relu(self.fc2(x))
+        return self.out(x)
+
+torch.manual_seed(42)
+net = Net(n_features)
+print(sum(p.numel() for p in net.parameters()),
+      tuple(net(Xtr[:5]).shape))</code></pre></div>
+            <div class="cell"><div class="outp">Out:</div><pre class="out">4289 (5, 1)</pre></div>
+        </div>
+        <div class="stack reveal">
+            <table class="tbl">
+                <tr><th></th><th>nn.Sequential</th><th>nn.Module 클래스</th></tr>
+                <tr><td>코드 길이</td><td>짧음</td><td>김</td></tr>
+                <tr><td>흐름</td><td>위에서 아래로만</td><td>forward에서 자유롭게</td></tr>
+                <tr><td>추천</td><td><b>시험처럼 구조가 정해진 문제</b></td><td>분기·여러 입력이 있는 모델</td></tr>
+            </table>
+            <div class="callout tip"><b class="h">둘 다 nn.Module이에요</b>파라미터 수도 4,289개로 같아요. 학습 루프, <code>model.eval()</code>, <code>state_dict()</code>도 똑같이 써요.</div>
+            <div class="callout warn"><b class="h">super().__init__() 잊지 않기</b>빠뜨리면 층을 등록할 때 에러가 나요. 클래스 방식의 단골 실수예요.</div>
+        </div>
+    </div>
+</section>
+
+<!-- ========== 12. 활성화 함수 ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">활성화 함수 3총사</h2>
+    <div class="act">
+        <div class="card reveal">
+            <span class="k">은닉층 기본값</span><h3>ReLU</h3>
+            <svg viewBox="0 0 300 150" aria-label="relu 그래프"><line x1="10" y1="120" x2="290" y2="120" stroke="#7d8497" stroke-width="2"/><line x1="150" y1="10" x2="150" y2="140" stroke="#7d8497" stroke-width="2"/><polyline points="10,120 150,120 270,20" fill="none" stroke="#1b2233" stroke-width="6"/></svg>
+            <p class="small">음수는 0, 양수는 그대로. 단순하고 빨라서 <b>은닉층은 거의 다 ReLU</b>예요.</p>
+        </div>
+        <div class="card blue reveal">
+            <span class="k">이진분류 확률</span><h3>sigmoid</h3>
+            <svg viewBox="0 0 300 150" aria-label="sigmoid 그래프"><line x1="10" y1="130" x2="290" y2="130" stroke="#7d8497" stroke-width="2"/><line x1="10" y1="20" x2="290" y2="20" stroke="#7d8497" stroke-width="1" stroke-dasharray="5 5"/><path d="M10,128 C95,128 115,120 150,75 C185,30 205,22 290,22" fill="none" stroke="#2b59c3" stroke-width="6"/><text x="270" y="15" font-size="16" fill="#7d8497">1</text><text x="270" y="148" font-size="16" fill="#7d8497">0</text></svg>
+            <p class="small">로짓을 <b>0~1 확률</b>로 바꿔요. 모델에 넣지 않고 <b>예측할 때</b> <code>torch.sigmoid</code>로 써요.</p>
+        </div>
+        <div class="card red reveal">
+            <span class="k">다중분류 확률</span><h3>softmax</h3>
+            <svg viewBox="0 0 300 150" aria-label="softmax 막대 그래프"><line x1="20" y1="130" x2="280" y2="130" stroke="#7d8497" stroke-width="2"/><rect x="45" y="20" width="55" height="110" fill="#d6402b"/><rect x="125" y="90" width="55" height="40" fill="#d6402b" opacity=".45"/><rect x="205" y="113" width="55" height="17" fill="#d6402b" opacity=".45"/><text x="72" y="14" font-size="18" text-anchor="middle" fill="#1b2233">.66</text><text x="152" y="84" font-size="18" text-anchor="middle" fill="#1b2233">.24</text><text x="232" y="107" font-size="18" text-anchor="middle" fill="#1b2233">.10</text></svg>
+            <p class="small">클래스별 점수를 <b>합이 1인 확률</b>로 바꿔요. 예측만 할 거면 <code>argmax</code>로 충분해요.</p>
+        </div>
+    </div>
+    <div class="cols c2 reveal" style="margin-top:22px; gap:30px">
+        <div class="cell"><div class="in">In [7]:</div><pre class="sm"><code class="py">s = torch.tensor([[2.0, 1.0, 0.1]])
+print(torch.softmax(s, dim=1).numpy().round(2),
+      s.argmax(dim=1))</code></pre></div>
+        <div class="cell"><div class="outp">Out:</div><pre class="out">[[0.66 0.24 0.1 ]] tensor([0])</pre></div>
+    </div>
+    <div class="callout exam reveal" style="margin-top:18px"><b class="h">회귀 출력층은 활성화 없음</b><code>nn.Linear(64, 1)</code>에서 끝내요. 배달 시간 37.5분 같은 값을 자르지 않고 그대로 내보내야 하니까요.</div>
+</section>
+
+<!-- ========== 13. 출력층·손실 짝꿍표 ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">★ 출력층 · 손실함수 짝꿍표 <small>이 표만은 꼭 외우세요</small></h2>
+    <table class="big3 reveal" style="margin-top:12px">
+        <tr><th>문제</th><th>마지막 층</th><th>손실함수</th><th>정답 y</th><th>예측 후처리</th></tr>
+        <tr class="g"><td>회귀</td><td><code>nn.Linear(…, 1)</code></td><td><code>nn.MSELoss()</code></td><td>float32 · (N, 1)</td><td>그대로</td></tr>
+        <tr class="b"><td>이진분류</td><td><code>nn.Linear(…, 1)</code></td><td><code>nn.BCEWithLogitsLoss()</code></td><td>float32 · (N, 1)</td><td><code>torch.sigmoid(out) &gt; 0.5</code></td></tr>
+        <tr class="r"><td>다중분류</td><td><code>nn.Linear(…, 클래스 수)</code></td><td><code>nn.CrossEntropyLoss()</code></td><td>long · (N,)</td><td><code>out.argmax(dim=1)</code></td></tr>
+    </table>
+    <div class="cols c2" style="margin-top:30px; gap:30px">
+        <div class="callout warn reveal"><b class="h">sigmoid · softmax는 손실 안에 있어요</b><code>BCEWithLogitsLoss</code>는 sigmoid를, <code>CrossEntropyLoss</code>는 softmax를 <b>내장</b>하고 있어요. 모델 끝에 또 넣으면 두 번 적용돼서 학습이 망가져요.</div>
+        <div class="callout tip reveal"><b class="h">로짓(logit)이란?</b>sigmoid·softmax를 거치기 전의 <b>날것의 점수</b>예요. −2.46, 0.99처럼 아무 실수나 나와요. 확률이 필요할 때만 변환해요.</div>
+    </div>
+    <span class="pen abs reveal" style="right:160px; bottom:70px">출력 수 · 손실 · y dtype — 세트로!</span>
+</section>
+
+<!-- ========== 14. 확인 문제 ① ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">확인 문제 ① <small>모델 쌓기</small></h2>
+    <div class="cols c2" style="gap:30px; margin-top:12px">
+        <div class="stack">
+            <div class="quiz reveal">
+                <div class="q">특성이 20개인 데이터로 "64 → 32 → 출력" 이진분류 모델을 만들 때, 첫 층과 마지막 층은?</div>
+                <button class="show-a">정답 보기</button>
+                <div class="a"><code>nn.Linear(20, 64)</code>로 시작해 <code>nn.Linear(32, 1)</code>로 끝나요. 이진분류 출력은 로짓 1개이고, sigmoid는 넣지 않아요.</div>
+            </div>
+            <div class="quiz reveal">
+                <div class="q">3개 클래스 분류 모델 끝에 <code>nn.Softmax(dim=1)</code>을 넣고 <code>nn.CrossEntropyLoss()</code>로 학습했어요. 뭐가 문제일까요?</div>
+                <button class="show-a">정답 보기</button>
+                <div class="a">softmax가 <b>두 번</b> 적용돼요. CrossEntropyLoss 안에 이미 softmax가 있으니, 모델은 <code>nn.Linear(…, 3)</code>에서 끝내야 해요.</div>
+            </div>
+        </div>
+        <div class="stack">
+            <div class="quiz reveal">
+                <div class="q">다중분류 정답을 <code>torch.tensor(y, dtype=torch.float32).reshape(-1, 1)</code>로 만들었어요. 어떻게 고쳐야 할까요?</div>
+                <button class="show-a">정답 보기</button>
+                <div class="a"><code>torch.tensor(y, dtype=torch.long)</code>으로 바꿔요. dtype은 <b>long</b>, 모양은 <b>(N,)</b> 그대로예요. reshape하면 안 돼요.</div>
+            </div>
+            <div class="quiz reveal">
+                <div class="q"><code>nn.Linear(64, 32)</code> 다음에 <code>nn.Linear(16, 1)</code>을 쌓았어요. 어떤 에러가 날까요?</div>
+                <button class="show-a">정답 보기</button>
+                <div class="a"><code>mat1 and mat2 shapes cannot be multiplied</code>예요. 앞 층 출력 수(32)와 다음 층 입력 수(16)가 같아야 해요.</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========== 15. 섹션 3 ========== -->
+<section class="slide section">
+    <div class="no reveal">PART 3</div>
+    <h2 class="reveal">학습시키기</h2>
+    <p class="reveal">손실함수와 옵티마이저를 정하고, 학습 루프 5줄을 돌리면서 history를 기록하고, 검증 손실이 더 안 좋아지면 멈춥니다.</p>
+    <span class="pen abs reveal" style="right:200px; top:650px">zero_grad → backward → step</span>
+</section>
+
+<!-- ========== 16. 손실 + 옵티마이저 ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">손실함수 = 채점 기준, 옵티마이저 = 공부법</h2>
+    <div class="cols c2" style="gap:36px">
+        <div class="reveal">
+            <div class="cell"><div class="in">In [8]:</div><pre><code class="py">loss_fn = nn.⟦BCEWithLogitsLoss⟧()          # 이진분류
+optimizer = torch.optim.⟦Adam⟧(model.parameters(),
+                             lr=⟦0.001⟧)</code></pre></div>
+            <table class="tbl" style="margin-top:18px">
+                <tr><th>인자</th><th>뜻</th></tr>
+                <tr><td><code>model.parameters()</code></td><td>고칠 대상 (모든 w, b)</td></tr>
+                <tr><td><code>lr</code></td><td>학습률: 한 번에 얼마나 크게 고칠지</td></tr>
+            </table>
+        </div>
+        <div class="stack reveal">
+            <div class="card"><span class="k">lr 비유</span><p class="small">산에서 눈을 가리고 가장 낮은 곳을 찾는다고 생각하세요. lr은 <b>한 걸음의 크기</b>예요. 너무 크면 골짜기를 건너뛰고, 너무 작으면 해가 져요. Adam은 걸음 크기를 알아서 조절해서 <b>기본값으로 가장 무난</b>해요.</p></div>
+            <div class="callout exam"><b class="h">문제에 적힌 값 그대로</b>"Adam, 학습률 0.001"이라고 나오면 <code>torch.optim.Adam(model.parameters(), lr=0.001)</code>로 옮겨요.</div>
+            <div class="callout warn"><b class="h">모델을 새로 만들면 옵티마이저도 새로</b>옵티마이저는 <b>만들 때의 model 파라미터</b>를 기억해요. model을 다시 만들었다면 optimizer도 다시 만들어야 해요.</div>
+        </div>
+    </div>
+</section>
+
+<!-- ========== 17. 학습 루프 5줄 ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">학습 루프 5줄 <small>한 epoch 학습 함수</small></h2>
+    <div class="cols c2" style="gap:36px">
+        <div class="reveal">
+            <div class="cell"><div class="in">In [9]:</div><pre><code class="py">def train_one_epoch(model, loader, loss_fn, optimizer):
+    model.train()                  # 학습 모드
+    total = 0.0
+    for xb, yb in loader:
+        optimizer.⟦zero_grad⟧()      # ①
+        out = model(xb)            # ②
+        loss = loss_fn(out, yb)    # ③
+        loss.⟦backward⟧()            # ④
+        optimizer.⟦step⟧()           # ⑤
+        total += loss.item() * len(xb)
+    return total / len(loader.dataset)</code></pre></div>
+        </div>
+        <ol class="loop5 reveal">
+            <li><b>①</b><div><code>optimizer.zero_grad()</code><span class="d">지난번 채점 흔적(기울기) 지우기. 안 지우면 계속 쌓여요.</span></div></li>
+            <li><b>②</b><div><code>out = model(xb)</code><span class="d">문제 풀기 (순전파)</span></div></li>
+            <li><b>③</b><div><code>loss = loss_fn(out, yb)</code><span class="d">채점하기. 순서는 <b>(예측, 정답)</b></span></div></li>
+            <li><b>④</b><div><code>loss.backward()</code><span class="d">어디서 틀렸는지 거꾸로 추적 (역전파)</span></div></li>
+            <li><b>⑤</b><div><code>optimizer.step()</code><span class="d">공부법 고치기 (가중치 업데이트)</span></div></li>
+        </ol>
+    </div>
+</section>
+
+<!-- ========== 18. train/eval/no_grad ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">train() · eval() · no_grad() <small>모드 스위치</small></h2>
+    <div class="cols c2" style="gap:36px">
+        <div class="stack reveal">
+            <table class="tbl mode">
+                <tr><th></th><th><code>model.train()</code></th><th><code>model.eval()</code></th></tr>
+                <tr><td>언제</td><td>학습할 때</td><td>검증 · 예측할 때</td></tr>
+                <tr><td>Dropout</td><td>켜짐 (랜덤으로 끔)</td><td><b>꺼짐</b> (전부 사용)</td></tr>
+                <tr><td>짝꿍</td><td>backward · step</td><td><code>with torch.no_grad():</code></td></tr>
+            </table>
+            <div class="callout warn"><b class="h">eval()을 잊으면</b>예측할 때도 Dropout이 뉴런을 꺼서 <b>실행할 때마다 결과가 달라져요</b>. 점수도 낮게 나와요.</div>
+            <div class="callout tip"><b class="h">no_grad()는 왜?</b>예측할 때는 역전파가 필요 없어요. 기울기 계산을 꺼서 <b>빠르고 메모리도 아껴요</b>.</div>
+        </div>
+        <div class="reveal">
+            <div class="cell"><div class="in">In [10]:</div><pre><code class="py">def evaluate(model, X, y, loss_fn):
+    model.⟦eval⟧()                  # 평가 모드
+    with torch.⟦no_grad⟧():          # 기울기 끄기
+        return loss_fn(model(X), y).item()</code></pre></div>
+            <div class="callout exam" style="margin-top:18px"><b class="h">예측 코드는 항상 이 두 줄로 시작</b><code>model.eval()</code><br><code>with torch.no_grad():</code><br>14번의 검증 지표 계산도 이 두 줄 안에서 해요.</div>
+        </div>
+    </div>
+</section>
+
+<!-- ========== 19. history + 조기 종료 ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">history 기록 + 조기 종료 <small>직접 만들기</small></h2>
+    <div class="cols c64" style="gap:30px">
+        <div class="reveal">
+            <div class="cell"><div class="in">In [11]:</div><pre class="xs"><code class="py">import copy
+⟦history⟧ = {'loss': [], 'val_loss': []}
+best_val, best_state, patience, wait = float('inf'), None, ⟦5⟧, 0
+
+for epoch in range(30):
+    tr = train_one_epoch(model, train_loader, loss_fn, optimizer)
+    va = evaluate(model, Xte, yte, loss_fn)
+    history['loss'].append(tr)
+    history['val_loss'].append(va)
+    print(f'epoch {epoch + 1:2d}  loss {tr:.4f}  val_loss {va:.4f}')
+    if va &lt; best_val:                         # 좋아졌다 → 사진 찍기
+        best_val, wait = va, 0
+        best_state = copy.deepcopy(model.state_dict())
+    else:
+        wait += 1
+        if wait &gt;= patience:
+            print(f'{epoch + 1} epoch 에서 조기 종료'); break
+
+model.load_state_dict(best_state)            # 최고 시점으로 복원
+print(f'best val_loss = {best_val:.4f}')</code></pre></div>
+        </div>
+        <div class="stack reveal">
+            <div class="cell"><div class="outp">Out:</div><pre class="out xs">epoch  1  loss 0.5834  val_loss 0.5264
+epoch  2  loss 0.4976  val_loss 0.4638
+ ...
+epoch 15  loss 0.4223  val_loss <span class="hl">0.4440</span>
+epoch 16  loss 0.4196  val_loss 0.4441
+ ...
+epoch 20  loss 0.4167  val_loss 0.4556
+20 epoch 에서 조기 종료
+best val_loss = 0.4440</pre></div>
+            <div class="card"><span class="k">규칙</span><p class="small">"모의고사 점수가 <b>5번 연속</b> 안 오르면 공부를 멈추고, <b>가장 잘 봤던 날</b>의 상태로 돌아간다." 15번째가 최고였고, 16~20번째 5번 연속 나빠져서 멈췄어요.</p></div>
+            <div class="callout warn"><b class="h">deepcopy가 필요한 이유</b><code>state_dict()</code>를 그냥 저장하면 계속 바뀌는 <b>실시간 영상</b>을 저장하는 셈이에요. 복사해야 <b>사진</b>이 돼요.</div>
+        </div>
+    </div>
+</section>
+
+<!-- ========== 20. 학습 곡선 ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">14번: 학습 곡선 그리고 읽기</h2>
+    <div class="cols c2" style="gap:36px">
+        <div class="stack reveal">
+            <div class="cell"><div class="in">In [12]:</div><pre class="sm"><code class="py">import matplotlib.pyplot as plt
+plt.plot(history['loss'])
+plt.plot(history['val_loss'])
+plt.title('Model Loss')
+plt.xlabel('Epochs'); plt.ylabel('Loss')
+plt.legend(['loss', 'val_loss'])
+plt.show()</code></pre></div>
+            <div class="callout exam"><b class="h">문제가 시킨 것만 정확히</b>title, xlabel, ylabel, legend 문구를 문제에 적힌 그대로 쓰세요. 그래프 문항은 이런 요소가 채점 포인트예요.</div>
+            <div class="callout tip"><b class="h">history는 그냥 딕셔너리</b>키 이름은 우리가 정해요. 문제가 <code>'val_mae'</code>를 기록하라고 하면 리스트를 하나 더 만들면 돼요.</div>
+        </div>
+        <div class="stack reveal">
+            <div class="fig" style="padding:10px 14px">
+                <svg viewBox="0 0 680 300" role="img" aria-label="실제 학습 기록: loss는 계속 내려가고 val_loss는 15번째 epoch 이후 조금씩 오른다">
+                    <g font-size="17" fill="#4b546b">
+                        <line x1="70" y1="250" x2="640" y2="250" stroke="#1b2233" stroke-width="2"/><line x1="70" y1="20" x2="70" y2="250" stroke="#1b2233" stroke-width="2"/>
+                        <text x="62" y="255" text-anchor="end">0.40</text><text x="62" y="145" text-anchor="end">0.50</text><text x="62" y="35" text-anchor="end">0.60</text>
+                        <text x="70" y="274" text-anchor="middle">1</text><text x="188" y="274" text-anchor="middle">5</text><text x="335" y="274" text-anchor="middle">10</text><text x="483" y="274" text-anchor="middle">15</text><text x="630" y="274" text-anchor="middle">20</text>
+                        <text x="355" y="296" text-anchor="middle">Epochs</text>
+                    </g>
+                    <polyline fill="none" stroke="#2b59c3" stroke-width="4" points="70,48 99,143 129,185 158,199 188,203 217,206 247,207 276,211 306,211 335,218 365,213 394,220 424,225 453,221 483,225 512,228 542,230 571,229 601,228 630,232"/>
+                    <polyline fill="none" stroke="#d6402b" stroke-width="4" points="70,111 99,180 129,197 158,199 188,200 217,200 247,200 276,200 306,197 335,201 365,202 394,201 424,201 453,199 483,202 512,202 542,199 571,198 601,195 630,189"/>
+                    <line x1="483" y1="30" x2="483" y2="250" stroke="#23845a" stroke-width="2" stroke-dasharray="6 6"/>
+                    <text x="491" y="48" font-size="17" fill="#23845a" font-weight="700">best (15)</text>
+                    <text x="150" y="120" font-size="19" fill="#2b59c3" font-weight="700">loss (train)</text>
+                    <text x="150" y="170" font-size="19" fill="#d6402b" font-weight="700">val_loss</text>
+                </svg>
+            </div>
+            <p class="xs dim">앞 슬라이드 예제의 실제 기록이에요. 실행 환경에 따라 조금씩 달라요.</p>
+            <ul class="list small">
+                <li>둘 다 내려가요 → 잘 배우는 중</li>
+                <li><b>loss만 내려가고 val_loss가 다시 올라요 → 과적합</b> (15번째 이후)</li>
+                <li>둘 다 높은 채로 평평해요 → 과소적합</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- ========== 21. 섹션 4 ========== -->
+<section class="slide section">
+    <div class="no reveal">PART 4</div>
+    <h2 class="reveal">예측 · 평가 · 시험형 템플릿</h2>
+    <p class="reveal">로짓을 확률과 클래스로 바꾸고, sklearn 지표로 점수를 매긴 뒤, 13~14번을 그대로 푸는 템플릿으로 정리합니다.</p>
+</section>
+
+<!-- ========== 22. 예측 후처리 ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">모델 출력은 "로짓"이에요</h2>
+    <div class="cols c2" style="gap:36px">
+        <div class="reveal">
+            <div class="cell"><div class="in">In [13]:</div><pre class="sm"><code class="py">model.eval()
+with torch.no_grad():
+    logits = model(Xte)
+logits[:3].flatten()</code></pre></div>
+            <div class="cell"><div class="outp">Out:</div><pre class="out">tensor([-2.4632,  0.9957, -1.0612])</pre></div>
+            <div class="cell"><div class="in">In [14]:</div><pre class="sm"><code class="py">proba = torch.⟦sigmoid⟧(logits).numpy().flatten()
+pred = (proba &gt; ⟦0.5⟧).astype(int)
+print(proba[:3].round(3))
+print(pred[:10])</code></pre></div>
+            <div class="cell"><div class="outp">Out:</div><pre class="out">[0.078 0.73  0.257]
+[0 1 0 0 0 0 0 1 0 0]</pre></div>
+        </div>
+        <div class="stack reveal">
+            <div class="cell"><div class="in">다중분류</div><pre class="sm"><code class="py">with torch.no_grad():
+    scores = mc_model(Xm_te)       # (N, 3)
+print(scores[:2].numpy().round(2))
+print(scores.⟦argmax(dim=1)⟧[:10].numpy())</code></pre></div>
+            <div class="cell"><div class="outp">Out:</div><pre class="out">[[12.44 -7.51 -8.71]
+ [-6.14  2.24  0.69]]
+[0 1 0 0 1 0 0 1 1 2]</pre></div>
+            <table class="tbl">
+                <tr><th>문제</th><th>후처리</th></tr>
+                <tr><td>회귀</td><td><code>model(X).numpy().flatten()</code></td></tr>
+                <tr><td>이진분류</td><td><code>(torch.sigmoid(out) &gt; 0.5)</code></td></tr>
+                <tr><td>다중분류</td><td><code>out.argmax(dim=1)</code></td></tr>
+            </table>
+        </div>
+    </div>
+</section>
+
+<!-- ========== 23. sklearn 지표 ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">점수는 sklearn 지표로 <small>04 덱과 같은 함수</small></h2>
+    <div class="cols c2" style="gap:36px">
+        <div class="reveal">
+            <div class="cell"><div class="in">In [15]:</div><pre class="sm"><code class="py">from sklearn.metrics import accuracy_score, f1_score
+from sklearn.metrics import classification_report
+print('acc', round(accuracy_score(y_test, pred), 3),
+      'f1', round(f1_score(y_test, pred), 3))
+print(classification_report(y_test, pred, digits=3))</code></pre></div>
+            <div class="cell"><div class="outp">Out:</div><pre class="out xs">acc 0.755 f1 0.397
+              precision    recall  f1-score   support
+
+           0      0.794     0.905     0.846       444
+           1      0.533     0.316     0.397       152
+
+    accuracy                          0.755       596</pre></div>
+        </div>
+        <div class="stack reveal">
+            <div class="cell"><div class="in">회귀</div><pre class="sm"><code class="py">from sklearn.metrics import mean_absolute_error
+with torch.no_grad():
+    dnn_pred = model(Xh_te).numpy().flatten()
+round(mean_absolute_error(yh_test, dnn_pred), 4)</code></pre></div>
+            <div class="cell"><div class="outp">Out:</div><pre class="out">0.0831</pre></div>
+            <div class="callout warn"><b class="h">정확도 0.755의 함정</b>이탈(1)을 잡아내는 recall은 <b>0.316</b>뿐이에요. 불균형 데이터에서는 정확도만 보지 말고 f1과 recall도 확인하세요.</div>
+            <div class="callout tip"><b class="h">인자 순서는 (정답, 예측)</b>sklearn 지표는 언제나 <code>(y_true, y_pred)</code> 순서예요. 텐서는 <code>.numpy()</code>로 바꿔서 넣어요.</div>
+        </div>
+    </div>
+</section>
+
+<!-- ========== 24. 자주 나는 에러 ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">PyTorch에서 자주 나는 에러 <small>실제 메시지</small></h2>
+    <table class="tbl err reveal">
+        <tr><th>에러 메시지 (실제 출력)</th><th>원인</th><th>해결</th></tr>
+        <tr><td><code>RuntimeError: expected scalar type Long but found Float</code></td><td>다중분류 정답이 float</td><td><code>torch.tensor(y, dtype=torch.long)</code></td></tr>
+        <tr><td><code>RuntimeError: 0D or 1D target tensor expected, multi-target not supported</code></td><td>다중분류 정답을 (N, 1)로 세움</td><td>reshape 하지 않고 <code>(N,)</code> 그대로</td></tr>
+        <tr><td><code>ValueError: Target size (torch.Size([4])) must be the same as input size (torch.Size([4, 1]))</code></td><td>이진분류 정답 (N,) vs 출력 (N, 1)</td><td><code>y.reshape(-1, 1)</code></td></tr>
+        <tr><td><code>RuntimeError: mat1 and mat2 must have the same dtype, but got Double and Float</code></td><td>float64 텐서를 모델에 넣음</td><td><code>dtype=torch.float32</code></td></tr>
+        <tr><td><code>RuntimeError: mat1 and mat2 shapes cannot be multiplied (2x3 and 5x1)</code></td><td>Linear 입력 수 ≠ 특성 수</td><td><code>nn.Linear(X.shape[1], …)</code></td></tr>
+    </table>
+    <div class="callout exam reveal" style="margin-top:22px"><b class="h">에러 메시지는 마지막 줄부터</b>긴 traceback은 맨 아래 한 줄이 핵심이에요. <b>Long / Float / size / shapes</b> 같은 키워드만 찾아도 위 표에서 바로 원인을 짚을 수 있어요.</div>
+</section>
+
+<!-- ========== 25. 시험형 템플릿 13번 ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">★ 시험형 템플릿 · 13번 <small>지정 구조로 학습 → history</small></h2>
+    <div class="cols c64" style="gap:30px">
+        <div class="reveal">
+            <div class="cell"><div class="in">Q13</div><pre class="xs"><code class="py"># 문제: Linear(128) → ReLU → Dropout(0.2) → Linear(64) → ReLU → Linear(1)
+#       MSELoss, Adam(lr=0.001), batch_size=16, 30 epoch, history 에 기록
+torch.manual_seed(42)
+⟦model⟧ = nn.Sequential(
+    nn.Linear(Xh_tr.shape[1], 128), nn.ReLU(), nn.Dropout(0.2),
+    nn.Linear(128, 64), nn.ReLU(),
+    nn.Linear(64, 1),
+)
+loss_fn = nn.MSELoss()
+optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+train_loader = DataLoader(TensorDataset(Xh_tr, yh_tr), batch_size=16, shuffle=True)
+
+⟦history⟧ = {'loss': [], 'val_loss': [], 'val_mae': []}
+for epoch in range(30):
+    history['loss'].append(train_one_epoch(model, train_loader, loss_fn, optimizer))
+    model.eval()
+    with torch.no_grad():
+        out = model(Xh_te)
+        history['val_loss'].append(loss_fn(out, yh_te).item())
+        history['val_mae'].append((out - yh_te).abs().mean().item())
+print(list(history), round(history['val_mae'][-1], 4))</code></pre></div>
+            <div class="cell"><div class="outp">Out:</div><pre class="out xs">['loss', 'val_loss', 'val_mae'] 0.0831</pre></div>
+        </div>
+        <div class="stack reveal">
+            <div class="card red"><span class="k">변수명 규약</span><p class="small"><code>model</code>: nn.Module<br><code>history</code>: <code>{'loss': [...], 'val_loss': [...]}</code><br>회귀면 <code>'val_mae'</code> 같은 키를 추가해요.</p></div>
+            <div class="callout exam"><b class="h">시험지 → 코드 옮기기</b>"128 → Dropout 0.2 → 64 → 1"을 <b>한 층씩 그대로</b> 옮겨요. 숫자 하나라도 다르면 오답이에요.</div>
+            <div class="callout tip"><b class="h">train_one_epoch 재사용</b>함수를 한 번 만들어 두면 모델·로더·손실만 바꿔 끼우면 돼요. 시험장에서도 맨 위 셀에 먼저 써 두세요.</div>
+        </div>
+    </div>
+</section>
+
+<!-- ========== 26. 시험형 템플릿 14번 ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">★ 시험형 템플릿 · 14번 <small>학습 곡선 + 검증 지표</small></h2>
+    <div class="cols c2" style="gap:36px">
+        <div class="reveal">
+            <div class="cell"><div class="in">Q14</div><pre class="sm"><code class="py">plt.plot(history['loss'])
+plt.plot(history['val_loss'])
+plt.title('Model Loss')
+plt.xlabel('Epochs'); plt.ylabel('Loss')
+plt.legend(['loss', 'val_loss'])
+plt.show()
+
+model.⟦eval⟧()
+with torch.⟦no_grad⟧():
+    dnn_pred = model(Xh_te).numpy().flatten()
+dnn_mae = mean_absolute_error(yh_test, dnn_pred)
+print('dnn_mae', round(dnn_mae, 4))</code></pre></div>
+            <div class="cell"><div class="outp">Out:</div><pre class="out">dnn_mae 0.0831</pre></div>
+        </div>
+        <div class="stack reveal">
+            <div class="card"><span class="k">13~14번 체크리스트</span>
+                <ul class="list small">
+                    <li>모든 텐서가 <b>float32</b>인가? (다중분류 y만 long)</li>
+                    <li>층 크기와 순서가 <b>문제와 똑같은가</b>?</li>
+                    <li>출력층에 sigmoid·softmax를 <b>넣지 않았나</b>?</li>
+                    <li><code>history</code>에 <b>loss와 val_loss</b>가 epoch 수만큼 있나?</li>
+                    <li>예측 전에 <code>model.eval()</code> + <code>torch.no_grad()</code>를 했나?</li>
+                    <li>그래프 title·label·legend 문구가 <b>문제와 같은가</b>?</li>
+                </ul>
+            </div>
+            <span class="pen" style="margin-left:20px">이 두 장이 13~14번 정답 틀이에요</span>
+        </div>
+    </div>
+</section>
+
+<!-- ========== 27. 확인 문제 ② ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">확인 문제 ② <small>학습 · 예측</small></h2>
+    <div class="cols c2" style="gap:30px; margin-top:12px">
+        <div class="stack">
+            <div class="quiz reveal">
+                <div class="q">학습 루프에서 <code>optimizer.zero_grad()</code>를 빼먹으면 어떻게 될까요?</div>
+                <button class="show-a">정답 보기</button>
+                <div class="a">기울기가 배치마다 <b>계속 더해져요</b>. 가중치가 엉뚱하게 크게 바뀌어서 손실이 잘 줄지 않아요. 매 배치 시작에 꼭 지워요.</div>
+            </div>
+            <div class="quiz reveal">
+                <div class="q">같은 검증 데이터로 두 번 예측했더니 결과가 매번 달라요. 무엇을 빠뜨렸을까요?</div>
+                <button class="show-a">정답 보기</button>
+                <div class="a"><code>model.eval()</code>이요. 학습 모드에서는 Dropout이 랜덤으로 뉴런을 꺼서 실행할 때마다 결과가 달라져요.</div>
+            </div>
+            <div class="quiz reveal">
+                <div class="q">이진분류 로짓 <code>0.9957</code>은 1로 예측될까요, 0으로 예측될까요?</div>
+                <button class="show-a">정답 보기</button>
+                <div class="a"><b>1</b>이에요. sigmoid(0.9957) ≈ 0.73 &gt; 0.5예요. 로짓이 0보다 크면 확률이 0.5보다 커요.</div>
+            </div>
+        </div>
+        <div class="stack">
+            <div class="quiz reveal">
+                <div class="q"><code>history['val_loss']</code>가 15번째까지 내려가다가 그 뒤로 올라가요. 무슨 뜻이고 어떻게 해야 할까요?</div>
+                <button class="show-a">정답 보기</button>
+                <div class="a"><b>과적합</b>이에요. 조기 종료로 15번째의 <code>state_dict</code>를 저장해 두었다가 <code>load_state_dict</code>로 되돌려요.</div>
+            </div>
+            <div class="quiz reveal">
+                <div class="q"><code>loss.item()</code> 대신 <code>loss</code>를 그대로 history에 append하면 무엇이 문제일까요?</div>
+                <button class="show-a">정답 보기</button>
+                <div class="a">숫자가 아니라 <b>계산 그래프가 달린 텐서</b>가 쌓여요. 메모리를 계속 차지하고 그래프 그리기도 번거로워요. <code>.item()</code>으로 float만 꺼내요.</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========== 28. 정리 ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">05 정리 <small>이것만은 손에 익히기</small></h2>
+    <div class="cols c64" style="gap:36px">
+        <pre class="summary reveal"><code class="py">import torch, torch.nn as nn
+from torch.utils.data import TensorDataset, DataLoader
+
+Xtr = torch.tensor(X_train, dtype=torch.float32)
+ytr = torch.tensor(y_train.to_numpy(), dtype=torch.float32).reshape(-1, 1)
+loader = DataLoader(TensorDataset(Xtr, ytr), batch_size=32, shuffle=True)
+
+torch.manual_seed(42)
+model = nn.Sequential(nn.Linear(Xtr.shape[1], 64), nn.ReLU(),
+                      nn.Linear(64, 1))
+loss_fn = nn.BCEWithLogitsLoss()      # 회귀 MSELoss · 다중 CrossEntropyLoss
+optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+
+history = {'loss': [], 'val_loss': []}
+for epoch in range(30):
+    model.train()
+    for xb, yb in loader:
+        optimizer.zero_grad()
+        loss = loss_fn(model(xb), yb)
+        loss.backward(); optimizer.step()
+    history['loss'].append(loss.item())   # 마지막 배치 손실
+    model.eval()
+    with torch.no_grad():
+        history['val_loss'].append(loss_fn(model(Xte), yte).item())
+
+with torch.no_grad():
+    pred = (torch.sigmoid(model(Xte)) &gt; 0.5).int().numpy().flatten()</code></pre>
+        <div class="stack reveal">
+            <ol class="list" style="font-size:24px">
+                <li>X는 <b>float32</b>, y는 회귀·이진이면 <b>(N, 1)</b>, 다중이면 <b>long (N,)</b></li>
+                <li>출력층에 sigmoid·softmax를 넣지 않아요. <b>손실함수 안에 있어요</b>.</li>
+                <li>루프 5줄: <b>zero_grad → model → loss → backward → step</b></li>
+                <li><code>history</code> 딕셔너리에 <code>.item()</code>으로 기록해요.</li>
+                <li>예측은 <b>eval() + no_grad()</b>, 그다음 sigmoid / argmax예요.</li>
+            </ol>
+            <span class="practice">실습 <code>notebooks/05_딥러닝_실습.ipynb</code></span>
+            <a class="practice" href="06_실전전략_체크리스트.html" style="text-decoration:none">다음 덱 <code>06_실전전략_체크리스트.html</code> →</a>
+        </div>
+    </div>
+</section>
+</main>
+</div>
+
+<nav class="deck-controls" aria-label="슬라이드 이동">
+    <a href="../index.html" title="학습 홈으로">⌂ 홈</a>
+    <button id="prevBtn" aria-label="이전 슬라이드">←</button>
+    <span class="count" id="count">1 / 1</span>
+    <button id="nextBtn" aria-label="다음 슬라이드">→</button>
+</nav>
+
+<script>
+/* ===========================================
+   INLINE EDITOR
+   - E 키 / 왼쪽 위 모서리 ✏️ 버튼으로 편집 모드
+   - 수정 내용은 브라우저(localStorage)에 자동 저장
+   - Ctrl+S(⌘+S): 수정된 HTML 파일 다운로드
+   =========================================== */
+class InlineEditor {
+    constructor() {
+        this.isActive = false;
+        const st = document.getElementById('deckStage');
+        this.key = 'aice-deck-edit:' + (st.dataset.deck || location.pathname) + ':' + (st.dataset.ver || '');
+        this.targets = () => document.querySelectorAll('.slide h1, .slide h2, .slide h3, .slide p, .slide li, .slide td, .slide th, .slide .pen, .slide .callout, .slide .q, .slide .a');
+        this.restore();
+    }
+    toggleEditMode() {
+        this.isActive = !this.isActive;
+        document.body.classList.toggle('editing', this.isActive);
+        document.getElementById('editToggle').classList.toggle('active', this.isActive);
+        this.targets().forEach(el => el.setAttribute('contenteditable', this.isActive ? 'true' : 'false'));
+        if (!this.isActive) this.save();
+    }
+    save() {
+        try {
+            const clone = document.getElementById('deckStage').cloneNode(true);
+            clone.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+            clone.querySelectorAll('.slide').forEach(el => el.classList.remove('active', 'visible'));
+            localStorage.setItem(this.key, clone.innerHTML);
+        } catch (e) { /* storage unavailable */ }
+    }
+    restore() {
+        try {
+            const saved = localStorage.getItem(this.key);
+            if (saved) { document.getElementById('deckStage').innerHTML = saved; }
+        } catch (e) { /* storage unavailable */ }
+    }
+    download() {
+        this.targets().forEach(el => el.removeAttribute('contenteditable'));
+        const html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
+        a.download = (location.pathname.split('/').pop() || 'deck.html');
+        a.click();
+        if (this.isActive) this.targets().forEach(el => el.setAttribute('contenteditable', 'true'));
+    }
+}
+const editor = new InlineEditor();   /* 저장된 편집본이 있으면 먼저 복원 */
+
+/* ===========================================
+   PYTHON SYNTAX HIGHLIGHTER (의존성 없음)
+   <pre><code class="py"> 안의 텍스트를 토큰 단위로 색칠합니다.
+   ▸ 코드 안에 ⟦...⟧ 로 감싼 부분은 노란 박스로 강조됩니다. (pandas 의 df[['a']] 와 겹치지 않게)
+   =========================================== */
+(function highlightPython() {
+    const KW = new Set('import from as def return if elif else for in while not and or is None True False lambda with class try except finally pass break continue global print'.split(' '));
+    const BI = new Set('len range type list dict set tuple int float str zip enumerate sorted round sum min max abs'.split(' '));
+    const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const re = /(#[^\n]*)|([fFrRbB]?'''[\s\S]*?'''|[fFrRbB]?"""[\s\S]*?"""|[fFrRbB]?'(?:\\.|[^'\\\n])*'|[fFrRbB]?"(?:\\.|[^"\\\n])*")|(\b\d+(?:\.\d+)?(?:e-?\d+)?\b)|([A-Za-z_][A-Za-z0-9_]*)(?=\s*\()|([A-Za-z_][A-Za-z0-9_]*)(?=\s*=(?!=))|([A-Za-z_][A-Za-z0-9_]*)/g;
+    function tokenize(src) {
+        let out = '', last = 0, m;
+        re.lastIndex = 0;
+        while ((m = re.exec(src))) {
+            out += esc(src.slice(last, m.index));
+            const [t, com, str, num, fn, kwarg, word] = m;
+            if (com) out += `<span class="tk-com">${esc(com)}</span>`;
+            else if (str) out += `<span class="tk-str">${esc(str)}</span>`;
+            else if (num) out += `<span class="tk-num">${num}</span>`;
+            else if (fn) out += KW.has(fn) ? `<span class="tk-kw">${fn}</span>` : `<span class="${BI.has(fn) ? 'tk-bi' : 'tk-fn'}">${fn}</span>`;
+            else if (kwarg) out += KW.has(kwarg) ? `<span class="tk-kw">${kwarg}</span>` : `<span class="tk-arg">${kwarg}</span>`;
+            else if (word) out += KW.has(word) ? `<span class="tk-kw">${word}</span>` : word;
+            last = m.index + t.length;
+        }
+        return out + esc(src.slice(last));
+    }
+    document.querySelectorAll('pre code.py').forEach(el => {
+        // ⟦...⟧ 마커를 보존하면서 하이라이트
+        const raw = el.textContent;
+        const parts = raw.split(/(⟦[\s\S]*?⟧)/);
+        el.innerHTML = parts.map(p => p.startsWith('⟦') && p.endsWith('⟧')
+            ? `<span class="hl">${tokenize(p.slice(1, -1))}</span>`
+            : tokenize(p)).join('');
+    });
+})();
+
+/* ===========================================
+   SLIDE PRESENTATION CONTROLLER
+   - 키보드: ← → ↑ ↓, Space, PageUp/PageDown, Home/End
+   - 마우스 휠, 터치 스와이프
+   - URL 해시(#5)로 특정 슬라이드 바로가기
+   =========================================== */
+class SlidePresentation {
+    constructor() {
+        this.stage = document.getElementById('deckStage');
+        this.slides = Array.from(document.querySelectorAll('.slide'));
+        this.count = document.getElementById('count');
+        this.progress = document.getElementById('progress');
+        this.current = 0;
+        this.fillHeaders();
+        this.setupStageScale();
+        this.setupKeyboardNav();
+        this.setupWheelNav();
+        this.setupTouchNav();
+        this.setupButtons();
+        this.setupQuizzes();
+        const fromHash = parseInt((location.hash || '').replace('#', ''), 10);
+        this.show(Number.isFinite(fromHash) ? fromHash - 1 : 0);
+        window.addEventListener('hashchange', () => {
+            const n = parseInt(location.hash.replace('#', ''), 10);
+            if (Number.isFinite(n) && n - 1 !== this.current) this.show(n - 1);
+        });
+    }
+
+    /* 각 슬라이드 헤더에 "섹션 태그"와 "페이지 번호"를 자동으로 채움 */
+    fillHeaders() {
+        const total = this.slides.length;
+        const tag = this.stage.dataset.tag || '';
+        this.slides.forEach((s, i) => {
+            const hd = s.querySelector('.hd');
+            if (!hd) return;
+            if (!hd.querySelector('.tag')) hd.insertAdjacentHTML('afterbegin', `<span class="tag">${tag}</span>`);
+            if (!hd.querySelector('.pg')) hd.insertAdjacentHTML('beforeend', '<span class="pg"></span>');
+            hd.querySelector('.pg').dataset.pg = `${String(i + 1).padStart(2, '0')} / ${String(total).padStart(2, '0')}`;
+        });
+    }
+
+    setupStageScale() {
+        const scale = () => {
+            const f = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+            const x = (window.innerWidth - 1920 * f) / 2;
+            const y = (window.innerHeight - 1080 * f) / 2;
+            this.stage.style.transform = `translate(${x}px, ${y}px) scale(${f})`;
+        };
+        scale();
+        window.addEventListener('resize', scale);
+    }
+
+    setupKeyboardNav() {
+        document.addEventListener('keydown', e => {
+            if (document.body.classList.contains('editing')) return;
+            if (['ArrowRight', 'ArrowDown', 'PageDown', ' '].includes(e.key)) { e.preventDefault(); this.next(); }
+            else if (['ArrowLeft', 'ArrowUp', 'PageUp'].includes(e.key)) { e.preventDefault(); this.prev(); }
+            else if (e.key === 'Home') this.show(0);
+            else if (e.key === 'End') this.show(this.slides.length - 1);
+        });
+    }
+
+    setupWheelNav() {
+        let lock = false;
+        window.addEventListener('wheel', e => {
+            if (document.body.classList.contains('editing') || lock || Math.abs(e.deltaY) < 30) return;
+            lock = true;
+            e.deltaY > 0 ? this.next() : this.prev();
+            setTimeout(() => { lock = false; }, 650);
+        }, { passive: true });
+    }
+
+    setupTouchNav() {
+        let sx = 0, sy = 0;
+        window.addEventListener('touchstart', e => { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, { passive: true });
+        window.addEventListener('touchend', e => {
+            const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
+            if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) dx < 0 ? this.next() : this.prev();
+        }, { passive: true });
+    }
+
+    setupButtons() {
+        document.getElementById('prevBtn').addEventListener('click', () => this.prev());
+        document.getElementById('nextBtn').addEventListener('click', () => this.next());
+    }
+
+    /* 퀴즈: "정답 보기" 버튼 클릭 시 정답 펼치기 */
+    setupQuizzes() {
+        document.querySelectorAll('.quiz').forEach(q => {
+            const btn = q.querySelector('.show-a');
+            if (!btn) return;
+            btn.addEventListener('click', ev => {
+                ev.stopPropagation();
+                q.classList.toggle('open');
+                btn.textContent = q.classList.contains('open') ? '정답 숨기기' : '정답 보기';
+            });
+        });
+    }
+
+    next() { this.show(this.current + 1); }
+    prev() { this.show(this.current - 1); }
+
+    show(i) {
+        this.current = Math.max(0, Math.min(i, this.slides.length - 1));
+        this.slides.forEach((s, k) => {
+            s.classList.toggle('active', k === this.current);
+            s.classList.toggle('visible', k === this.current);
+        });
+        const n = this.current + 1, total = this.slides.length;
+        this.count.textContent = `${n} / ${total}`;
+        this.progress.style.width = `${(n / total) * 100}%`;
+        if (location.hash !== `#${n}`) history.replaceState(null, '', `#${n}`);
+    }
+}
+const deck = new SlidePresentation();
+
+(function wireEditor() {
+    const toggle = document.getElementById('editToggle');
+    const hot = document.querySelector('.edit-hotzone');
+    let hideT = null;
+    const hideSoon = () => { hideT = setTimeout(() => { if (!editor.isActive) toggle.classList.remove('show'); }, 400); };
+    toggle.addEventListener('click', () => editor.toggleEditMode());
+    hot.addEventListener('click', () => editor.toggleEditMode());
+    hot.addEventListener('mouseenter', () => { clearTimeout(hideT); toggle.classList.add('show'); });
+    hot.addEventListener('mouseleave', hideSoon);
+    toggle.addEventListener('mouseenter', () => clearTimeout(hideT));
+    toggle.addEventListener('mouseleave', hideSoon);
+    document.addEventListener('keydown', e => {
+        const inEdit = e.target.getAttribute && e.target.getAttribute('contenteditable') === 'true';
+        if ((e.key === 'e' || e.key === 'E') && !inEdit && !e.metaKey && !e.ctrlKey) editor.toggleEditMode();
+        if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 's') { e.preventDefault(); editor.save(); editor.download(); }
+        if (e.key === 'Escape' && editor.isActive) editor.toggleEditMode();
+    });
+})();
+</script>
+</body>
+</html>

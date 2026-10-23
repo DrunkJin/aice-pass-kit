@@ -1,0 +1,3002 @@
+[
+ {
+  "customerID": "3173-RCFII",
+  "age": 20,
+  "region": "Seoul",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "9177-UXZCD",
+  "age": 39,
+  "region": "Daegu",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "8810-CEEXJ",
+  "age": 60,
+  "region": "Daegu",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "3374-ELPUQ",
+  "age": 75,
+  "region": "Daejeon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "9873-CMORA",
+  "age": 78,
+  "region": "Seoul",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "2823-MBZQU",
+  "age": 44,
+  "region": "Incheon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "5639-PIIDF",
+  "age": 43,
+  "region": "Gwangju",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "7900-LVHSW",
+  "age": 26,
+  "region": "Busan",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "8465-FJHUU",
+  "age": 38,
+  "region": "Daejeon",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "4985-GBGDB",
+  "age": 49,
+  "region": "Daegu",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "8044-MZGKX",
+  "age": 51,
+  "region": "Busan",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "6547-HJUJM",
+  "age": 56,
+  "region": "Gwangju",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "5402-MMZGX",
+  "age": 78,
+  "region": "Seoul",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "2760-CIGQE",
+  "age": 36,
+  "region": "Daegu",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "2840-XVOXJ",
+  "age": 68,
+  "region": "Incheon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "1642-VCJLR",
+  "age": 30,
+  "region": "Incheon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "2114-FCAES",
+  "age": 24,
+  "region": "Seoul",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "5875-IRIZH",
+  "age": 77,
+  "region": "Daegu",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "7111-GOOXI",
+  "age": 44,
+  "region": "Daegu",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "1968-LPFZN",
+  "age": 62,
+  "region": "Incheon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "5452-POKOK",
+  "age": 59,
+  "region": "Daegu",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "9943-YOBII",
+  "age": 46,
+  "region": "Seoul",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "6977-NDPAB",
+  "age": 52,
+  "region": "Daejeon",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "1138-GYBPA",
+  "age": 68,
+  "region": "Busan",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "1447-IEKBW",
+  "age": 46,
+  "region": "Gwangju",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "5071-AASJL",
+  "age": 73,
+  "region": "Daegu",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "7093-PRDTU",
+  "age": 66,
+  "region": "Daegu",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "5979-JHKUO",
+  "age": 38,
+  "region": "Daegu",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "2704-GELHD",
+  "age": 79,
+  "region": "Busan",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "6812-SICKH",
+  "age": 67,
+  "region": "Seoul",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "4430-FADWO",
+  "age": 28,
+  "region": "Seoul",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "5873-FRTYH",
+  "age": 39,
+  "region": "Incheon",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "1105-ZXOZC",
+  "age": 62,
+  "region": "Incheon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "6038-QFFOJ",
+  "age": 28,
+  "region": "Gwangju",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "5663-FLHNP",
+  "age": 37,
+  "region": "Gwangju",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "5413-NGARX",
+  "age": 19,
+  "region": "Busan",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "6433-GLMKD",
+  "age": 70,
+  "region": "Daejeon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "8660-JAUAG",
+  "age": 39,
+  "region": "Incheon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "4417-VSPMQ",
+  "age": 39,
+  "region": "Seoul",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "8900-XTNFD",
+  "age": 28,
+  "region": "Gwangju",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "4332-QEQVU",
+  "age": 56,
+  "region": "Busan",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "4165-DXFQY",
+  "age": 79,
+  "region": "Incheon",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "9501-OKFTL",
+  "age": 72,
+  "region": "Incheon",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "3835-KDDJP",
+  "age": 49,
+  "region": "Daejeon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "4256-BIBCG",
+  "age": 59,
+  "region": "Daegu",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "6259-JBOXX",
+  "age": 56,
+  "region": "Daegu",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "9005-FVDID",
+  "age": 72,
+  "region": "Daegu",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "8118-BNEYF",
+  "age": 24,
+  "region": "Incheon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "5183-YNWZD",
+  "age": 72,
+  "region": "Busan",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "6911-UWAYR",
+  "age": 19,
+  "region": "Daegu",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "3429-IHJZF",
+  "age": 19,
+  "region": "Daegu",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "2903-OSYUV",
+  "age": 53,
+  "region": "Gwangju",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "3793-VRNTZ",
+  "age": 30,
+  "region": "Seoul",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "8020-VWQGX",
+  "age": 31,
+  "region": "Incheon",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "7977-CAFMX",
+  "age": 72,
+  "region": "Busan",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "7917-EQCBK",
+  "age": 67,
+  "region": "Daejeon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "5349-SCPQN",
+  "age": 46,
+  "region": "Daejeon",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "1062-TCVRA",
+  "age": 52,
+  "region": "Seoul",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "5187-XAPBW",
+  "age": 68,
+  "region": "Daegu",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "2752-MPIHD",
+  "age": 44,
+  "region": "Daejeon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "9327-TIDMV",
+  "age": 25,
+  "region": "Busan",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "8515-ERBLR",
+  "age": 44,
+  "region": "Daejeon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "1879-NFEUA",
+  "age": 62,
+  "region": "Seoul",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "7952-HTWZJ",
+  "age": 51,
+  "region": "Daegu",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "9667-UXZYV",
+  "age": 42,
+  "region": "Daegu",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "4350-ZWMCY",
+  "age": 66,
+  "region": "Seoul",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "6988-FEELS",
+  "age": 30,
+  "region": "Daegu",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "3017-ZAQRO",
+  "age": 60,
+  "region": "Seoul",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "7738-WMHKW",
+  "age": 57,
+  "region": "Incheon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "7731-BXFIV",
+  "age": 65,
+  "region": "Daejeon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "6613-OCVLJ",
+  "age": 76,
+  "region": "Daegu",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "6936-ALPQQ",
+  "age": 52,
+  "region": "Daegu",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "4941-DFPCT",
+  "age": 49,
+  "region": "Incheon",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "6792-ZBREO",
+  "age": 55,
+  "region": "Daegu",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "8683-QVKMO",
+  "age": 50,
+  "region": "Seoul",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "3983-LGOWQ",
+  "age": 74,
+  "region": "Daejeon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "5228-REVKE",
+  "age": 62,
+  "region": "Incheon",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "3958-FKIKY",
+  "age": 29,
+  "region": "Daegu",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "8098-QWDTI",
+  "age": 78,
+  "region": "Daejeon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "7854-SXFET",
+  "age": 44,
+  "region": "Gwangju",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "9801-YWYBM",
+  "age": 55,
+  "region": "Incheon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "3196-IREUD",
+  "age": 31,
+  "region": "Daejeon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "3208-BKVCI",
+  "age": 33,
+  "region": "Daejeon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "8670-GIWXD",
+  "age": 48,
+  "region": "Seoul",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "1581-DYGAV",
+  "age": 73,
+  "region": "Incheon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "3130-DRFVY",
+  "age": 41,
+  "region": "Gwangju",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "3752-WTSND",
+  "age": 65,
+  "region": "Seoul",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "5721-SIZKR",
+  "age": 58,
+  "region": "Seoul",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "5006-OISSX",
+  "age": 77,
+  "region": "Daegu",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "6455-KLSMQ",
+  "age": 30,
+  "region": "Gwangju",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "2787-PNMXJ",
+  "age": 46,
+  "region": "Gwangju",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "6112-ATVYN",
+  "age": 71,
+  "region": "Daegu",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "6296-QJHFN",
+  "age": 73,
+  "region": "Incheon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "7747-ABMDN",
+  "age": 51,
+  "region": "Incheon",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "6084-HOHQQ",
+  "age": 76,
+  "region": "Seoul",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "2259-CKDJE",
+  "age": 53,
+  "region": "Incheon",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "8475-IFZYW",
+  "age": 71,
+  "region": "Daejeon",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "3658-LRREK",
+  "age": 42,
+  "region": "Gwangju",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "3670-UHSAA",
+  "age": 38,
+  "region": "Daejeon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "6035-PRGEY",
+  "age": 35,
+  "region": "Daegu",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "2528-QOXMV",
+  "age": 24,
+  "region": "Incheon",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "9899-KAXOZ",
+  "age": 48,
+  "region": "Seoul",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "1433-FXLLC",
+  "age": 21,
+  "region": "Daegu",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "9117-MPLQM",
+  "age": 57,
+  "region": "Daegu",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "1124-DGNIJ",
+  "age": 20,
+  "region": "Seoul",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "3538-LTTRN",
+  "age": 68,
+  "region": "Seoul",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "1443-ATKXX",
+  "age": 27,
+  "region": "Daejeon",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "6729-HLENA",
+  "age": 38,
+  "region": "Gwangju",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "1958-OQFWI",
+  "age": 27,
+  "region": "Seoul",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "3632-URXTG",
+  "age": 39,
+  "region": "Gwangju",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "5172-EIHXY",
+  "age": 72,
+  "region": "Gwangju",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "8268-ALTUY",
+  "age": 71,
+  "region": "Incheon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "8193-JREHW",
+  "age": 19,
+  "region": "Daegu",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "7131-EUSAZ",
+  "age": 55,
+  "region": "Daegu",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "2920-JUCFN",
+  "age": 68,
+  "region": "Gwangju",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "1293-TNMUJ",
+  "age": 34,
+  "region": "Seoul",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "4566-LPSDG",
+  "age": 59,
+  "region": "Daejeon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "5915-NDDKT",
+  "age": 33,
+  "region": "Daegu",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "1400-SBEOG",
+  "age": 60,
+  "region": "Daegu",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "1896-IOINI",
+  "age": 45,
+  "region": "Seoul",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "4105-UBAHF",
+  "age": 33,
+  "region": "Gwangju",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "9436-RWECW",
+  "age": 70,
+  "region": "Daegu",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "3829-UBUOQ",
+  "age": 64,
+  "region": "Seoul",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "1417-BCZGD",
+  "age": 59,
+  "region": "Daegu",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "6727-AANAX",
+  "age": 51,
+  "region": "Incheon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "6326-IOUHM",
+  "age": 47,
+  "region": "Seoul",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "1045-CGQZZ",
+  "age": 73,
+  "region": "Seoul",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "1694-RGRHP",
+  "age": 24,
+  "region": "Seoul",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "4399-CNKOF",
+  "age": 26,
+  "region": "Daegu",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "5516-PUNUB",
+  "age": 75,
+  "region": "Daegu",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "4731-LKTHJ",
+  "age": 77,
+  "region": "Incheon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "6195-QZIWB",
+  "age": 24,
+  "region": "Daegu",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "9217-DZAOB",
+  "age": 35,
+  "region": "Daejeon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "7506-RUFLW",
+  "age": 21,
+  "region": "Incheon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "9878-TRTOR",
+  "age": 77,
+  "region": "Daegu",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "7888-YEODH",
+  "age": 37,
+  "region": "Incheon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "1475-SCDQH",
+  "age": 78,
+  "region": "Busan",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "3739-AAYPH",
+  "age": 24,
+  "region": "Daejeon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "9891-WMXGN",
+  "age": 65,
+  "region": "Busan",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "2786-TPIEK",
+  "age": 32,
+  "region": "Seoul",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "5189-XLYHC",
+  "age": 35,
+  "region": "Daejeon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "3248-VUULL",
+  "age": 29,
+  "region": "Incheon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "8219-AWLPQ",
+  "age": 46,
+  "region": "Incheon",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "1064-DNOVX",
+  "age": 50,
+  "region": "Busan",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "2404-DMRQK",
+  "age": 36,
+  "region": "Seoul",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "5553-TJPCK",
+  "age": 34,
+  "region": "Daegu",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "7079-MHBKT",
+  "age": 69,
+  "region": "Busan",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "2838-IFZOW",
+  "age": 52,
+  "region": "Busan",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "5160-DNZTJ",
+  "age": 34,
+  "region": "Gwangju",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "7287-SGXOF",
+  "age": 65,
+  "region": "Incheon",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "7474-GAXCO",
+  "age": 65,
+  "region": "Busan",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "1304-KYNLR",
+  "age": 69,
+  "region": "Daejeon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "1082-HIADG",
+  "age": 26,
+  "region": "Seoul",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "5185-XBJJG",
+  "age": 57,
+  "region": "Busan",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "8261-JXNFZ",
+  "age": 29,
+  "region": "Incheon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "3099-QECIW",
+  "age": 51,
+  "region": "Incheon",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "6137-QQNPB",
+  "age": 62,
+  "region": "Daegu",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "7491-FPQTG",
+  "age": 42,
+  "region": "Busan",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "5633-VAFET",
+  "age": 36,
+  "region": "Seoul",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "9637-SYIUO",
+  "age": 68,
+  "region": "Incheon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "9108-YVGZU",
+  "age": 78,
+  "region": "Daegu",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "7314-PPFFM",
+  "age": 25,
+  "region": "Seoul",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "9290-EHNTP",
+  "age": 74,
+  "region": "Gwangju",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "8080-VFSMC",
+  "age": 26,
+  "region": "Daegu",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "5227-TVHWG",
+  "age": 61,
+  "region": "Daejeon",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "6154-XDYNH",
+  "age": 34,
+  "region": "Busan",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "5282-FQMZJ",
+  "age": 47,
+  "region": "Daegu",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "3088-ZFGSW",
+  "age": 44,
+  "region": "Incheon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "9840-MJQWY",
+  "age": 34,
+  "region": "Busan",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "2345-NUTFV",
+  "age": 36,
+  "region": "Gwangju",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "4983-VRMDT",
+  "age": 27,
+  "region": "Busan",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "6643-DOBHX",
+  "age": 56,
+  "region": "Daegu",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "9198-BLBOU",
+  "age": 53,
+  "region": "Gwangju",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "6015-EUBII",
+  "age": 21,
+  "region": "Daejeon",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "9250-RVDOW",
+  "age": 65,
+  "region": "Daegu",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "3516-ZMQFS",
+  "age": 20,
+  "region": "Seoul",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "4633-EQQFZ",
+  "age": 54,
+  "region": "Gwangju",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "2704-YMIOS",
+  "age": 67,
+  "region": "Busan",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "2145-EKPAP",
+  "age": 28,
+  "region": "Seoul",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "4649-FAIDW",
+  "age": 38,
+  "region": "Seoul",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "8944-FNHNM",
+  "age": 59,
+  "region": "Busan",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "9005-FPMFJ",
+  "age": 21,
+  "region": "Busan",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "7899-LPPHW",
+  "age": 60,
+  "region": "Seoul",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "9499-JBNTC",
+  "age": 47,
+  "region": "Incheon",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "2814-VNJXZ",
+  "age": 33,
+  "region": "Daegu",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "4428-TTTCR",
+  "age": 44,
+  "region": "Daegu",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "8825-CZVPM",
+  "age": 25,
+  "region": "Daegu",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "3030-RHTBA",
+  "age": 39,
+  "region": "Seoul",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "3985-XLAZV",
+  "age": 55,
+  "region": "Gwangju",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "8568-NCJAU",
+  "age": 54,
+  "region": "Daejeon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "9689-QGVPQ",
+  "age": 73,
+  "region": "Daejeon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "7606-QFMYR",
+  "age": 58,
+  "region": "Gwangju",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "8432-QTKRT",
+  "age": 38,
+  "region": "Busan",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "5716-MYVPR",
+  "age": 65,
+  "region": "Seoul",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "6349-YPXOY",
+  "age": 58,
+  "region": "Gwangju",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "7838-JNTGZ",
+  "age": 69,
+  "region": "Daegu",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "2732-VSFMN",
+  "age": 63,
+  "region": "Daejeon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "9026-GLOYV",
+  "age": 57,
+  "region": "Seoul",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "3808-WDEZQ",
+  "age": 67,
+  "region": "Busan",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "2537-MQITQ",
+  "age": 44,
+  "region": "Busan",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "2080-SBEAV",
+  "age": 36,
+  "region": "Daegu",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "7594-KYSKH",
+  "age": 54,
+  "region": "Incheon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "3315-SWBVX",
+  "age": 48,
+  "region": "Seoul",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "7678-OCWUE",
+  "age": 59,
+  "region": "Gwangju",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "7054-IQTAC",
+  "age": 78,
+  "region": "Daejeon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "2167-VRKMI",
+  "age": 58,
+  "region": "Daejeon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "9947-FDAOU",
+  "age": 58,
+  "region": "Daejeon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "2753-XONGS",
+  "age": 54,
+  "region": "Incheon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "3693-VWFAN",
+  "age": 23,
+  "region": "Gwangju",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "3817-LSGYF",
+  "age": 65,
+  "region": "Gwangju",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "1852-RMQGV",
+  "age": 67,
+  "region": "Daejeon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "9706-XSCLZ",
+  "age": 30,
+  "region": "Daegu",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "6428-VGPNA",
+  "age": 54,
+  "region": "Gwangju",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "6639-UKGJW",
+  "age": 51,
+  "region": "Seoul",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "2061-RZLOA",
+  "age": 34,
+  "region": "Busan",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "8706-PVSSX",
+  "age": 67,
+  "region": "Daegu",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "6295-BUQTD",
+  "age": 77,
+  "region": "Incheon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "5445-WAEDN",
+  "age": 55,
+  "region": "Daejeon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "5360-SADPV",
+  "age": 79,
+  "region": "Busan",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "4100-ENKIA",
+  "age": 31,
+  "region": "Busan",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "3304-HXRLU",
+  "age": 26,
+  "region": "Seoul",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "5147-RNNTN",
+  "age": 31,
+  "region": "Daejeon",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "3013-DJTBG",
+  "age": 30,
+  "region": "Seoul",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "9068-NUHTS",
+  "age": 31,
+  "region": "Daejeon",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "6346-CNJXB",
+  "age": 61,
+  "region": "Gwangju",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "7419-FGHZQ",
+  "age": 57,
+  "region": "Daejeon",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "4633-DGXTM",
+  "age": 39,
+  "region": "Daegu",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "9748-VQXNJ",
+  "age": 42,
+  "region": "Busan",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "7373-CZHQC",
+  "age": 30,
+  "region": "Seoul",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "6839-YVTTU",
+  "age": 21,
+  "region": "Gwangju",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "9464-TAFIW",
+  "age": 40,
+  "region": "Daejeon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "6164-SMOTZ",
+  "age": 51,
+  "region": "Daejeon",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "1130-XNRBY",
+  "age": 43,
+  "region": "Gwangju",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "9334-IODHM",
+  "age": 74,
+  "region": "Incheon",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "4485-IUHMN",
+  "age": 65,
+  "region": "Seoul",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "6610-JOGGY",
+  "age": 24,
+  "region": "Busan",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "4896-FCXNG",
+  "age": 74,
+  "region": "Daegu",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "1703-OAOFY",
+  "age": 31,
+  "region": "Daejeon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "4917-TJZYE",
+  "age": 47,
+  "region": "Daejeon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "8734-FXYFX",
+  "age": 75,
+  "region": "Incheon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "4756-DIGOG",
+  "age": 71,
+  "region": "Daejeon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "1130-PWJUJ",
+  "age": 39,
+  "region": "Incheon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "1968-XPAWZ",
+  "age": 37,
+  "region": "Incheon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "1885-MVMEV",
+  "age": 54,
+  "region": "Incheon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "4335-PQQOX",
+  "age": 70,
+  "region": "Incheon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "7881-QLDLG",
+  "age": 73,
+  "region": "Gwangju",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "9559-OXOBN",
+  "age": 30,
+  "region": "Gwangju",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "9963-BHBXJ",
+  "age": 72,
+  "region": "Daegu",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "5420-WHGLF",
+  "age": 29,
+  "region": "Daegu",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "4200-NUTRI",
+  "age": 51,
+  "region": "Busan",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "1646-VNCAF",
+  "age": 35,
+  "region": "Daegu",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "2217-WYSGG",
+  "age": 46,
+  "region": "Daejeon",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "3814-PFHFW",
+  "age": 77,
+  "region": "Incheon",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "7963-ABKXY",
+  "age": 33,
+  "region": "Incheon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "4223-DAWHZ",
+  "age": 77,
+  "region": "Daegu",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "1688-KDSMC",
+  "age": 75,
+  "region": "Daejeon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "4236-BBMOY",
+  "age": 36,
+  "region": "Busan",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "9967-FYDDB",
+  "age": 44,
+  "region": "Seoul",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "9938-WZYMY",
+  "age": 34,
+  "region": "Daejeon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "9544-EYJYR",
+  "age": 70,
+  "region": "Incheon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "8160-VPYHU",
+  "age": 77,
+  "region": "Gwangju",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "6797-VYLER",
+  "age": 62,
+  "region": "Incheon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "7025-NIQKR",
+  "age": 35,
+  "region": "Gwangju",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "3867-BILNG",
+  "age": 72,
+  "region": "Gwangju",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "4206-HRJMN",
+  "age": 37,
+  "region": "Daejeon",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "7752-WBXQD",
+  "age": 66,
+  "region": "Gwangju",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "1499-SSZJV",
+  "age": 19,
+  "region": "Daejeon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "5636-ISGCT",
+  "age": 45,
+  "region": "Daejeon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "9664-EOSAU",
+  "age": 47,
+  "region": "Seoul",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "4683-NJCXZ",
+  "age": 50,
+  "region": "Busan",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "3260-TXICF",
+  "age": 54,
+  "region": "Gwangju",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "6273-CRDCW",
+  "age": 79,
+  "region": "Daejeon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "9549-YYFWC",
+  "age": 44,
+  "region": "Busan",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "5471-NXYOB",
+  "age": 57,
+  "region": "Gwangju",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "3916-LWDXS",
+  "age": 25,
+  "region": "Daegu",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "9156-HHFUG",
+  "age": 35,
+  "region": "Incheon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "2108-VNLHT",
+  "age": 35,
+  "region": "Seoul",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "7010-JHJIX",
+  "age": 46,
+  "region": "Daejeon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "2601-ORASI",
+  "age": 79,
+  "region": "Daejeon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "1008-EQXIC",
+  "age": 29,
+  "region": "Daegu",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "3534-BPQJP",
+  "age": 60,
+  "region": "Gwangju",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "8897-EHYSX",
+  "age": 31,
+  "region": "Busan",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "4043-MVJNE",
+  "age": 67,
+  "region": "Gwangju",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "9630-PVIRU",
+  "age": 71,
+  "region": "Busan",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "7947-DWRMY",
+  "age": 55,
+  "region": "Gwangju",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "1187-YCXCB",
+  "age": 27,
+  "region": "Incheon",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "9197-AGWNB",
+  "age": 19,
+  "region": "Daejeon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "9260-YAITH",
+  "age": 22,
+  "region": "Seoul",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "5498-FQKCW",
+  "age": 21,
+  "region": "Seoul",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "3635-GZPLI",
+  "age": 68,
+  "region": "Seoul",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "8200-YAVXO",
+  "age": 64,
+  "region": "Gwangju",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "1682-HCNAR",
+  "age": 54,
+  "region": "Seoul",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "9205-BDZXC",
+  "age": 45,
+  "region": "Gwangju",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "7295-CQVUD",
+  "age": 59,
+  "region": "Daegu",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "6453-SRTSR",
+  "age": 79,
+  "region": "Daegu",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "1232-RXPLJ",
+  "age": 36,
+  "region": "Daegu",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "3295-KWTSJ",
+  "age": 24,
+  "region": "Daejeon",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "9189-CJWWY",
+  "age": 39,
+  "region": "Daejeon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "9513-LHILV",
+  "age": 55,
+  "region": "Busan",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "1560-BWPNQ",
+  "age": 68,
+  "region": "Seoul",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "3381-MRSXF",
+  "age": 30,
+  "region": "Busan",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "4150-ZXHTC",
+  "age": 47,
+  "region": "Busan",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "7373-QUQQQ",
+  "age": 43,
+  "region": "Daegu",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "8401-XIFYP",
+  "age": 57,
+  "region": "Daegu",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "8990-UDIUZ",
+  "age": 33,
+  "region": "Daejeon",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "9821-YNACY",
+  "age": 50,
+  "region": "Daejeon",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "5214-OYBDY",
+  "age": 42,
+  "region": "Incheon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "8341-JWRED",
+  "age": 29,
+  "region": "Seoul",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "2235-ZTOEW",
+  "age": 37,
+  "region": "Daegu",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "8753-AMWZN",
+  "age": 70,
+  "region": "Busan",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "3567-MFJBY",
+  "age": 74,
+  "region": "Seoul",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "4051-MLZOM",
+  "age": 66,
+  "region": "Daegu",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "1423-QWUCV",
+  "age": 57,
+  "region": "Daejeon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "7160-RLIIS",
+  "age": 53,
+  "region": "Incheon",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "1607-GBKSH",
+  "age": 62,
+  "region": "Daegu",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "8728-XTWQJ",
+  "age": 69,
+  "region": "Busan",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "7699-XGOSN",
+  "age": 57,
+  "region": "Daejeon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "6633-BWLRT",
+  "age": 41,
+  "region": "Daegu",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "5350-WGDKT",
+  "age": 75,
+  "region": "Incheon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "5357-XYVMA",
+  "age": 32,
+  "region": "Seoul",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "1718-PUGVQ",
+  "age": 61,
+  "region": "Daejeon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "8495-SMGOA",
+  "age": 45,
+  "region": "Incheon",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "2722-SDUDA",
+  "age": 33,
+  "region": "Daegu",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "9715-MBGGI",
+  "age": 32,
+  "region": "Daejeon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "2278-LFSZX",
+  "age": 28,
+  "region": "Daegu",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "7724-STOMM",
+  "age": 28,
+  "region": "Seoul",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "5516-UNZFZ",
+  "age": 54,
+  "region": "Daejeon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "9312-PEDEH",
+  "age": 71,
+  "region": "Incheon",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "8092-ZEBXG",
+  "age": 55,
+  "region": "Daejeon",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "9132-RSOFI",
+  "age": 73,
+  "region": "Busan",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "6625-MYOKZ",
+  "age": 44,
+  "region": "Incheon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "2154-MDCKF",
+  "age": 50,
+  "region": "Daegu",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "6725-VBXKE",
+  "age": 63,
+  "region": "Gwangju",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "5053-ANYOC",
+  "age": 27,
+  "region": "Daejeon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "8772-KUMEY",
+  "age": 26,
+  "region": "Busan",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "2380-SJSXY",
+  "age": 48,
+  "region": "Incheon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "1565-MHMYL",
+  "age": 75,
+  "region": "Busan",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "8836-TNXZO",
+  "age": 57,
+  "region": "Gwangju",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "9887-RVODI",
+  "age": 71,
+  "region": "Daegu",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "7121-QICXV",
+  "age": 65,
+  "region": "Daejeon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "1203-YPFBU",
+  "age": 26,
+  "region": "Daejeon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "3443-SJDPF",
+  "age": 38,
+  "region": "Daejeon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "4562-MFLQQ",
+  "age": 44,
+  "region": "Daejeon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "3232-GGVZM",
+  "age": 25,
+  "region": "Daejeon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "3749-ZBQSU",
+  "age": 53,
+  "region": "Busan",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "9847-VLNJS",
+  "age": 62,
+  "region": "Incheon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "9807-MQOLM",
+  "age": 73,
+  "region": "Busan",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "6674-NZRLW",
+  "age": 67,
+  "region": "Daejeon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "6954-CEGQJ",
+  "age": 28,
+  "region": "Incheon",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "7704-UKFLN",
+  "age": 56,
+  "region": "Seoul",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "3606-QMRND",
+  "age": 20,
+  "region": "Daegu",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "7006-GVAKZ",
+  "age": 73,
+  "region": "Gwangju",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "9651-TPNHW",
+  "age": 20,
+  "region": "Gwangju",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "6423-LSRUA",
+  "age": 46,
+  "region": "Busan",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "5447-NSJUD",
+  "age": 71,
+  "region": "Incheon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "4430-RYCLV",
+  "age": 57,
+  "region": "Daegu",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "4228-BWZOL",
+  "age": 42,
+  "region": "Daejeon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "7216-OQDXR",
+  "age": 51,
+  "region": "Gwangju",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "5755-JMSGP",
+  "age": 28,
+  "region": "Seoul",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "2251-CTGEL",
+  "age": 43,
+  "region": "Incheon",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "5185-ASNZI",
+  "age": 58,
+  "region": "Busan",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "9155-JDAUW",
+  "age": 24,
+  "region": "Daegu",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "2886-FMGOY",
+  "age": 27,
+  "region": "Daejeon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "4320-AFMQK",
+  "age": 61,
+  "region": "Seoul",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "3552-CWNQJ",
+  "age": 43,
+  "region": "Gwangju",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "8540-YJMIU",
+  "age": 31,
+  "region": "Seoul",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "8028-BYLDY",
+  "age": 38,
+  "region": "Incheon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "8949-IJXNW",
+  "age": 68,
+  "region": "Daegu",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "3256-BRQMU",
+  "age": 62,
+  "region": "Gwangju",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "5870-WZMZG",
+  "age": 79,
+  "region": "Gwangju",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "5150-KZZQS",
+  "age": 59,
+  "region": "Busan",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "8057-MYRCY",
+  "age": 31,
+  "region": "Incheon",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "4656-XEFZX",
+  "age": 29,
+  "region": "Daegu",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "9256-NRJID",
+  "age": 20,
+  "region": "Daegu",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "9866-PPRVF",
+  "age": 56,
+  "region": "Daegu",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "6030-SPXLY",
+  "age": 36,
+  "region": "Incheon",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "6054-QPKIZ",
+  "age": 69,
+  "region": "Daejeon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "8383-RAOYU",
+  "age": 77,
+  "region": "Daegu",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "1099-NTZKS",
+  "age": 74,
+  "region": "Daejeon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "7651-TPHQQ",
+  "age": 59,
+  "region": "Daegu",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "5461-GMZLT",
+  "age": 30,
+  "region": "Daejeon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "2191-FWCJF",
+  "age": 50,
+  "region": "Seoul",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "7118-XFJIF",
+  "age": 46,
+  "region": "Seoul",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "3310-GURGT",
+  "age": 34,
+  "region": "Busan",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "4372-XZVBD",
+  "age": 73,
+  "region": "Busan",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "7472-VXHZW",
+  "age": 50,
+  "region": "Gwangju",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "8676-AOVVQ",
+  "age": 49,
+  "region": "Daejeon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "5951-HMRIE",
+  "age": 44,
+  "region": "Daejeon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "5245-ODTZQ",
+  "age": 66,
+  "region": "Incheon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "3443-ADBQB",
+  "age": 61,
+  "region": "Gwangju",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "8643-ADCEU",
+  "age": 56,
+  "region": "Daejeon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "2090-ADXQQ",
+  "age": 68,
+  "region": "Gwangju",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "9345-FXBXK",
+  "age": 50,
+  "region": "Busan",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "4094-GRQWP",
+  "age": 31,
+  "region": "Incheon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "5905-RCSYX",
+  "age": 61,
+  "region": "Daegu",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "5191-JRYBT",
+  "age": 71,
+  "region": "Seoul",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "4166-OIAYP",
+  "age": 55,
+  "region": "Daejeon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "5965-BKMTR",
+  "age": 24,
+  "region": "Gwangju",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "3170-VFKTC",
+  "age": 31,
+  "region": "Daejeon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "2614-QFRMO",
+  "age": 76,
+  "region": "Daejeon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "3181-VWKMJ",
+  "age": 75,
+  "region": "Gwangju",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "8608-FZZGO",
+  "age": 42,
+  "region": "Incheon",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "4643-MTAFP",
+  "age": 21,
+  "region": "Daegu",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "5942-GZFGI",
+  "age": 47,
+  "region": "Busan",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "6558-SHWTG",
+  "age": 47,
+  "region": "Daejeon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "7527-UYPKR",
+  "age": 31,
+  "region": "Gwangju",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "8148-JGALT",
+  "age": 59,
+  "region": "Incheon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "4174-TMOWT",
+  "age": 46,
+  "region": "Daegu",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "5509-USZKD",
+  "age": 56,
+  "region": "Daegu",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "7570-JDTXT",
+  "age": 61,
+  "region": "Gwangju",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "4968-KCQKD",
+  "age": 52,
+  "region": "Gwangju",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "1889-ZSKST",
+  "age": 39,
+  "region": "Daejeon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "5546-AHLWQ",
+  "age": 39,
+  "region": "Incheon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "4715-GAYBH",
+  "age": 72,
+  "region": "Seoul",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "3435-PFJDZ",
+  "age": 53,
+  "region": "Daejeon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "2133-FGVNG",
+  "age": 30,
+  "region": "Seoul",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "1861-WZXXJ",
+  "age": 28,
+  "region": "Seoul",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "9588-VNMCK",
+  "age": 55,
+  "region": "Incheon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "3014-ILMWP",
+  "age": 23,
+  "region": "Gwangju",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "7218-FANKG",
+  "age": 52,
+  "region": "Daegu",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "2577-YOYEJ",
+  "age": 35,
+  "region": "Busan",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "5506-MJYFZ",
+  "age": 22,
+  "region": "Daegu",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "4691-HEQZY",
+  "age": 72,
+  "region": "Gwangju",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "2163-DGLQY",
+  "age": 25,
+  "region": "Daegu",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "1066-WMYDL",
+  "age": 21,
+  "region": "Daejeon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "6662-MEXSP",
+  "age": 55,
+  "region": "Seoul",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "6752-CLVPD",
+  "age": 47,
+  "region": "Daegu",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "1216-CFCBM",
+  "age": 53,
+  "region": "Seoul",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "5327-UZPSW",
+  "age": 51,
+  "region": "Daejeon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "6731-AQXPT",
+  "age": 72,
+  "region": "Seoul",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "8295-VKJAW",
+  "age": 41,
+  "region": "Daejeon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "5986-IXTCU",
+  "age": 40,
+  "region": "Daegu",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "6418-UAMXL",
+  "age": 32,
+  "region": "Seoul",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "5952-PVXTL",
+  "age": 53,
+  "region": "Incheon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "6102-YDZCJ",
+  "age": 73,
+  "region": "Incheon",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "9244-KAFCW",
+  "age": 69,
+  "region": "Gwangju",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "7366-DNWNL",
+  "age": 61,
+  "region": "Gwangju",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "3452-JVLNX",
+  "age": 73,
+  "region": "Daejeon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "4198-HAETU",
+  "age": 45,
+  "region": "Daegu",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "9174-OTCGA",
+  "age": 28,
+  "region": "Daegu",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "3800-WZCFQ",
+  "age": 35,
+  "region": "Daejeon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "3520-HJYWK",
+  "age": 75,
+  "region": "Daegu",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "5937-OFOFN",
+  "age": 37,
+  "region": "Seoul",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "9328-EFUBO",
+  "age": 20,
+  "region": "Daejeon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "1401-SNPHD",
+  "age": 47,
+  "region": "Seoul",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "4982-WGQYP",
+  "age": 74,
+  "region": "Incheon",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "7805-GQGZM",
+  "age": 22,
+  "region": "Incheon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "1556-FFLQY",
+  "age": 34,
+  "region": "Busan",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "3134-SVUOD",
+  "age": 76,
+  "region": "Daegu",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "8759-ODBNG",
+  "age": 39,
+  "region": "Daejeon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "9169-HIEHC",
+  "age": 75,
+  "region": "Gwangju",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "3778-LTSVA",
+  "age": 51,
+  "region": "Incheon",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "5710-IAJVZ",
+  "age": 59,
+  "region": "Gwangju",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "9257-UHEMR",
+  "age": 38,
+  "region": "Daejeon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "6631-OZWFJ",
+  "age": 48,
+  "region": "Incheon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "2718-YINZR",
+  "age": 69,
+  "region": "Seoul",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "5040-AIQTN",
+  "age": 33,
+  "region": "Seoul",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "4857-XSPJD",
+  "age": 56,
+  "region": "Gwangju",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "2376-ZNHOS",
+  "age": 43,
+  "region": "Daegu",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "1041-AMMGX",
+  "age": 49,
+  "region": "Busan",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "8506-JUORY",
+  "age": 50,
+  "region": "Seoul",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "3501-RORGS",
+  "age": 49,
+  "region": "Daegu",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "9829-XOXLA",
+  "age": 28,
+  "region": "Daejeon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "9773-GGFCF",
+  "age": 59,
+  "region": "Daejeon",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "4486-UKTMR",
+  "age": 26,
+  "region": "Busan",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "2892-JPVAW",
+  "age": 73,
+  "region": "Busan",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "9093-LCLJN",
+  "age": 56,
+  "region": "Daegu",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "6289-WISGK",
+  "age": 70,
+  "region": "Seoul",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "6912-EDVSD",
+  "age": 66,
+  "region": "Seoul",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "4476-KMTOM",
+  "age": 69,
+  "region": "Daejeon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "5342-ERAFA",
+  "age": 75,
+  "region": "Incheon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "3041-ZPPAU",
+  "age": 39,
+  "region": "Gwangju",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "1401-PPLYG",
+  "age": 55,
+  "region": "Gwangju",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "6421-TURNH",
+  "age": 53,
+  "region": "Seoul",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "6163-OSWVM",
+  "age": 76,
+  "region": "Daegu",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "3714-WETUI",
+  "age": 71,
+  "region": "Busan",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "3169-KGXGB",
+  "age": 79,
+  "region": "Busan",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "4001-RMKAI",
+  "age": 29,
+  "region": "Daegu",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "2722-SVVPU",
+  "age": 19,
+  "region": "Daegu",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "7130-HKXVT",
+  "age": 29,
+  "region": "Busan",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "4469-MRYTS",
+  "age": 49,
+  "region": "Seoul",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "1166-MRGUZ",
+  "age": 34,
+  "region": "Seoul",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "8898-MYVUT",
+  "age": 55,
+  "region": "Daejeon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "5584-LAUZU",
+  "age": 22,
+  "region": "Gwangju",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "2657-VTJKQ",
+  "age": 43,
+  "region": "Daejeon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "9182-TKVFA",
+  "age": 71,
+  "region": "Daegu",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "5181-HIFPL",
+  "age": 32,
+  "region": "Daegu",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "6206-YSUAG",
+  "age": 26,
+  "region": "Busan",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "3228-QIVYX",
+  "age": 40,
+  "region": "Seoul",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "3059-GEQLT",
+  "age": 53,
+  "region": "Incheon",
+  "join_channel": "store"
+ },
+ {
+  "customerID": "5933-IDWXM",
+  "age": 36,
+  "region": "Seoul",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "3733-NQEJP",
+  "age": 75,
+  "region": "Gwangju",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "7984-HERIR",
+  "age": 56,
+  "region": "Busan",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "9293-FQRUO",
+  "age": 77,
+  "region": "Incheon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "6546-ODRFB",
+  "age": 25,
+  "region": "Incheon",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "7492-GHMZB",
+  "age": 19,
+  "region": "Gwangju",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "7296-MFKIT",
+  "age": 66,
+  "region": "Busan",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "4154-UKOUX",
+  "age": 30,
+  "region": "Busan",
+  "join_channel": "online"
+ },
+ {
+  "customerID": "9295-ISMAL",
+  "age": 40,
+  "region": "Seoul",
+  "join_channel": "phone"
+ },
+ {
+  "customerID": "5126-LHIUD",
+  "age": 64,
+  "region": "Daegu",
+  "join_channel": "phone"
+ }
+]

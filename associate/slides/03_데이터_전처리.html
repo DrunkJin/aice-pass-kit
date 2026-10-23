@@ -1,0 +1,1474 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>데이터 전처리</title>
+
+<!-- ===========================================
+     FONTS (Google Fonts)
+     - Black Han Sans   : 제목용 한글 디스플레이
+     - IBM Plex Sans KR : 본문
+     - JetBrains Mono   : 코드
+     - Nanum Pen Script : 빨간 채점펜 손글씨 주석
+     =========================================== -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=IBM+Plex+Sans+KR:wght@300;400;500;700&family=JetBrains+Mono:wght@400;700&family=Nanum+Pen+Script&display=swap" rel="stylesheet">
+
+<style>
+/* ===========================================
+   THEME — 이 변수만 바꾸면 전체 색/글꼴이 바뀝니다
+   콘셉트: 시험지(크림 모눈종이) + Jupyter 셀 + 빨간 채점펜
+   =========================================== */
+:root {
+    --stage-bg: #23283a;          /* 슬라이드 바깥 여백 색 */
+    --slide-bg: #f3eee3;          /* 종이 */
+    --paper-2: #e9e1cf;           /* 진한 종이 (카드 배경) */
+    --ink: #1b2233;               /* 본문 잉크 */
+    --ink-2: #4b546b;             /* 보조 텍스트 */
+    --ink-3: #7d8497;             /* 흐린 텍스트 */
+    --rule: rgba(27, 34, 51, 0.07); /* 모눈 선 */
+    --red: #d6402b;               /* 채점펜 / 강조 */
+    --red-soft: rgba(214, 64, 43, 0.10);
+    --blue: #2b59c3;              /* Jupyter In[] 프롬프트 */
+    --blue-soft: rgba(43, 89, 195, 0.10);
+    --green: #23845a;             /* 정답 / OK */
+    --green-soft: rgba(35, 132, 90, 0.11);
+    --yellow: #f4cf55;            /* 형광펜 */
+    --code-bg: #1d2232;           /* 코드 셀 배경 */
+    --code-fg: #e8e3d7;
+
+    --font-display: 'Black Han Sans', sans-serif;
+    --font-body: 'IBM Plex Sans KR', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    --font-pen: 'Nanum Pen Script', cursive;
+
+    --pad-x: 120px;               /* 좌우 여백 (왼쪽 빨간 여백선 고려) */
+    --pad-y: 72px;
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* ===========================================
+   VIEWPORT BASE (frontend-slides 필수 CSS — 전체 포함)
+   =========================================== */
+html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    background: var(--stage-bg, #000);
+}
+.deck-viewport {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    background: var(--stage-bg, #000);
+}
+.deck-stage {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 1920px;
+    height: 1080px;
+    overflow: hidden;
+    transform-origin: 0 0;
+    background: var(--slide-bg, #fff);
+}
+.slide {
+    position: absolute;
+    inset: 0;
+    width: 1920px;
+    height: 1080px;
+    overflow: hidden;
+    display: block;
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    background: var(--slide-bg, #fff);
+}
+.slide.active,
+.slide.visible {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+    z-index: 1;
+}
+img, video, canvas, svg { max-width: 100%; max-height: 100%; }
+.deck-controls {
+    position: fixed;
+    left: 50%;
+    bottom: 22px;
+    transform: translateX(-50%);
+    z-index: 1000;
+}
+@media print {
+    html, body { width: 1920px; height: auto; overflow: visible; background: #fff; }
+    .deck-viewport { position: static; overflow: visible; background: #fff; }
+    .deck-stage { position: static; width: auto; height: auto; transform: none !important; background: none; }
+    .slide {
+        position: relative; display: block !important; visibility: visible !important;
+        opacity: 1 !important; pointer-events: auto !important;
+        width: 1920px; height: 1080px; break-after: page; page-break-after: always;
+    }
+    .slide:last-child { break-after: auto; page-break-after: auto; }
+    .deck-controls { display: none !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.2s !important;
+    }
+}
+
+/* ===========================================
+   PAPER BACKGROUND — 모눈 + 왼쪽 빨간 여백선 (시험지 느낌)
+   =========================================== */
+.slide {
+    font-family: var(--font-body);
+    color: var(--ink);
+    font-size: 30px;
+    line-height: 1.55;
+    background-color: var(--slide-bg);
+    background-image:
+        linear-gradient(var(--rule) 1px, transparent 1px),
+        linear-gradient(90deg, var(--rule) 1px, transparent 1px);
+    background-size: 48px 48px;
+    background-position: -1px -1px;
+    padding: var(--pad-y) var(--pad-x) 64px;
+    word-break: keep-all;          /* 한글 단어 중간에서 줄바꿈 방지 */
+}
+.slide::before {               /* 빨간 여백선 */
+    content: "";
+    position: absolute;
+    top: 0; bottom: 0; left: 72px;
+    width: 2px;
+    background: var(--red);
+    opacity: .55;
+}
+.slide::after {                /* 펀치 구멍 3개 */
+    content: "";
+    position: absolute;
+    left: 22px; top: 50%;
+    width: 22px; height: 22px;
+    margin-top: -11px;
+    border-radius: 50%;
+    background: var(--stage-bg);
+    opacity: .16;
+    box-shadow: 0 -300px 0 var(--stage-bg), 0 300px 0 var(--stage-bg);
+}
+
+/* ===========================================
+   SLIDE HEADER — 섹션 태그 + 페이지 번호 (JS가 자동 기입)
+   =========================================== */
+.hd {
+    position: absolute;
+    top: 30px; left: var(--pad-x); right: 72px;
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: var(--font-mono);
+    font-size: 20px;
+    letter-spacing: .04em;
+    color: var(--ink-3);
+}
+.hd .tag { color: var(--red); font-weight: 700; }
+.hd .pg::before { content: attr(data-pg); }
+
+/* ===========================================
+   TYPOGRAPHY
+   =========================================== */
+h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing: -.01em; line-height: 1.15; }
+h2.t { font-size: 64px; margin-top: 18px; margin-bottom: 14px; }
+h2.t small { font-family: var(--font-body); font-size: 30px; color: var(--ink-3); margin-left: 16px; font-weight: 400; letter-spacing: 0; }
+h3 { font-size: 36px; margin-bottom: 10px; }
+.lead { font-size: 31px; color: var(--ink-2); margin-bottom: 28px; max-width: 1560px; }
+p + p { margin-top: 12px; }
+b, strong { font-weight: 700; }
+code, .mono { font-family: var(--font-mono); font-size: .86em; }
+pre, code, kbd, .mono, .hd, .chip, .k { font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; }  /* != 가 ≠ 로 바뀌지 않게 (초보자 오타 방지) */
+:not(pre) > code {
+    background: rgba(27, 34, 51, .08);
+    padding: 1px 8px; border-radius: 6px;
+}
+mark {                                  /* 형광펜 */
+    background: linear-gradient(transparent 52%, var(--yellow) 52%, var(--yellow) 92%, transparent 92%);
+    color: inherit; padding: 0 2px;
+}
+.red { color: var(--red); }
+.blue { color: var(--blue); }
+.green { color: var(--green); }
+.dim { color: var(--ink-3); }
+.small { font-size: 24px; }
+.xs { font-size: 21px; }
+ul.list, ol.list { padding-left: 1.2em; }
+ul.list li, ol.list li { margin: 6px 0; }
+ul.list li::marker { color: var(--red); }
+ol.list li::marker { color: var(--red); font-family: var(--font-mono); font-weight: 700; }
+
+/* ===========================================
+   LAYOUT GRIDS
+   =========================================== */
+.cols { display: grid; gap: 40px; align-items: start; }
+.c2 { grid-template-columns: 1fr 1fr; }
+.c3 { grid-template-columns: repeat(3, 1fr); }
+.c4 { grid-template-columns: repeat(4, 1fr); }
+.c37 { grid-template-columns: 3fr 7fr; }
+.c46 { grid-template-columns: 4fr 6fr; }
+.c64 { grid-template-columns: 6fr 4fr; }
+.c73 { grid-template-columns: 7fr 3fr; }
+.stack > * + * { margin-top: 22px; }
+.center-y { align-items: center; }
+
+/* ===========================================
+   CARDS — 종이 위에 올린 메모 카드
+   =========================================== */
+.card {
+    background: rgba(255, 253, 247, .82);
+    border: 2px solid var(--ink);
+    border-radius: 14px;
+    padding: 26px 30px;
+    box-shadow: 6px 6px 0 rgba(27, 34, 51, .12);
+}
+.card h3 { font-size: 34px; }
+.card.red, .card.blue, .card.green, .card.yellow { color: var(--ink); }  /* 테두리 색이 글자색에 번지지 않게 */
+.card.red   { border-top: 10px solid var(--red); }
+.card.blue  { border-top: 10px solid var(--blue); }
+.card.green { border-top: 10px solid var(--green); }
+.card.yellow{ border-top: 10px solid var(--yellow); }
+.card .k {                              /* 카드 안의 작은 라벨 */
+    font-family: var(--font-mono); font-size: 19px; letter-spacing: .08em;
+    color: var(--ink-3); text-transform: uppercase; display: block; margin-bottom: 6px;
+}
+
+/* ===========================================
+   JUPYTER CELL — In [ ]: 프롬프트 + 다크 코드 블록 + Out
+   =========================================== */
+.cell { display: grid; grid-template-columns: 112px 1fr; gap: 0 14px; align-items: start; }
+.cell + .cell { margin-top: 16px; }
+.cell .in, .cell .outp {
+    font-family: var(--font-mono); font-size: 20px; text-align: right;
+    padding-top: 18px; white-space: nowrap;
+}
+.cell .in { color: var(--blue); }
+.cell .outp { color: var(--red); }
+pre {
+    font-family: var(--font-mono);
+    font-size: 24px;
+    line-height: 1.5;
+    background: var(--code-bg);
+    color: var(--code-fg);
+    border-radius: 12px;
+    padding: 16px 24px;
+    overflow: hidden;
+    white-space: pre;
+    tab-size: 4;
+    border-left: 6px solid var(--blue);
+}
+pre.out {                               /* 출력 결과: 밝은 종이 위 */
+    background: rgba(255, 253, 247, .9);
+    color: var(--ink);
+    border: 1.5px dashed var(--ink-3);
+    border-left: 6px solid var(--red);
+    font-size: 21px;
+}
+pre.sm { font-size: 21px; }
+pre.xs { font-size: 19px; line-height: 1.45; }
+pre.bad { border-left-color: var(--red); }
+pre.good { border-left-color: var(--green); }
+/* 문법 강조 (JS 하이라이터가 넣는 span) */
+.tk-kw { color: #ff9a7a; font-weight: 700; }
+.tk-str { color: #b8dc8c; }
+.tk-com { color: #8a92a8; font-style: italic; }
+.tk-num { color: #f4cf55; }
+.tk-fn { color: #92c0ff; }
+.tk-bi { color: #e4a8ff; }
+.tk-arg { color: #ffd2a1; }
+pre .hl {                               /* 코드 안에서 특정 부분 강조 */
+    background: rgba(244, 207, 85, .22);
+    outline: 2px solid rgba(244, 207, 85, .55);
+    border-radius: 4px;
+}
+
+/* ===========================================
+   TABLE
+   =========================================== */
+table.tbl { width: 100%; border-collapse: collapse; font-size: 25px; background: rgba(255,253,247,.85); }
+.tbl th, .tbl td { border: 1.5px solid rgba(27,34,51,.25); padding: 10px 16px; text-align: left; vertical-align: top; }
+.tbl th { background: var(--ink); color: var(--slide-bg); font-weight: 500; font-size: 23px; }
+.tbl td code { font-size: .85em; }
+.tbl tr.hit td { background: rgba(244, 207, 85, .28); }
+
+/* ===========================================
+   CALLOUTS — 함정 / 팁 / 시험 포인트
+   =========================================== */
+.callout {
+    border-radius: 12px; padding: 18px 24px 18px 88px; position: relative;
+    font-size: 26px; line-height: 1.5;
+}
+.callout::before {
+    position: absolute; left: 22px; top: 14px; font-size: 40px; line-height: 1;
+}
+.callout b.h { display: block; font-family: var(--font-display); font-weight: 400; font-size: 30px; margin-bottom: 4px; }
+.callout.warn { background: var(--red-soft); border: 2px solid var(--red); }
+.callout.warn::before { content: "⚠️"; }
+.callout.tip { background: var(--green-soft); border: 2px solid var(--green); }
+.callout.tip::before { content: "💡"; }
+.callout.exam { background: var(--blue-soft); border: 2px solid var(--blue); }
+.callout.exam::before { content: "📝"; }
+
+/* ===========================================
+   RED-PEN NOTE — 채점펜 손글씨 주석
+   =========================================== */
+.pen {
+    font-family: var(--font-pen);
+    color: var(--red);
+    font-size: 46px;
+    line-height: 1.05;
+    transform: rotate(-3deg);
+    display: inline-block;
+}
+.pen.abs { position: absolute; }
+.circle {                               /* 빨간 동그라미 표시 */
+    display: inline-block; padding: 0 10px;
+    border: 3px solid var(--red); border-radius: 50% 46% 52% 48%;
+    transform: rotate(-2deg);
+}
+
+/* ===========================================
+   FLOW — 단계 흐름 (1 → 2 → 3 ...)
+   =========================================== */
+.flow { list-style: none; display: flex; gap: 14px; flex-wrap: wrap; }
+.flow li {
+    flex: 1; min-width: 0;
+    background: rgba(255,253,247,.9); border: 2px solid var(--ink); border-radius: 12px;
+    padding: 16px 16px 14px; position: relative; font-size: 23px; line-height: 1.35;
+}
+.flow li b {
+    display: block; font-family: var(--font-mono); font-size: 20px; color: var(--red); margin-bottom: 6px;
+}
+.flow li:not(:last-child)::after {
+    content: "→"; position: absolute; right: -16px; top: 50%; transform: translate(50%, -50%);
+    font-size: 28px; color: var(--ink-3); z-index: 2;
+}
+.flow li.on { background: var(--ink); color: var(--slide-bg); }
+.flow li.on b { color: var(--yellow); }
+
+/* ===========================================
+   QUIZ — 클릭하면 정답이 보이는 문제 카드
+   =========================================== */
+.quiz {
+    background: rgba(255,253,247,.9); border: 2px dashed var(--blue); border-radius: 14px;
+    padding: 22px 28px; font-size: 27px;
+}
+.quiz .q { font-weight: 500; }
+.quiz .q::before {
+    content: "Q"; font-family: var(--font-display); color: var(--blue);
+    font-size: 34px; margin-right: 12px;
+}
+.quiz button.show-a {
+    margin-top: 14px; font-family: var(--font-body); font-size: 22px; cursor: pointer;
+    background: var(--blue); color: #fff; border: 0; border-radius: 999px; padding: 8px 22px;
+}
+.quiz .a { display: none; margin-top: 14px; border-top: 1.5px dashed var(--ink-3); padding-top: 14px; }
+.quiz.open .a { display: block; animation: pop .35s var(--ease-out-expo); }
+.quiz.open button.show-a { background: var(--ink-3); }
+@keyframes pop { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* ===========================================
+   SMALL BITS — chips, kbd, practice link, big number
+   =========================================== */
+.chips { display: flex; flex-wrap: wrap; gap: 10px; }
+.chip {
+    font-family: var(--font-mono); font-size: 20px; padding: 6px 14px; border-radius: 999px;
+    border: 1.5px solid var(--ink); background: rgba(255,253,247,.8);
+}
+.chip.r { border-color: var(--red); color: var(--red); }
+.chip.b { border-color: var(--blue); color: var(--blue); }
+.chip.g { border-color: var(--green); color: var(--green); }
+kbd {
+    font-family: var(--font-mono); font-size: .8em; padding: 2px 10px; border-radius: 6px;
+    border: 1.5px solid var(--ink-2); border-bottom-width: 4px; background: #fffdf7;
+}
+.practice {
+    display: inline-flex; align-items: center; gap: 14px;
+    background: var(--ink); color: var(--slide-bg); border-radius: 12px;
+    padding: 12px 22px; font-size: 24px;
+}
+.practice::before { content: "✍️"; }
+.practice code { background: rgba(255,255,255,.12); color: var(--yellow); }
+.bignum { font-family: var(--font-display); font-size: 120px; line-height: 1; color: var(--red); }
+.bignum small { font-size: 40px; color: var(--ink-2); margin-left: 6px; }
+.foot {                                  /* 슬라이드 하단 메모 */
+    position: absolute; left: var(--pad-x); right: 72px; bottom: 34px;
+    font-size: 21px; color: var(--ink-3);
+}
+
+/* ===========================================
+   TITLE SLIDE
+   =========================================== */
+.slide.title { padding-top: 150px; }
+.slide.title .deckno {
+    position: absolute; right: 70px; top: 40px;
+    font-family: var(--font-display); font-size: 520px; line-height: 1;
+    color: transparent; -webkit-text-stroke: 3px rgba(27,34,51,.14);
+}
+.slide.title .kicker {
+    font-family: var(--font-mono); font-size: 24px; letter-spacing: .14em; color: var(--red); font-weight: 700;
+}
+.slide.title h1 { font-size: 132px; margin: 20px 0 26px; max-width: 1400px; }
+.slide.title h1 em { font-style: normal; color: var(--red); }
+.slide.title .sub { font-size: 36px; color: var(--ink-2); max-width: 1250px; }
+.slide.title .meta { position: absolute; left: var(--pad-x); bottom: 80px; right: 72px; }
+.stamp {                                  /* 합격 도장 */
+    position: absolute; right: 150px; bottom: 120px;
+    width: 250px; height: 250px; border-radius: 50%;
+    border: 7px solid var(--red); color: var(--red);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    font-family: var(--font-display); font-size: 62px; line-height: 1;
+    transform: rotate(-14deg); opacity: .85;
+    box-shadow: inset 0 0 0 8px var(--slide-bg), inset 0 0 0 11px var(--red);
+}
+.stamp small { font-family: var(--font-mono); font-size: 18px; margin-top: 10px; letter-spacing: .1em; }
+
+/* ===========================================
+   SECTION DIVIDER
+   =========================================== */
+.slide.section { display: block; padding-top: 260px; }
+.slide.section .no {
+    font-family: var(--font-mono); font-size: 34px; color: var(--red); font-weight: 700; letter-spacing: .1em;
+}
+.slide.section h2 { font-size: 120px; margin: 16px 0 24px; }
+.slide.section p { font-size: 36px; color: var(--ink-2); max-width: 1300px; }
+
+/* ===========================================
+   ANIMATIONS — 슬라이드가 보일 때 순서대로 등장
+   =========================================== */
+.reveal {
+    opacity: 0; transform: translateY(26px);
+    transition: opacity .6s var(--ease-out-expo), transform .6s var(--ease-out-expo);
+}
+.slide.visible .reveal { opacity: 1; transform: none; }
+.slide.visible .reveal:nth-child(2) { transition-delay: .08s; }
+.slide.visible .reveal:nth-child(3) { transition-delay: .16s; }
+.slide.visible .reveal:nth-child(4) { transition-delay: .24s; }
+.slide.visible .reveal:nth-child(5) { transition-delay: .32s; }
+.slide.visible .reveal:nth-child(6) { transition-delay: .40s; }
+.slide.visible .reveal:nth-child(7) { transition-delay: .48s; }
+.stamp.reveal { transform: rotate(-14deg) scale(1.6); }
+.slide.visible .stamp.reveal { transform: rotate(-14deg) scale(1); transition-delay: .5s; }
+
+/* ===========================================
+   DECK CHROME — 진행바, 페이지 표시, 목차 버튼 (슬라이드 바깥)
+   =========================================== */
+.progress {
+    position: fixed; left: 0; top: 0; height: 4px; background: var(--red);
+    z-index: 1001; transition: width .3s ease;
+}
+.deck-controls {
+    left: auto; right: 18px; bottom: 14px; transform: none;   /* 오른쪽 아래 구석: 슬라이드 내용과 겹치지 않게 */
+    display: flex; gap: 8px; align-items: center;
+    background: rgba(20, 24, 36, .82); backdrop-filter: blur(6px);
+    padding: 6px 8px; border-radius: 999px;
+    font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #e8e3d7;
+    opacity: .25; transition: opacity .25s;
+}
+.deck-controls:hover { opacity: 1; }
+.deck-controls button, .deck-controls a {
+    background: transparent; color: inherit; border: 0; cursor: pointer;
+    font: inherit; padding: 6px 12px; border-radius: 999px; text-decoration: none;
+}
+.deck-controls button:hover, .deck-controls a:hover { background: rgba(255,255,255,.12); }
+.deck-controls .count { padding: 0 6px; min-width: 64px; text-align: center; }
+
+/* ===========================================
+   INLINE EDITING — E 키 또는 왼쪽 위 모서리에 마우스
+   =========================================== */
+.edit-hotzone { position: fixed; top: 0; left: 0; width: 80px; height: 80px; z-index: 10000; cursor: pointer; }
+.edit-toggle {
+    position: fixed; top: 16px; left: 16px; z-index: 10001;
+    width: 44px; height: 44px; border-radius: 50%; border: 0; cursor: pointer;
+    background: #f3eee3; font-size: 20px; box-shadow: 0 4px 14px rgba(0,0,0,.3);
+    opacity: 0; pointer-events: none; transition: opacity .3s ease;
+}
+.edit-toggle.show, .edit-toggle.active { opacity: 1; pointer-events: auto; }
+.edit-toggle.active { background: var(--red); }
+body.editing [contenteditable="true"] { outline: 2px dashed rgba(214,64,43,.5); outline-offset: 4px; }
+.edit-banner {
+    position: fixed; top: 16px; left: 50%; transform: translateX(-50%); z-index: 10001;
+    background: var(--red); color: #fff; font: 14px 'IBM Plex Sans KR', sans-serif;
+    padding: 6px 16px; border-radius: 999px; display: none;
+}
+body.editing .edit-banner { display: block; }
+
+/* ===========================================
+   DECK-SPECIFIC STYLES (덱마다 추가)
+   =========================================== */
+/* 읽기용 덱: 기본 크기를 조금 키워 빈 공간을 줄임 */
+.slide pre { font-size: 26px; line-height: 1.6; padding: 18px 26px; }
+.slide pre.out { font-size: 23px; }
+.slide pre.sm { font-size: 24px; }
+.slide pre.xs { font-size: 21px; }
+.slide .tbl { font-size: 26px; }
+.slide .tbl th, .slide .tbl td { padding: 12px 18px; }
+.slide .callout { font-size: 27px; }
+.slide .cell + .cell { margin-top: 20px; }
+.slide .quiz { font-size: 29px; padding: 26px 32px; }
+
+/* 덱 03 전용 */
+.fig { background: #fffdf7; border: 2px solid var(--ink); border-radius: 14px; padding: 18px 20px 12px; box-shadow: 6px 6px 0 rgba(27,34,51,.12); }
+.fig svg { display: block; width: 100%; height: auto; max-height: none; }
+.fig .cap { font-family: var(--font-mono); font-size: 20px; color: var(--ink-3); margin-bottom: 6px; }
+.fig text { font-family: 'JetBrains Mono', monospace; font-size: 18px; fill: #4b546b; }
+.fig text.lab { font-family: 'Nanum Pen Script', cursive; font-size: 32px; fill: #d6402b; }
+.mini { border-collapse: collapse; font-family: var(--font-mono); font-size: 24px; background: #fffdf7; }
+.mini th, .mini td { border: 1.5px solid rgba(27,34,51,.3); padding: 9px 16px; text-align: center; }
+.mini th { background: var(--paper-2); }
+.mini td.one { background: rgba(35,132,90,.18); font-weight: 700; color: var(--green); }
+.mini td.num { background: rgba(43,89,195,.12); font-weight: 700; color: var(--blue); }
+.encode { display: grid; grid-template-columns: auto 60px auto; align-items: center; gap: 10px; }
+.encode .arr { font-size: 44px; color: var(--ink-3); text-align: center; }
+.split-diag { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.split-diag div { border: 2px solid var(--ink); border-radius: 10px; padding: 14px 12px; text-align: center; font-family: var(--font-mono); font-size: 25px; background: #fffdf7; }
+.split-diag div small { display: block; font-family: var(--font-body); font-size: 19px; color: var(--ink-3); margin-top: 4px; }
+.split-diag .tr { border-top: 8px solid var(--blue); } .split-diag .te { border-top: 8px solid var(--red); }
+.check { list-style: none; }
+.check li { position: relative; padding-left: 56px; margin: 26px 0; font-size: 30px; }
+.check li::before { content: ""; position: absolute; left: 0; top: 4px; width: 32px; height: 32px; border: 3px solid var(--ink); border-radius: 6px; background: #fffdf7; }
+.check li b.q { font-family: var(--font-mono); color: var(--red); margin-right: 8px; }
+.decide { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+.decide .card { padding: 20px 24px; }
+.decide .card p { font-size: 27px; }
+.decide .card h3 { font-size: 40px; }
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<div class="edit-hotzone" aria-hidden="true"></div>
+<button class="edit-toggle" id="editToggle" title="편집 모드 (E)">✏️</button>
+<div class="edit-banner">편집 모드 · 텍스트를 클릭해 수정 · Ctrl+S 로 파일 저장 · E 로 종료</div>
+
+<div class="deck-viewport">
+<main class="deck-stage" id="deckStage" data-deck="03" data-ver="de27077025" data-tag="03 · 전처리">
+<!-- ========== 1. 표지 ========== -->
+<section class="slide active visible title">
+    <div class="deckno">03</div>
+    <div class="kicker reveal">AICE ASSOCIATE · DECK 03</div>
+    <h1 class="reveal">모델이 먹을 수 있게<br><em>데이터 손질하기</em></h1>
+    <p class="sub reveal">시험 6~10번, 점수가 가장 많이 걸린 구간이에요. 잘못된 값 → 이상치 → 결측치 → 인코딩 → 분할·스케일링 순서로 정리합니다.</p>
+    <div class="meta reveal">
+        <div class="chips">
+            <span class="chip">이상치 · IQR</span><span class="chip">dropna · fillna</span><span class="chip">LabelEncoder</span>
+            <span class="chip">get_dummies</span><span class="chip">train_test_split</span><span class="chip r">데이터 누수</span>
+        </div>
+    </div>
+</section>
+
+<!-- ========== 2. 전처리 지도 ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">전처리 지도 <small>문항과 함수 한 장 정리</small></h2>
+    <ol class="flow reveal" style="margin-top:10px">
+        <li><b>Q4</b>잘못된 값 제거<br><code>df[df[c] != '-']</code></li>
+        <li><b>Q6</b>이상치 제거<br><code>df[df[c] &lt; 300]</code></li>
+        <li><b>Q7</b>결측치 처리<br><code>dropna()</code> <code>fillna()</code></li>
+        <li><b>Q8</b>컬럼 삭제<br><code>drop(axis=1)</code></li>
+        <li><b>Q9</b>인코딩<br><code>get_dummies()</code></li>
+        <li class="on"><b>Q10</b>분할·스케일링<br><code>train_test_split</code></li>
+    </ol>
+    <div class="cols c2" style="gap:36px; margin-top:30px">
+        <table class="tbl reveal">
+            <tr><th>문항</th><th>결과 변수 (샘플 기준)</th><th>입력</th></tr>
+            <tr><td>Q6</td><td><code>df_temp</code></td><td><code>df</code></td></tr>
+            <tr><td>Q7</td><td><code>df_na</code></td><td><code>df_temp</code></td></tr>
+            <tr><td>Q8</td><td><code>df_del</code></td><td><code>df_na</code></td></tr>
+            <tr><td>Q9</td><td><code>df_preset</code></td><td><code>df_del</code></td></tr>
+            <tr><td>Q10</td><td><code>X_train</code> … <code>y_valid</code></td><td><code>df_preset</code></td></tr>
+        </table>
+        <div class="stack reveal">
+            <div class="callout exam"><b class="h">이어달리기 구조</b>각 문항의 결과가 다음 문항의 입력이에요. <b>입력 변수를 잘못 고르면</b>(예: Q8에서 <code>df_temp</code>를 씀) 뒤가 전부 어긋나요.</div>
+            <div class="callout tip"><b class="h">매 문항 끝에 확인</b><code>변수.shape</code>를 찍어 행·열 수가 예상대로 줄었는지 보세요. 10초면 돼요.</div>
+        </div>
+    </div>
+    <div class="cell reveal" style="margin-top:26px"><div class="in">점검</div><pre class="sm"><code class="py">print(df.shape, df_temp.shape, df_na.shape, df_del.shape, df_preset.shape)
+# 행은 줄어들고(Q6·Q7), 열은 줄었다가(Q8) 늘어나야(Q9) 정상이에요</code></pre></div>
+</section>
+
+<!-- ========== 3. 섹션 ========== -->
+<section class="slide section">
+    <div class="no reveal">PART 1</div>
+    <h2 class="reveal">잘못된 값과 이상치</h2>
+    <p class="reveal">"있을 수 없는 값"을 찾아 지우거나 고쳐요. 기준은 대부분 <b>문제에 적혀 있어요</b>(예: 시속 300 이상). 적혀 있지 않으면 IQR을 써요.</p>
+    <span class="pen abs reveal" style="right:200px; top:650px">이상(≥)과 초과(&gt;)를 구분!</span>
+</section>
+
+<!-- ========== 4. 잘못된 범주 ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">잘못된 범주 찾고 지우기 <small>시험 4번</small></h2>
+    <div class="cols c2" style="gap:40px">
+        <div class="reveal">
+            <div class="cell"><div class="in">In [1]:</div><pre><code class="py">df = pd.read_csv('pre_sample.csv')
+df['Contract'].value_counts()</code></pre></div>
+            <div class="cell"><div class="outp">Out:</div><pre class="out">Contract
+Month       4
+One year    2
+<span class="hl">-           1</span>
+Two year    1
+Name: count, dtype: int64</pre></div>
+            <div class="cell"><div class="in">In [2]:</div><pre><code class="py">df = df[df['Contract'] != '-']
+df.shape</code></pre></div>
+            <div class="cell"><div class="outp">Out:</div><pre class="out">(7, 7)        ← 8행 → 7행</pre></div>
+        </div>
+        <div class="stack reveal">
+            <div class="card red">
+                <h3>지우는 방법 3가지</h3>
+                <pre class="sm"><code class="py"># ① 조건으로 남기기 (가장 많이 씀)
+df = df[df['Contract'] != '-']
+# ② 해당 index 찾아서 drop
+idx = df[df['Contract'] == '-'].index
+df = df.drop(idx)
+# ③ 여러 값이면 isin + ~
+df = df[~df['Contract'].isin(['-', '?'])]</code></pre>
+            </div>
+            <div class="callout tip"><b class="h">'-'를 결측치로 바꾸라는 문제라면</b><code>df['Contract'] = df['Contract'].replace('-', np.nan)</code></div>
+        </div>
+    </div>
+</section>
+
+<!-- ========== 5. 공백 문자열 숫자 ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">숫자인데 문자열? <small>공백 ' ' 처리</small></h2>
+    <div class="cols c2" style="gap:36px">
+        <div class="reveal">
+            <div class="cell"><div class="in">In [3]:</div><pre><code class="py">df['TotalCharges'].astype(float)</code></pre></div>
+            <div class="cell"><div class="outp">Out:</div><pre class="out bad">ValueError: could not convert string
+to float: ' '</pre></div>
+            <div class="cell"><div class="in">In [4]:</div><pre><code class="py">(df['TotalCharges'] == ' ').sum()   # 몇 개?</code></pre></div>
+            <div class="cell"><div class="outp">Out:</div><pre class="out">2</pre></div>
+            <div class="callout tip" style="margin-top:20px"><b class="h">어떻게 알아채나</b><code>info()</code>에서 금액처럼 숫자여야 할 컬럼이 <code>object</code>로 나오면 공백·문자가 섞인 거예요.</div>
+        </div>
+        <div class="stack reveal">
+            <div class="cell"><div class="in">방법 ①</div><pre class="sm"><code class="py"># 공백을 '0'으로 바꾼 뒤 float 변환
+df['TotalCharges'] = (df['TotalCharges']
+    .replace(' ', '0').astype(float))</code></pre></div>
+            <div class="cell"><div class="outp">결과</div><pre class="out">[29.85, 1889.5, 0.0, 1840.75, 151.65, 0.0, ...]</pre></div>
+            <div class="cell"><div class="in">방법 ②</div><pre class="sm"><code class="py"># 숫자로 못 바꾸는 값은 NaN으로
+df['TotalCharges'] = pd.to_numeric(
+    df['TotalCharges'], errors='coerce')</code></pre></div>
+            <div class="cell"><div class="outp">결과</div><pre class="out">[29.85, 1889.5, nan, 1840.75, 151.65, nan, ...]</pre></div>
+            <div class="callout exam"><b class="h">문제가 정해줘요</b>"0으로 바꾸라"면 ①, "결측 처리하라"면 ②예요.</div>
+        </div>
+    </div>
+</section>
+
+<!-- ========== 6. 이상치: 조건 ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">이상치 ① 기준값이 주어질 때 <small>시험 6번</small></h2>
+    <div class="cols c2" style="gap:40px">
+        <div class="reveal">
+            <div class="cell"><div class="in">In [5]:</div><pre><code class="py"># "Speed_Per_Hour가 300 이상인 행 제거"
+df_temp = df[df['Speed_Per_Hour'] &lt; 300]
+
+# "0 이하이거나 300 초과인 행 제거"
+df_temp = df[(df['Speed_Per_Hour'] &gt; 0) &amp;
+             (df['Speed_Per_Hour'] &lt;= 300)]</code></pre></div>
+            <div class="callout warn" style="margin-top:22px"><b class="h">"제거"를 "남기기"로 뒤집기</b>"300 이상 제거" = "300 <b>미만</b> 남기기"예요. 부등호 방향과 등호 포함 여부를 한 번 더 확인하세요.</div>
+        </div>
+        <div class="stack reveal">
+            <table class="tbl">
+                <tr><th>문제 표현</th><th>지울 행</th><th>남길 조건</th></tr>
+                <tr><td>300 <b>이상</b> 제거</td><td><code>&gt;= 300</code></td><td><code>&lt; 300</code></td></tr>
+                <tr><td>300 <b>초과</b> 제거</td><td><code>&gt; 300</code></td><td><code>&lt;= 300</code></td></tr>
+                <tr><td>300 <b>이하</b> 제거</td><td><code>&lt;= 300</code></td><td><code>&gt; 300</code></td></tr>
+                <tr><td>300 <b>미만</b> 제거</td><td><code>&lt; 300</code></td><td><code>&gt;= 300</code></td></tr>
+            </table>
+            <div class="cell"><div class="in">확인</div><pre class="sm"><code class="py">len(df), len(df_temp)        # 몇 행 줄었나
+df_temp['Speed_Per_Hour'].max()   # 300 미만?</code></pre></div>
+        </div>
+    </div>
+    <div class="fig reveal" style="margin-top:24px">
+        <div class="cap">수직선으로 보기: ● 포함 / ○ 미포함</div>
+        <svg viewBox="0 0 1640 150">
+            <text x="10" y="50" style="font-size:22px; font-weight:700; fill:#1b2233">300 이상 제거</text>
+            <line x1="260" y1="44" x2="1600" y2="44" stroke="#1b2233" stroke-width="2"/>
+            <line x1="260" y1="44" x2="900" y2="44" stroke="#23845a" stroke-width="10"/>
+            <line x1="900" y1="44" x2="1600" y2="44" stroke="#d6402b" stroke-width="10" stroke-dasharray="14 10"/>
+            <circle cx="900" cy="44" r="13" fill="#f3eee3" stroke="#23845a" stroke-width="4"/>
+            <text x="880" y="90" style="font-size:22px">300</text><text x="480" y="30" style="fill:#23845a; font-size:20px">남김 (&lt; 300)</text><text x="1200" y="30" style="fill:#d6402b; font-size:20px">제거 (≥ 300)</text>
+            <text x="10" y="130" style="font-size:22px; font-weight:700; fill:#1b2233">300 초과 제거</text>
+            <line x1="260" y1="124" x2="1600" y2="124" stroke="#1b2233" stroke-width="2"/>
+            <line x1="260" y1="124" x2="900" y2="124" stroke="#23845a" stroke-width="10"/>
+            <line x1="900" y1="124" x2="1600" y2="124" stroke="#d6402b" stroke-width="10" stroke-dasharray="14 10"/>
+            <circle cx="900" cy="124" r="13" fill="#23845a"/>
+            <text x="480" y="110" style="fill:#23845a; font-size:20px">남김 (≤ 300, 300 포함)</text><text x="1200" y="110" style="fill:#d6402b; font-size:20px">제거 (&gt; 300)</text>
+        </svg>
+    </div>
+</section>
+
+<!-- ========== 7. IQR ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">이상치 ② 기준이 없을 때: IQR 규칙</h2>
+    <div class="fig reveal">
+        <div class="cap">Speed_Per_Hour (300건) — Q1 = 24.8, Q3 = 30.9, IQR = 6.1</div>
+        <svg viewBox="0 0 1640 250">
+            <line x1="40" y1="130" x2="1600" y2="130" stroke="#1b2233" stroke-width="3"/>
+            <rect x="160" y="60" width="1400" height="140" fill="none"/>
+            <rect x="560" y="80" width="420" height="100" fill="rgba(43,89,195,.15)" stroke="#1b2233" stroke-width="3"/>
+            <line x1="760" y1="80" x2="760" y2="180" stroke="#d6402b" stroke-width="5"/>
+            <line x1="140" y1="95" x2="140" y2="165" stroke="#23845a" stroke-width="5"/>
+            <line x1="1400" y1="95" x2="1400" y2="165" stroke="#23845a" stroke-width="5"/>
+            <circle cx="1480" cy="130" r="13" fill="#d6402b"/><circle cx="1530" cy="130" r="13" fill="#d6402b"/><circle cx="1575" cy="130" r="13" fill="#d6402b"/>
+            <text x="530" y="225">Q1 24.8</text><text x="730" y="225">중앙값</text><text x="940" y="225">Q3 30.9</text>
+            <text x="60" y="60" style="fill:#23845a; font-weight:700">하한 15.65</text>
+            <text x="1300" y="60" style="fill:#23845a; font-weight:700">상한 40.05</text>
+            <text class="lab" x="1440" y="215">밖은 제거</text>
+            <path d="M560 30 H980" stroke="#2b59c3" stroke-width="3"/><text x="700" y="22" style="fill:#2b59c3; font-weight:700">IQR = Q3 − Q1</text>
+        </svg>
+    </div>
+    <div class="cols c2" style="gap:36px; margin-top:24px">
+        <div class="reveal">
+            <table class="tbl">
+                <tr><th>경계</th><th>공식</th><th>값</th></tr>
+                <tr><td>하한</td><td><code>Q1 − 1.5 × IQR</code></td><td>15.65</td></tr>
+                <tr><td>상한</td><td><code>Q3 + 1.5 × IQR</code></td><td>40.05</td></tr>
+            </table>
+        </div>
+        <div class="callout tip reveal"><b class="h">왜 1.5배?</b>관례예요. 정규분포라면 이 범위 밖은 전체의 약 0.7%뿐이라 "드문 값"으로 봐요. 문제에서 배수를 바꾸면 그 값을 쓰세요.</div>
+    </div>
+</section>
+
+<!-- ========== 8. IQR 코드 ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">IQR로 이상치 지우는 코드</h2>
+    <div class="cols c2" style="gap:36px">
+        <div class="reveal">
+            <div class="cell"><div class="in">In [6]:</div><pre><code class="py">s = df['Speed_Per_Hour']
+q1 = s.quantile(0.25)
+q3 = s.quantile(0.75)
+iqr = q3 - q1
+low, high = q1 - 1.5 * iqr, q3 + 1.5 * iqr
+print(q1, q3, round(iqr, 2),
+      round(low, 2), round(high, 2))
+
+df_temp = df[(s &gt;= low) &amp; (s &lt;= high)]
+len(df), len(df_temp)</code></pre></div>
+            <div class="cell"><div class="outp">Out:</div><pre class="out">24.8 30.9 6.1 15.65 40.05
+(300, 295)</pre></div>
+        </div>
+        <div class="stack reveal">
+            <div class="callout warn"><b class="h">300 기준과 결과가 달라요</b>"300 이상 제거"는 3행만 지웠지만, IQR은 <b>5행</b>을 지워요. 문제에서 지정한 방법을 따르세요.</div>
+            <div class="cell"><div class="in">참고</div><pre class="sm"><code class="py"># 지우지 않고 경계값으로 자르기 (clipping)
+df['Speed_Per_Hour'] = s.clip(lower=low,
+                              upper=high)
+df['Speed_Per_Hour'].max()   # → 40.05</code></pre></div>
+            <div class="callout tip"><b class="h">clip은 언제?</b>행을 지우면 데이터가 줄어요. 데이터가 적을 때는 값만 경계로 눌러두는 방법도 써요. 시험에선 대부분 "제거"를 물어요.</div>
+        </div>
+    </div>
+</section>
+
+<!-- ========== 9. 퀴즈 ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">확인 문제 <small>잘못된 값 · 이상치</small></h2>
+    <div class="cols c2" style="gap:30px; margin-top:10px">
+        <div class="stack">
+            <div class="quiz reveal">
+                <div class="q">"<code>Age</code>가 0 <b>이하</b>이거나 100 <b>초과</b>인 행을 제거해 <b>df_temp</b>에 저장하라."</div>
+                <button class="show-a">정답 보기</button>
+                <div class="a"><code>df_temp = df[(df['Age'] &gt; 0) &amp; (df['Age'] &lt;= 100)]</code><br>남길 조건은 "0 초과 <b>그리고</b> 100 이하"예요.</div>
+            </div>
+            <div class="quiz reveal">
+                <div class="q"><code>Price</code>의 Q1이 10, Q3가 30이에요. IQR 규칙의 상한은?</div>
+                <button class="show-a">정답 보기</button>
+                <div class="a">IQR = 20, 상한 = 30 + 1.5 × 20 = <b>60</b>이에요. (하한 = 10 − 30 = −20)</div>
+            </div>
+        </div>
+        <div class="stack">
+            <div class="quiz reveal">
+                <div class="q"><code>df['Fee'].astype(float)</code>에서 <code>could not convert string to float: ' '</code> 에러가 났어요. 공백을 NaN으로 바꾸며 숫자로 만드는 한 줄은?</div>
+                <button class="show-a">정답 보기</button>
+                <div class="a"><code>df['Fee'] = pd.to_numeric(df['Fee'], errors='coerce')</code></div>
+            </div>
+            <div class="quiz reveal">
+                <div class="q"><code>Address</code>에서 <code>'-'</code>와 <code>'?'</code>인 행을 한 번에 지우려면?</div>
+                <button class="show-a">정답 보기</button>
+                <div class="a"><code>df = df[~df['Address'].isin(['-', '?'])]</code><br><code>~</code>는 "아닌 것"이에요.</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========== 10. 섹션 ========== -->
+<section class="slide section">
+    <div class="no reveal">PART 2</div>
+    <h2 class="reveal">결측치 다루기</h2>
+    <p class="reveal">NaN이 남아 있으면 대부분의 모델이 <code>ValueError: Input X contains NaN</code>을 내요. 지울지, 채울지, 컬럼째 버릴지를 정해요.</p>
+</section>
+
+<!-- ========== 11. 결측 확인 ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">결측치 확인: 개수와 비율</h2>
+    <div class="cols c2" style="gap:36px">
+        <div class="reveal">
+            <div class="cell"><div class="in">In [7]:</div><pre><code class="py">df.isna().sum()      # 컬럼별 개수</code></pre></div>
+            <div class="cell"><div class="outp">Out:</div><pre class="out">gender              0
+Contract            0
+tenure              0
+MonthlyCharges      <span class="hl">2</span>
+TotalCharges        0
+DeviceProtection    <span class="hl">5</span>
+Churn               0
+dtype: int64</pre></div>
+        </div>
+        <div class="reveal">
+            <div class="cell"><div class="in">In [8]:</div><pre><code class="py">df.isna().mean().round(2)   # 비율</code></pre></div>
+            <div class="cell"><div class="outp">Out:</div><pre class="out">MonthlyCharges      0.25
+DeviceProtection    <span class="hl">0.62</span>   ← 절반 이상!
+(나머지 0.00)</pre></div>
+            <div class="callout tip" style="margin-top:18px"><b class="h">isna = isnull</b>두 함수는 완전히 같아요. <code>sum()</code>은 True를 1로 세고, <code>mean()</code>은 비율을 줘요.</div>
+            <div class="callout exam"><b class="h">전체 결측 개수 하나만</b><code>df.isna().sum().sum()</code>처럼 sum을 두 번 쓰면 돼요.</div>
+        </div>
+    </div>
+</section>
+
+<!-- ========== 12. dropna ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">dropna: 결측이 있는 행(열) 지우기 <small>시험 7번</small></h2>
+    <div class="cols c64" style="gap:36px">
+        <div class="reveal">
+            <div class="cell"><div class="in">In [9]:</div><pre class="sm"><code class="py">df.shape                                 # 원본
+df.dropna().shape                        # 하나라도
+df.dropna(subset=['MonthlyCharges']).shape
+df.dropna(axis=1).shape                  # 열 삭제
+df.dropna(how='all').shape               # 모두 NaN</code></pre></div>
+            <div class="cell"><div class="outp">Out:</div><pre class="out">(8, 7)
+(2, 7)    ← 6행이나 사라짐!
+(6, 7)
+(8, 5)
+(8, 7)</pre></div>
+        </div>
+        <div class="stack reveal">
+            <table class="tbl" style="font-size:24px">
+                <tr><th>옵션</th><th>뜻</th></tr>
+                <tr><td><code>axis=0</code> (기본)</td><td>결측이 있는 <b>행</b> 삭제</td></tr>
+                <tr><td><code>axis=1</code></td><td>결측이 있는 <b>열</b> 삭제</td></tr>
+                <tr><td><code>subset=['a']</code></td><td>a 컬럼만 보고 판단</td></tr>
+                <tr><td><code>how='all'</code></td><td>전부 NaN인 행만 삭제</td></tr>
+            </table>
+            <div class="callout warn"><b class="h">결측 많은 컬럼부터 지우세요</b>DeviceProtection(62% 결측) 때문에 <code>dropna()</code>가 8행 중 6행을 날렸어요. 그 컬럼을 먼저 <code>drop</code>하면 2행만 줄어요.</div>
+        </div>
+    </div>
+</section>
+
+<!-- ========== 13. fillna ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">fillna: 무엇으로 채울까</h2>
+    <div class="cols c2" style="gap:36px">
+        <div class="reveal">
+            <div class="cell"><div class="in">In [10]:</div><pre><code class="py">mc = df['MonthlyCharges']
+round(mc.mean(), 2), round(mc.median(), 2)
+df['Contract'].mode()[0]     # 최빈값</code></pre></div>
+            <div class="cell"><div class="outp">Out:</div><pre class="out">(58.23, 55.4)
+'Month'</pre></div>
+            <div class="cell"><div class="in">In [11]:</div><pre><code class="py">df['MonthlyCharges'] = mc.fillna(mc.median())
+df['Contract'] = df['Contract'].fillna(
+    df['Contract'].mode()[0])</code></pre></div>
+        </div>
+        <div class="stack reveal">
+            <table class="tbl" style="font-size:24px">
+                <tr><th>컬럼 종류</th><th>채우는 값</th><th>코드</th></tr>
+                <tr><td>숫자, 대칭 분포</td><td>평균</td><td><code>.mean()</code></td></tr>
+                <tr class="hit"><td>숫자, 치우침·이상치</td><td>중앙값</td><td><code>.median()</code></td></tr>
+                <tr><td>범주(문자열)</td><td>최빈값</td><td><code>.mode()[0]</code></td></tr>
+                <tr><td>의미상 "없음"</td><td>0 또는 'None'</td><td><code>.fillna(0)</code></td></tr>
+            </table>
+            <div class="callout warn"><b class="h"><code>mode()</code>는 Series를 돌려줘요</b>최빈값이 여러 개일 수 있어서예요. <code>[0]</code>을 붙여 <b>첫 번째 값</b>을 꺼내야 해요. 빼먹으면 이상하게 채워져요.</div>
+        </div>
+    </div>
+    <div class="cols c2 reveal" style="gap:36px; margin-top:24px">
+        <div class="callout tip"><b class="h">채운 뒤 꼭 확인</b><code>df.isna().sum()</code>을 다시 실행해 해당 컬럼이 0이 됐는지 보세요.</div>
+        <div class="callout exam"><b class="h">문제가 값을 정해줘요</b>"평균으로 채우라"면 평균이에요. 위 표는 문제에 지시가 없을 때의 기본 판단이에요.</div>
+    </div>
+</section>
+
+<!-- ========== 14. 결정 + 컬럼 삭제 ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">결측 처리 결정하기 + 컬럼 삭제 <small>시험 8번</small></h2>
+    <div class="decide reveal" style="margin-top:6px">
+        <div class="card red"><span class="k">결측이 아주 많다 (예: 50% 이상)</span><h3>컬럼째 삭제</h3><p>정보보다 구멍이 많아요.<br><code>df.drop('DeviceProtection', axis=1)</code></p></div>
+        <div class="card blue"><span class="k">결측이 조금 (몇 %)</span><h3>행 삭제</h3><p>데이터가 충분하면 가장 간단해요.<br><code>df.dropna()</code></p></div>
+        <div class="card green"><span class="k">결측이 꽤 있고 중요한 컬럼</span><h3>값 채우기</h3><p>데이터를 아껴요.<br><code>fillna(median / mode()[0])</code></p></div>
+    </div>
+    <div class="cols c2" style="gap:36px; margin-top:26px">
+        <div class="reveal">
+            <div class="cell"><div class="in">In [12]:</div><pre><code class="py">df_del = df_na.drop(['Time_Departure',
+                     'Time_Arrival'], axis=1)
+# 같은 뜻
+df_del = df_na.drop(columns=['Time_Departure',
+                             'Time_Arrival'])</code></pre></div>
+        </div>
+        <div class="stack reveal">
+            <div class="callout warn"><b class="h"><code>axis=1</code>을 빼먹으면</b><code>KeyError: "['Time_Departure'] not found in axis"</code>가 나요. 기본값 axis=0은 <b>행 이름</b>에서 찾거든요.</div>
+            <div class="callout exam"><b class="h">무엇을 지우나?</b>ID처럼 모두 다른 값, 시간 문자열, 타깃을 그대로 담은 컬럼(정답 유출)이 단골이에요.</div>
+        </div>
+    </div>
+</section>
+
+<!-- ========== 15. 퀴즈 ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">확인 문제 <small>결측치</small></h2>
+    <div class="cols c2" style="gap:30px; margin-top:10px">
+        <div class="stack">
+            <div class="quiz reveal">
+                <div class="q"><code>df_temp</code>에서 결측치가 있는 행을 모두 제거해 <b>df_na</b>에 저장하세요.</div>
+                <button class="show-a">정답 보기</button>
+                <div class="a"><code>df_na = df_temp.dropna()</code> (또는 <code>dropna(axis=0)</code>)</div>
+            </div>
+            <div class="quiz reveal">
+                <div class="q">범주형 컬럼 <code>Weather</code>의 결측을 최빈값으로 채우는 코드는?</div>
+                <button class="show-a">정답 보기</button>
+                <div class="a"><code>df['Weather'] = df['Weather'].fillna(df['Weather'].mode()[0])</code></div>
+            </div>
+        </div>
+        <div class="stack">
+            <div class="quiz reveal">
+                <div class="q"><code>df.drop('ID')</code>를 실행했더니 KeyError가 났어요. 왜일까요?</div>
+                <button class="show-a">정답 보기</button>
+                <div class="a">기본값이 <code>axis=0</code>(행)이라 <b>행 이름</b>에서 'ID'를 찾았어요. <code>df.drop('ID', axis=1)</code> 또는 <code>df.drop(columns='ID')</code>로 쓰세요.</div>
+            </div>
+            <div class="quiz reveal">
+                <div class="q">소득(Income) 컬럼은 오른쪽 꼬리가 길어요. 결측을 평균과 중앙값 중 무엇으로 채울까요?</div>
+                <button class="show-a">정답 보기</button>
+                <div class="a"><b>중앙값</b>이에요. 고소득자 몇 명이 평균을 크게 끌어올려요.</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========== 16. 섹션 ========== -->
+<section class="slide section">
+    <div class="no reveal">PART 3</div>
+    <h2 class="reveal">문자를 숫자로: 인코딩</h2>
+    <p class="reveal">모델은 숫자만 계산할 수 있어요. <code>'Male'</code>, <code>'One year'</code> 같은 문자열을 숫자로 바꾸는 두 가지 방법을 비교합니다.</p>
+</section>
+
+<!-- ========== 17. 라벨 vs 원핫 ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">라벨 인코딩 vs 원-핫 인코딩</h2>
+    <div class="cols c2" style="gap:40px; margin-top:6px">
+        <div class="card blue reveal">
+            <h3>라벨 인코딩 <small class="dim" style="font-family:var(--font-body); font-size:22px">한 컬럼 → 번호</small></h3>
+            <div class="encode" style="margin:14px 0">
+                <table class="mini"><tr><th>Contract</th></tr><tr><td>Month</td></tr><tr><td>One year</td></tr><tr><td>Two year</td></tr><tr><td>Month</td></tr></table>
+                <div class="arr">→</div>
+                <table class="mini"><tr><th>Contract</th></tr><tr><td class="num">0</td></tr><tr><td class="num">1</td></tr><tr><td class="num">2</td></tr><tr><td class="num">0</td></tr></table>
+            </div>
+            <p class="small">✅ 컬럼 수가 그대로예요. <b>타깃(y)</b>이나 순서가 있는 값(저·중·고)에 써요.</p>
+            <p class="small">⚠️ 특성(X)에 쓰면 모델이 "Two year(2)가 Month(0)의 두 배"처럼 <b>없는 크기 관계</b>를 배울 수 있어요.</p>
+        </div>
+        <div class="card green reveal">
+            <h3>원-핫 인코딩 <small class="dim" style="font-family:var(--font-body); font-size:22px">값마다 0/1 컬럼</small></h3>
+            <div class="encode" style="margin:14px 0">
+                <table class="mini"><tr><th>Contract</th></tr><tr><td>Month</td></tr><tr><td>One year</td></tr><tr><td>Two year</td></tr><tr><td>Month</td></tr></table>
+                <div class="arr">→</div>
+                <table class="mini"><tr><th>_Month</th><th>_One year</th><th>_Two year</th></tr>
+                    <tr><td class="one">1</td><td>0</td><td>0</td></tr><tr><td>0</td><td class="one">1</td><td>0</td></tr><tr><td>0</td><td>0</td><td class="one">1</td></tr><tr><td class="one">1</td><td>0</td><td>0</td></tr></table>
+            </div>
+            <p class="small">✅ 크기 관계가 생기지 않아요. <b>특성(X)의 범주형 컬럼</b>에 써요. 시험 9번이에요.</p>
+            <p class="small">⚠️ 범주가 많으면 컬럼이 많이 늘어나요.</p>
+        </div>
+    </div>
+    <div class="callout exam reveal" style="margin-top:26px"><b class="h">시험에서의 구분</b>타깃 <code>Churn</code>(Yes/No) → <b>LabelEncoder</b>로 0/1, 특성의 범주형 컬럼 → <b>get_dummies</b>. 문제에 어떤 방법을 쓰라고 적혀 있으면 그대로 따르세요.</div>
+</section>
+
+<!-- ========== 18. LabelEncoder ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">라벨 인코딩 3가지 방법</h2>
+    <div class="cols c2" style="gap:36px">
+        <div class="reveal">
+            <div class="cell"><div class="in">In [13]:</div><pre><code class="py">from sklearn.preprocessing import LabelEncoder
+
+le = LabelEncoder()
+df['Churn'] = le.fit_transform(df['Churn'])
+df['Churn'].tolist(), le.classes_</code></pre></div>
+            <div class="cell"><div class="outp">Out:</div><pre class="out">([0, 0, 1, 0, 1, 0, 0, 1],
+ array(['No', 'Yes'], dtype=object))</pre></div>
+            <p class="small" style="margin-top:12px"><code>classes_</code>의 순서(알파벳순)대로 0, 1, 2…가 붙어요.</p>
+        </div>
+        <div class="stack reveal">
+            <div class="cell"><div class="in">In [14]:</div><pre class="xs"><code class="py"># 직접 규칙을 정하고 싶을 때
+df['Churn'] = df['Churn'].map({'Yes': 1, 'No': 0})
+df['Churn'] = df['Churn'].replace({'Yes': 1, 'No': 0})</code></pre></div>
+            <table class="tbl" style="font-size:23px">
+                <tr><th>방법</th><th>특징</th></tr>
+                <tr><td><code>LabelEncoder</code></td><td>자동 번호 (알파벳순). 문제에서 지정하면 이걸로</td></tr>
+                <tr><td><code>map(dict)</code></td><td>규칙에 없는 값은 <b>NaN</b>이 돼요</td></tr>
+                <tr><td><code>replace(dict)</code></td><td>규칙에 없는 값은 그대로 남아요</td></tr>
+            </table>
+            <div class="callout warn"><b class="h">셀을 두 번 실행하면?</b>이미 0/1이 된 컬럼에 <code>map</code>을 다시 쓰면 전부 NaN이 돼요. 꼬이면 데이터 읽기부터 다시 실행하세요.</div>
+        </div>
+    </div>
+</section>
+
+<!-- ========== 19. get_dummies ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">get_dummies: 원-핫 인코딩 <small>시험 9번</small></h2>
+    <div class="cols c64" style="gap:36px">
+        <div class="reveal">
+            <div class="cell"><div class="in">In [15]:</div><pre class="sm"><code class="py">d = df[['gender', 'Contract', 'tenure']]  # 예시용 3개 컬럼
+pd.get_dummies(d, columns=['Contract']).head(3)</code></pre></div>
+            <div class="cell"><div class="outp">Out:</div><pre class="out xs" style="font-size:18px; padding:16px 18px">   gender  tenure  Contract_Month  Contract_One year  Contract_Two year
+0    Male       1            <span class="hl">True</span>              False              False
+1  Female      34           False               True              False
+2    Male      45           False              False               True</pre></div>
+            <div class="cell"><div class="in">In [16]:</div><pre class="sm"><code class="py">pd.get_dummies(d, columns=['gender', 'Contract'],
+               drop_first=True, dtype=int).head(3)</code></pre></div>
+            <div class="cell"><div class="outp">Out:</div><pre class="out xs">   tenure  gender_Male  Contract_One year  Contract_Two year
+0       1            1                  0                  0
+1      34            0                  1                  0
+2      45            1                  0                  1</pre></div>
+        </div>
+        <div class="stack reveal">
+            <table class="tbl" style="font-size:23px">
+                <tr><th>인자</th><th>뜻</th></tr>
+                <tr><td><code>columns=</code></td><td>바꿀 컬럼 목록. 생략하면 문자열 컬럼 전부</td></tr>
+                <tr><td><code>drop_first=True</code></td><td>첫 범주 컬럼을 빼요 (나머지가 0이면 그 값)</td></tr>
+                <tr><td><code>dtype=int</code></td><td>True/False 대신 1/0으로</td></tr>
+            </table>
+            <div class="callout warn"><b class="h">pandas 2.x는 True/False</b>최근 pandas는 0/1이 아니라 <b>bool</b>로 만들어요. ML 모델은 괜찮지만 PyTorch 텐서로 바꾸기 전에는 <code>X.astype('float32')</code>로 바꿔 주세요.</div>
+        </div>
+    </div>
+</section>
+
+<!-- ========== 20. select_dtypes + 9번 ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">문자열 컬럼 전부를 한 번에 <small>select_dtypes</small></h2>
+    <div class="cols c2" style="gap:36px">
+        <div class="reveal">
+            <div class="cell"><div class="in">In [17]:</div><pre><code class="py">df.select_dtypes('object').columns.tolist()
+df.select_dtypes('number').columns.tolist()</code></pre></div>
+            <div class="cell"><div class="outp">Out:</div><pre class="out">['gender', 'Contract', 'TotalCharges',
+ 'DeviceProtection', 'Churn']
+['tenure', 'MonthlyCharges']</pre></div>
+            <p class="small" style="margin-top:12px"><code>TotalCharges</code>가 문자열 쪽에 있어요 → <b>먼저 숫자로 바꾸지 않으면</b> 원-핫 인코딩 대상이 돼서 컬럼이 폭발해요.</p>
+        </div>
+        <div class="stack reveal">
+            <div class="cell"><div class="in">Q9 정답</div><pre><code class="py">cols = df_del.select_dtypes('object').columns
+df_preset = pd.get_dummies(data=df_del,
+                           columns=cols)
+df_preset.shape</code></pre></div>
+            <div class="callout exam"><b class="h">타깃이 문자열이면?</b>타깃(y)은 원-핫하면 안 돼요. 먼저 <b>LabelEncoder</b>로 숫자로 바꾸거나, <code>cols</code>에서 빼세요.</div>
+            <div class="callout tip"><b class="h">확인</b><code>df_preset.info()</code>에 <code>object</code>가 하나도 없으면 성공이에요.</div>
+        </div>
+    </div>
+</section>
+
+<!-- ========== 21. 섹션 ========== -->
+<section class="slide section">
+    <div class="no reveal">PART 4</div>
+    <h2 class="reveal">나누고, 크기 맞추기</h2>
+    <p class="reveal">학습용과 검증용으로 나눈 뒤, 컬럼마다 다른 숫자 범위를 맞춰요. 여기서 <b>순서</b>를 틀리면 "데이터 누수"가 생겨요.</p>
+</section>
+
+<!-- ========== 22. train_test_split ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">train_test_split <small>시험 10번</small></h2>
+    <div class="cols c64" style="gap:36px">
+        <div class="reveal">
+            <div class="cell"><div class="in">In [18]:</div><pre class="xs"><code class="py">from sklearn.model_selection import train_test_split
+
+# 예시 데이터: 300행, 특성 3개, 타깃 0/1 (약 73:27)
+X = df_preset.drop('Churn', axis=1)
+y = df_preset['Churn']
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42, stratify=y)
+X_train.shape, X_test.shape, y_train.shape, y_test.shape</code></pre></div>
+            <div class="cell"><div class="outp">Out:</div><pre class="out">((240, 3), (60, 3), (240,), (60,))</pre></div>
+            <div class="cell"><div class="outp">비율</div><pre class="out xs">전체                [0.727, 0.273]
+stratify O → train  [0.725, 0.275]   test [0.733, 0.267]
+stratify X → test   [0.717, 0.283]</pre></div>
+            <div class="split-diag" style="margin-top:20px">
+                <div class="tr">X_train<small>① 학습 X</small></div><div class="te">X_test<small>② 검증 X</small></div>
+                <div class="tr">y_train<small>③ 학습 y</small></div><div class="te">y_test<small>④ 검증 y</small></div>
+            </div>
+        </div>
+        <div class="stack reveal">
+            <div class="callout warn"><b class="h">반환 순서: X, X, y, y</b><code>X_train, y_train, X_test, y_test = …</code>처럼 쓰면 에러 없이 <b>엉뚱한 데이터</b>가 들어가요. 가장 위험한 실수예요.</div>
+            <table class="tbl" style="font-size:23px">
+                <tr><th>인자</th><th>뜻</th></tr>
+                <tr><td><code>test_size=0.2</code></td><td>20%를 검증용으로</td></tr>
+                <tr><td><code>random_state=42</code></td><td>매번 같게 섞기 (채점 재현)</td></tr>
+                <tr class="hit"><td><code>stratify=y</code></td><td>타깃 비율을 양쪽에 똑같이</td></tr>
+                <tr><td><code>shuffle=True</code></td><td>기본값. 시계열이면 False</td></tr>
+            </table>
+            <div class="callout exam"><b class="h">이름은 문제 따라</b>샘플 문항은 <code>X_valid</code>, <code>y_valid</code>라는 이름을 써요. 문제에 적힌 이름 그대로 받으세요.</div>
+        </div>
+    </div>
+</section>
+
+<!-- ========== 23. 스케일링 ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">스케일링: 숫자 범위 맞추기</h2>
+    <p class="lead reveal">나이(0~100)와 요금(0~10,000)을 그대로 넣으면 큰 숫자 컬럼이 학습을 좌우해요. 특히 <b>딥러닝·KNN·로지스틱 회귀</b>에 중요해요. (트리 모델은 영향이 거의 없어요)</p>
+    <div class="cols c2" style="gap:36px">
+        <div class="card blue reveal">
+            <h3>MinMaxScaler</h3>
+            <p style="font-family:var(--font-mono); font-size:28px; margin:6px 0 10px">(x − min) / (max − min)</p>
+            <p class="small">결과가 <b>0~1</b> 사이. train 범위 밖 값은 1을 넘을 수 있어요.</p>
+            <pre class="out xs" style="margin-top:10px">train [10, 20, 30, 40] → [0, 0.333, 0.667, 1]
+test  [25, 50]         → [0.5, 1.333]</pre>
+        </div>
+        <div class="card green reveal">
+            <h3>StandardScaler</h3>
+            <p style="font-family:var(--font-mono); font-size:28px; margin:6px 0 10px">(x − 평균) / 표준편차</p>
+            <p class="small">결과의 <b>평균 0, 표준편차 1</b>. 이상치에 조금 덜 민감해요.</p>
+            <pre class="out xs" style="margin-top:10px">train [10, 20, 30, 40] → [-1.342, -0.447, 0.447, 1.342]
+test  [25, 50]         → [0.0, 2.236]   (평균 25, 표준편차 11.18)</pre>
+        </div>
+    </div>
+    <div class="cell reveal" style="margin-top:22px"><div class="in">In [19]:</div><pre class="sm"><code class="py">from sklearn.preprocessing import MinMaxScaler   # 또는 StandardScaler
+scaler = MinMaxScaler()
+X_train = scaler.fit_transform(X_train)   # train: 기준을 배우고(fit) + 변환
+X_test = scaler.transform(X_test)         # test: 배운 기준으로 변환만</code></pre></div>
+</section>
+
+<!-- ========== 24. 데이터 누수 ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">fit은 train에만: 데이터 누수 막기</h2>
+    <div class="cols c2" style="gap:40px">
+        <div class="stack reveal">
+            <div class="card green">
+                <h3 class="green">✅ 올바른 순서</h3>
+                <pre class="good sm"><code class="py">X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)</code></pre>
+                <p class="small" style="margin-top:10px">시험지(test)는 시험 날 처음 보는 거예요. 기준(min, max, 평균)은 <b>공부한 자료(train)에서만</b> 정해야 해요.</p>
+            </div>
+            <div class="card red">
+                <h3 class="red">❌ 누수 (test 정보가 학습에 섞임)</h3>
+                <pre class="bad sm"><code class="py">X = scaler.fit_transform(X)      # 분할 전에 fit
+X_test = scaler.fit_transform(X_test)  # test에 fit</code></pre>
+            </div>
+        </div>
+        <div class="stack reveal">
+            <div class="callout warn"><b class="h">왜 문제일까?</b>test의 최댓값·평균을 미리 보고 기준을 정하면 검증 점수가 실제보다 <b>좋게</b> 나와요. 실제 서비스에서는 미래 데이터를 미리 볼 수 없어요.</div>
+            <div class="callout exam"><b class="h">시험 포인트</b>"학습 데이터로 fit한 scaler로 검증 데이터를 변환하라"는 표현이 나오면 위의 ✅ 두 줄이에요. 이름은 보통 <code>scaler</code>예요.</div>
+            <div class="callout tip"><b class="h">결과는 numpy 배열</b>스케일링 후 <code>X_train</code>은 DataFrame이 아니라 배열이 돼요. <code>.head()</code> 대신 <code>X_train[:5]</code>로 보세요.</div>
+        </div>
+    </div>
+</section>
+
+<!-- ========== 25. 체크리스트 + 퀴즈 ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">전처리 순서 체크리스트</h2>
+    <div class="cols c2" style="gap:40px">
+        <ul class="check reveal">
+            <li><b class="q">Q4</b>잘못된 범주(<code>'-'</code>) 행 제거</li>
+            <li><b class="q">Q6</b>이상치 제거 (부등호 방향 확인)</li>
+            <li><b class="q">Q7</b>결측치: 많은 컬럼 drop → 행 dropna / fillna</li>
+            <li><b class="q">Q8</b>ID·시간 문자열 등 불필요 컬럼 drop(axis=1)</li>
+            <li><b class="q">Q9</b>문자열 숫자는 먼저 숫자로 → 나머지 object를 get_dummies</li>
+            <li><b class="q">Q10</b>X/y 분리 → split(X, X, y, y) → scaler fit은 train만</li>
+        </ul>
+        <div class="stack">
+            <div class="quiz reveal">
+                <div class="q">split 결과를 <code>X_train, y_train, X_valid, y_valid</code> 순서로 받았어요. 무엇이 문제일까요?</div>
+                <button class="show-a">정답 보기</button>
+                <div class="a">반환 순서는 <b>X_train, X_valid, y_train, y_valid</b>예요. 에러 없이 이름만 뒤바뀌어 모델이 엉뚱하게 학습돼요.</div>
+            </div>
+            <div class="quiz reveal">
+                <div class="q">스케일링을 <code>train_test_split</code> <b>전에</b> 전체 X에 하면 안 되는 이유는?</div>
+                <button class="show-a">정답 보기</button>
+                <div class="a">검증 데이터의 정보(min·max·평균)가 기준에 섞이는 <b>데이터 누수</b>예요. 분할 후 train에만 fit하세요.</div>
+            </div>
+            <div class="quiz reveal">
+                <div class="q">타깃 비율이 9:1이에요. split에 꼭 넣을 인자는?</div>
+                <button class="show-a">정답 보기</button>
+                <div class="a"><code>stratify=y</code> — 검증 세트에도 9:1 비율이 유지돼요.</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========== 26. 요약 ========== -->
+<section class="slide">
+    <header class="hd"></header>
+    <h2 class="t reveal">03 요약 <small>시험 6~10번 한 번에</small></h2>
+    <div class="cols c2" style="gap:30px 50px">
+        <div class="reveal">
+            <pre style="font-size:24px"><code class="py">df = df[df['Address1'] != '-']                       # Q4
+df_temp = df[df['Speed_Per_Hour'] &lt; 300]              # Q6
+df_na = df_temp.dropna()                              # Q7
+df_del = df_na.drop(['A', 'B'], axis=1)              # Q8
+cols = df_del.select_dtypes('object').columns
+df_preset = pd.get_dummies(data=df_del, columns=cols) # Q9
+X = df_preset.drop('target', axis=1)
+y = df_preset['target']
+X_train, X_valid, y_train, y_valid = train_test_split(
+    X, y, test_size=0.2, random_state=42)             # Q10
+scaler = MinMaxScaler()
+X_train = scaler.fit_transform(X_train)
+X_valid = scaler.transform(X_valid)</code></pre>
+        </div>
+        <div class="stack reveal">
+            <ol class="list" style="font-size:31px">
+                <li>"제거"는 "남길 조건"으로 뒤집어 쓰세요.</li>
+                <li>결측이 많은 컬럼은 <code>dropna</code> 전에 지우세요.</li>
+                <li>범주 채우기는 <code>mode()[0]</code>, 치우친 숫자는 median.</li>
+                <li>X는 원-핫, 타깃 y는 라벨 인코딩.</li>
+                <li>split은 <b>X, X, y, y</b>. fit은 train에만.</li>
+            </ol>
+            <span class="practice">실습 <code>notebooks/03_전처리_실습.ipynb</code></span>
+            <span class="practice">다음 <code>slides/04_머신러닝.html</code></span>
+        </div>
+    </div>
+</section>
+</main>
+</div>
+
+<nav class="deck-controls" aria-label="슬라이드 이동">
+    <a href="../index.html" title="학습 홈으로">⌂ 홈</a>
+    <button id="prevBtn" aria-label="이전 슬라이드">←</button>
+    <span class="count" id="count">1 / 1</span>
+    <button id="nextBtn" aria-label="다음 슬라이드">→</button>
+</nav>
+
+<script>
+/* ===========================================
+   INLINE EDITOR
+   - E 키 / 왼쪽 위 모서리 ✏️ 버튼으로 편집 모드
+   - 수정 내용은 브라우저(localStorage)에 자동 저장
+   - Ctrl+S(⌘+S): 수정된 HTML 파일 다운로드
+   =========================================== */
+class InlineEditor {
+    constructor() {
+        this.isActive = false;
+        const st = document.getElementById('deckStage');
+        this.key = 'aice-deck-edit:' + (st.dataset.deck || location.pathname) + ':' + (st.dataset.ver || '');
+        this.targets = () => document.querySelectorAll('.slide h1, .slide h2, .slide h3, .slide p, .slide li, .slide td, .slide th, .slide .pen, .slide .callout, .slide .q, .slide .a');
+        this.restore();
+    }
+    toggleEditMode() {
+        this.isActive = !this.isActive;
+        document.body.classList.toggle('editing', this.isActive);
+        document.getElementById('editToggle').classList.toggle('active', this.isActive);
+        this.targets().forEach(el => el.setAttribute('contenteditable', this.isActive ? 'true' : 'false'));
+        if (!this.isActive) this.save();
+    }
+    save() {
+        try {
+            const clone = document.getElementById('deckStage').cloneNode(true);
+            clone.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+            clone.querySelectorAll('.slide').forEach(el => el.classList.remove('active', 'visible'));
+            localStorage.setItem(this.key, clone.innerHTML);
+        } catch (e) { /* storage unavailable */ }
+    }
+    restore() {
+        try {
+            const saved = localStorage.getItem(this.key);
+            if (saved) { document.getElementById('deckStage').innerHTML = saved; }
+        } catch (e) { /* storage unavailable */ }
+    }
+    download() {
+        this.targets().forEach(el => el.removeAttribute('contenteditable'));
+        const html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
+        a.download = (location.pathname.split('/').pop() || 'deck.html');
+        a.click();
+        if (this.isActive) this.targets().forEach(el => el.setAttribute('contenteditable', 'true'));
+    }
+}
+const editor = new InlineEditor();   /* 저장된 편집본이 있으면 먼저 복원 */
+
+/* ===========================================
+   PYTHON SYNTAX HIGHLIGHTER (의존성 없음)
+   <pre><code class="py"> 안의 텍스트를 토큰 단위로 색칠합니다.
+   ▸ 코드 안에 ⟦...⟧ 로 감싼 부분은 노란 박스로 강조됩니다. (pandas 의 df[['a']] 와 겹치지 않게)
+   =========================================== */
+(function highlightPython() {
+    const KW = new Set('import from as def return if elif else for in while not and or is None True False lambda with class try except finally pass break continue global print'.split(' '));
+    const BI = new Set('len range type list dict set tuple int float str zip enumerate sorted round sum min max abs'.split(' '));
+    const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const re = /(#[^\n]*)|([fFrRbB]?'''[\s\S]*?'''|[fFrRbB]?"""[\s\S]*?"""|[fFrRbB]?'(?:\\.|[^'\\\n])*'|[fFrRbB]?"(?:\\.|[^"\\\n])*")|(\b\d+(?:\.\d+)?(?:e-?\d+)?\b)|([A-Za-z_][A-Za-z0-9_]*)(?=\s*\()|([A-Za-z_][A-Za-z0-9_]*)(?=\s*=(?!=))|([A-Za-z_][A-Za-z0-9_]*)/g;
+    function tokenize(src) {
+        let out = '', last = 0, m;
+        re.lastIndex = 0;
+        while ((m = re.exec(src))) {
+            out += esc(src.slice(last, m.index));
+            const [t, com, str, num, fn, kwarg, word] = m;
+            if (com) out += `<span class="tk-com">${esc(com)}</span>`;
+            else if (str) out += `<span class="tk-str">${esc(str)}</span>`;
+            else if (num) out += `<span class="tk-num">${num}</span>`;
+            else if (fn) out += KW.has(fn) ? `<span class="tk-kw">${fn}</span>` : `<span class="${BI.has(fn) ? 'tk-bi' : 'tk-fn'}">${fn}</span>`;
+            else if (kwarg) out += KW.has(kwarg) ? `<span class="tk-kw">${kwarg}</span>` : `<span class="tk-arg">${kwarg}</span>`;
+            else if (word) out += KW.has(word) ? `<span class="tk-kw">${word}</span>` : word;
+            last = m.index + t.length;
+        }
+        return out + esc(src.slice(last));
+    }
+    document.querySelectorAll('pre code.py').forEach(el => {
+        // ⟦...⟧ 마커를 보존하면서 하이라이트
+        const raw = el.textContent;
+        const parts = raw.split(/(⟦[\s\S]*?⟧)/);
+        el.innerHTML = parts.map(p => p.startsWith('⟦') && p.endsWith('⟧')
+            ? `<span class="hl">${tokenize(p.slice(1, -1))}</span>`
+            : tokenize(p)).join('');
+    });
+})();
+
+/* ===========================================
+   SLIDE PRESENTATION CONTROLLER
+   - 키보드: ← → ↑ ↓, Space, PageUp/PageDown, Home/End
+   - 마우스 휠, 터치 스와이프
+   - URL 해시(#5)로 특정 슬라이드 바로가기
+   =========================================== */
+class SlidePresentation {
+    constructor() {
+        this.stage = document.getElementById('deckStage');
+        this.slides = Array.from(document.querySelectorAll('.slide'));
+        this.count = document.getElementById('count');
+        this.progress = document.getElementById('progress');
+        this.current = 0;
+        this.fillHeaders();
+        this.setupStageScale();
+        this.setupKeyboardNav();
+        this.setupWheelNav();
+        this.setupTouchNav();
+        this.setupButtons();
+        this.setupQuizzes();
+        const fromHash = parseInt((location.hash || '').replace('#', ''), 10);
+        this.show(Number.isFinite(fromHash) ? fromHash - 1 : 0);
+        window.addEventListener('hashchange', () => {
+            const n = parseInt(location.hash.replace('#', ''), 10);
+            if (Number.isFinite(n) && n - 1 !== this.current) this.show(n - 1);
+        });
+    }
+
+    /* 각 슬라이드 헤더에 "섹션 태그"와 "페이지 번호"를 자동으로 채움 */
+    fillHeaders() {
+        const total = this.slides.length;
+        const tag = this.stage.dataset.tag || '';
+        this.slides.forEach((s, i) => {
+            const hd = s.querySelector('.hd');
+            if (!hd) return;
+            if (!hd.querySelector('.tag')) hd.insertAdjacentHTML('afterbegin', `<span class="tag">${tag}</span>`);
+            if (!hd.querySelector('.pg')) hd.insertAdjacentHTML('beforeend', '<span class="pg"></span>');
+            hd.querySelector('.pg').dataset.pg = `${String(i + 1).padStart(2, '0')} / ${String(total).padStart(2, '0')}`;
+        });
+    }
+
+    setupStageScale() {
+        const scale = () => {
+            const f = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+            const x = (window.innerWidth - 1920 * f) / 2;
+            const y = (window.innerHeight - 1080 * f) / 2;
+            this.stage.style.transform = `translate(${x}px, ${y}px) scale(${f})`;
+        };
+        scale();
+        window.addEventListener('resize', scale);
+    }
+
+    setupKeyboardNav() {
+        document.addEventListener('keydown', e => {
+            if (document.body.classList.contains('editing')) return;
+            if (['ArrowRight', 'ArrowDown', 'PageDown', ' '].includes(e.key)) { e.preventDefault(); this.next(); }
+            else if (['ArrowLeft', 'ArrowUp', 'PageUp'].includes(e.key)) { e.preventDefault(); this.prev(); }
+            else if (e.key === 'Home') this.show(0);
+            else if (e.key === 'End') this.show(this.slides.length - 1);
+        });
+    }
+
+    setupWheelNav() {
+        let lock = false;
+        window.addEventListener('wheel', e => {
+            if (document.body.classList.contains('editing') || lock || Math.abs(e.deltaY) < 30) return;
+            lock = true;
+            e.deltaY > 0 ? this.next() : this.prev();
+            setTimeout(() => { lock = false; }, 650);
+        }, { passive: true });
+    }
+
+    setupTouchNav() {
+        let sx = 0, sy = 0;
+        window.addEventListener('touchstart', e => { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, { passive: true });
+        window.addEventListener('touchend', e => {
+            const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
+            if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) dx < 0 ? this.next() : this.prev();
+        }, { passive: true });
+    }
+
+    setupButtons() {
+        document.getElementById('prevBtn').addEventListener('click', () => this.prev());
+        document.getElementById('nextBtn').addEventListener('click', () => this.next());
+    }
+
+    /* 퀴즈: "정답 보기" 버튼 클릭 시 정답 펼치기 */
+    setupQuizzes() {
+        document.querySelectorAll('.quiz').forEach(q => {
+            const btn = q.querySelector('.show-a');
+            if (!btn) return;
+            btn.addEventListener('click', ev => {
+                ev.stopPropagation();
+                q.classList.toggle('open');
+                btn.textContent = q.classList.contains('open') ? '정답 숨기기' : '정답 보기';
+            });
+        });
+    }
+
+    next() { this.show(this.current + 1); }
+    prev() { this.show(this.current - 1); }
+
+    show(i) {
+        this.current = Math.max(0, Math.min(i, this.slides.length - 1));
+        this.slides.forEach((s, k) => {
+            s.classList.toggle('active', k === this.current);
+            s.classList.toggle('visible', k === this.current);
+        });
+        const n = this.current + 1, total = this.slides.length;
+        this.count.textContent = `${n} / ${total}`;
+        this.progress.style.width = `${(n / total) * 100}%`;
+        if (location.hash !== `#${n}`) history.replaceState(null, '', `#${n}`);
+    }
+}
+const deck = new SlidePresentation();
+
+(function wireEditor() {
+    const toggle = document.getElementById('editToggle');
+    const hot = document.querySelector('.edit-hotzone');
+    let hideT = null;
+    const hideSoon = () => { hideT = setTimeout(() => { if (!editor.isActive) toggle.classList.remove('show'); }, 400); };
+    toggle.addEventListener('click', () => editor.toggleEditMode());
+    hot.addEventListener('click', () => editor.toggleEditMode());
+    hot.addEventListener('mouseenter', () => { clearTimeout(hideT); toggle.classList.add('show'); });
+    hot.addEventListener('mouseleave', hideSoon);
+    toggle.addEventListener('mouseenter', () => clearTimeout(hideT));
+    toggle.addEventListener('mouseleave', hideSoon);
+    document.addEventListener('keydown', e => {
+        const inEdit = e.target.getAttribute && e.target.getAttribute('contenteditable') === 'true';
+        if ((e.key === 'e' || e.key === 'E') && !inEdit && !e.metaKey && !e.ctrlKey) editor.toggleEditMode();
+        if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 's') { e.preventDefault(); editor.save(); editor.download(); }
+        if (e.key === 'Escape' && editor.isActive) editor.toggleEditMode();
+    });
+})();
+</script>
+</body>
+</html>

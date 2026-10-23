@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AICE Associate 학습 홈</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=IBM+Plex+Sans+KR:wght@400;500;700&family=JetBrains+Mono:wght@400;700&family=Nanum+Pen+Script&display=swap" rel="stylesheet">
+<style>
+/* ===========================================
+   THEME — 슬라이드와 같은 시험지 콘셉트
+   =========================================== */
+:root {
+    --paper: #f3eee3;
+    --ink: #1b2233;
+    --ink-2: #4b546b;
+    --ink-3: #7d8497;
+    --rule: rgba(27, 34, 51, 0.07);
+    --red: #d6402b;
+    --blue: #2b59c3;
+    --green: #23845a;
+    --yellow: #f4cf55;
+    --card: rgba(255, 253, 247, .9);
+    --display: 'Black Han Sans', sans-serif;
+    --body: 'IBM Plex Sans KR', sans-serif;
+    --mono: 'JetBrains Mono', monospace;
+    --pen: 'Nanum Pen Script', cursive;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+    font-family: var(--body); color: var(--ink); line-height: 1.6; word-break: keep-all;
+    background-color: var(--paper);
+    background-image: linear-gradient(var(--rule) 1px, transparent 1px), linear-gradient(90deg, var(--rule) 1px, transparent 1px);
+    background-size: 32px 32px;
+    min-height: 100vh;
+}
+.wrap { max-width: 1180px; margin: 0 auto; padding: 56px 32px 96px 64px; position: relative; }
+.wrap::before {                       /* 빨간 여백선 */
+    content: ""; position: absolute; top: 0; bottom: 0; left: 32px; width: 2px; background: var(--red); opacity: .5;
+}
+a { color: inherit; }
+code { font-family: var(--mono); font-size: .88em; background: rgba(27,34,51,.07); padding: 1px 6px; border-radius: 5px; }
+
+/* ===========================================
+   HERO
+   =========================================== */
+.kicker { font-family: var(--mono); font-weight: 700; letter-spacing: .12em; color: var(--red); font-size: 14px; }
+h1 { font-family: var(--display); font-weight: 400; font-size: clamp(40px, 7vw, 76px); line-height: 1.1; margin: 10px 0 14px; }
+h1 em { font-style: normal; color: var(--red); }
+.sub { font-size: 18px; color: var(--ink-2); max-width: 760px; }
+.facts { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+.fact { font-family: var(--mono); font-size: 14px; border: 1.5px solid var(--ink); border-radius: 999px; padding: 5px 14px; background: var(--card); }
+.fact b { color: var(--red); }
+.stamp {
+    position: absolute; right: 40px; top: 48px; width: 150px; height: 150px; border-radius: 50%;
+    border: 5px solid var(--red); color: var(--red); display: flex; flex-direction: column; align-items: center; justify-content: center;
+    font-family: var(--display); font-size: 38px; line-height: 1; transform: rotate(-14deg); opacity: .85;
+    box-shadow: inset 0 0 0 6px var(--paper), inset 0 0 0 8px var(--red);
+}
+.stamp small { font-family: var(--mono); font-size: 12px; margin-top: 6px; }
+
+/* ===========================================
+   PROGRESS
+   =========================================== */
+.progress-box { margin: 40px 0 8px; display: flex; align-items: center; gap: 16px; }
+.bar { flex: 1; height: 14px; border: 2px solid var(--ink); border-radius: 999px; background: var(--card); overflow: hidden; }
+.bar i { display: block; height: 100%; width: 0; background: var(--red); transition: width .4s ease; }
+.pct { font-family: var(--mono); font-weight: 700; min-width: 64px; text-align: right; }
+.hint { font-size: 13px; color: var(--ink-3); }
+
+/* ===========================================
+   SECTIONS / STEPS
+   =========================================== */
+h2 { font-family: var(--display); font-weight: 400; font-size: 34px; margin: 52px 0 6px; display: flex; align-items: baseline; gap: 14px; }
+h2 .no { font-family: var(--mono); font-size: 15px; color: var(--red); letter-spacing: .1em; }
+.lead { color: var(--ink-2); margin-bottom: 18px; }
+.steps { display: grid; gap: 14px; }
+.step {
+    display: grid; grid-template-columns: 44px 1fr auto; gap: 16px; align-items: center;
+    background: var(--card); border: 2px solid var(--ink); border-radius: 14px; padding: 16px 20px;
+    box-shadow: 5px 5px 0 rgba(27,34,51,.1); transition: transform .15s ease, box-shadow .15s ease;
+}
+.step:hover { transform: translate(-2px, -2px); box-shadow: 7px 7px 0 rgba(27,34,51,.14); }
+.step.done { opacity: .62; }
+.step.done .title { text-decoration: line-through; text-decoration-color: var(--red); text-decoration-thickness: 2px; }
+.check { width: 30px; height: 30px; accent-color: var(--red); cursor: pointer; }
+.title { font-weight: 700; font-size: 18px; }
+.desc { font-size: 15px; color: var(--ink-2); }
+.step > div { min-width: 0; }   /* 긴 파일 경로가 카드 폭을 밀어내지 않게 */
+.tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+.tag { overflow-wrap: anywhere; font-family: var(--mono); font-size: 12px; padding: 2px 9px; border-radius: 999px; border: 1.3px solid var(--ink-3); color: var(--ink-2); }
+.tag.s { border-color: var(--red); color: var(--red); }
+.tag.n { border-color: var(--blue); color: var(--blue); }
+.tag.m { border-color: var(--green); color: var(--green); }
+.links { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+.btn {
+    font-size: 14px; font-weight: 500; text-decoration: none; padding: 8px 14px; border-radius: 10px;
+    border: 2px solid var(--ink); background: var(--ink); color: var(--paper); white-space: nowrap;
+}
+.btn.ghost { background: transparent; color: var(--ink); }
+.btn:hover { background: var(--red); border-color: var(--red); color: #fff; }
+.path { font-family: var(--mono); font-size: 13px; color: var(--ink-3); }
+
+/* ===========================================
+   INFO GRID
+   =========================================== */
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.card { background: var(--card); border: 2px solid var(--ink); border-radius: 14px; padding: 20px 22px; }
+.card h3 { font-family: var(--display); font-weight: 400; font-size: 22px; margin-bottom: 8px; }
+.card ul { padding-left: 1.2em; }
+.card li { margin: 4px 0; }
+.card li::marker { color: var(--red); }
+pre {
+    font-family: var(--mono); font-size: 14px; line-height: 1.6; background: #1d2232; color: #e8e3d7;
+    border-radius: 10px; padding: 14px 18px; overflow-x: auto; border-left: 5px solid var(--blue); margin-top: 8px;
+}
+pre .c { color: #8a92a8; font-style: italic; }
+.pen { font-family: var(--pen); color: var(--red); font-size: 30px; transform: rotate(-2deg); display: inline-block; }
+table { width: 100%; border-collapse: collapse; font-size: 15px; background: var(--card); }
+th, td { border: 1.5px solid rgba(27,34,51,.22); padding: 8px 12px; text-align: left; vertical-align: top; }
+th { background: var(--ink); color: var(--paper); font-weight: 500; }
+.tablewrap { overflow-x: auto; }
+pre { max-width: 100%; }
+.card { min-width: 0; }
+footer { margin-top: 64px; font-size: 13px; color: var(--ink-3); }
+
+/* ===========================================
+   MOBILE
+   =========================================== */
+@media (max-width: 760px) {
+    .wrap { padding: 40px 16px 72px 34px; }
+    .wrap::before { left: 18px; }
+    .stamp { display: none; }
+    .step { grid-template-columns: 34px 1fr; }
+    .links { grid-column: 1 / -1; justify-content: flex-start; }
+    .grid2 { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+    <div class="stamp">합격<small>PASS ≥ 80</small></div>
+
+    <!-- ===== HERO ===== -->
+    <div class="kicker"><a href="../index.html" style="text-decoration:none">← AICE PASS KIT</a> · ASSOCIATE</div>
+    <h1>위에서부터 차례로,<br><em>체크</em>하면서 따라오세요</h1>
+    <p class="sub">개념 슬라이드로 이해하고, 빈칸 노트북으로 손에 익히고, 모의고사 3회로 실전 감각을 만드는 순서예요. 다 끝낸 단계는 체크박스를 눌러 표시하세요. 진도는 이 브라우저에 저장돼요.</p>
+    <div class="facts">
+        <span class="fact"><b>14</b>문항 실기</span><span class="fact"><b>90</b>분</span><span class="fact"><b>80</b>점 이상 합격</span>
+        <span class="fact">공식 문서 <b>7</b>곳만 허용</span><span class="fact">딥러닝은 PyTorch</span>
+    </div>
+
+    <div class="progress-box">
+        <div class="bar"><i id="bar"></i></div><span class="pct" id="pct">0%</span>
+    </div>
+    <p class="hint">진도 체크는 이 브라우저에만 저장돼요. 다른 기기와는 공유되지 않아요.</p>
+
+    <!-- ===== STEP 0 ===== -->
+    <h2><span class="no">STEP 0</span>시작하기</h2>
+    <p class="lead">시험이 어떻게 생겼는지 보고, 실습 환경이 잘 돌아가는지 확인해요.</p>
+    <div class="steps">
+        <div class="step" data-id="s00">
+            <input type="checkbox" class="check" aria-label="완료 표시">
+            <div><div class="title">00 · 시험 안내와 학습 로드맵</div>
+                <div class="desc">14문항이 어떤 순서로 나오는지, 무엇을 볼 수 있고 무엇이 금지인지, 2주 학습 계획을 정리했어요.</div>
+                <div class="tags"><span class="tag s">슬라이드 17장</span><span class="tag n">노트북 00_환경확인</span></div></div>
+            <div class="links"><a class="btn" href="slides/00_시험안내_로드맵.html">슬라이드 열기</a></div>
+        </div>
+    </div>
+
+    <!-- ===== STEP 1 ===== -->
+    <h2><span class="no">STEP 1</span>개념과 손풀기</h2>
+    <p class="lead">각 단원은 <b>슬라이드 읽기 → 실습 노트북 빈칸 채우기 → 채점 셀 확인 → 정답 비교</b> 순서로 공부해요.</p>
+    <div class="steps">
+        <div class="step" data-id="s01">
+            <input type="checkbox" class="check" aria-label="완료 표시">
+            <div><div class="title">01 · 파이썬과 판다스 기초</div>
+                <div class="desc">read_csv, read_json, merge, 인덱싱, groupby. 시험 1~3번 문항과 모든 전처리의 기본기예요.</div>
+                <div class="tags"><span class="tag s">슬라이드</span><span class="tag n">notebooks/01_판다스_기초_실습.ipynb</span></div></div>
+            <div class="links"><a class="btn" href="slides/01_파이썬_판다스_기초.html">슬라이드 열기</a></div>
+        </div>
+        <div class="step" data-id="s02">
+            <input type="checkbox" class="check" aria-label="완료 표시">
+            <div><div class="title">02 · EDA와 시각화</div>
+                <div class="desc">countplot, histplot, boxplot, jointplot, heatmap을 그리고 그래프를 해석해요. 시험 4~5번 문항이에요.</div>
+                <div class="tags"><span class="tag s">슬라이드</span><span class="tag n">notebooks/02_EDA_시각화_실습.ipynb</span></div></div>
+            <div class="links"><a class="btn" href="slides/02_EDA_시각화.html">슬라이드 열기</a></div>
+        </div>
+        <div class="step" data-id="s03">
+            <input type="checkbox" class="check" aria-label="완료 표시">
+            <div><div class="title">03 · 데이터 전처리</div>
+                <div class="desc">이상치, 결측치, 컬럼 삭제, 인코딩, 분할, 스케일링을 다뤄요. 점수가 가장 많이 걸린 시험 6~10번이에요.</div>
+                <div class="tags"><span class="tag s">슬라이드</span><span class="tag n">notebooks/03_전처리_실습.ipynb</span></div></div>
+            <div class="links"><a class="btn" href="slides/03_데이터_전처리.html">슬라이드 열기</a></div>
+        </div>
+        <div class="step" data-id="s04">
+            <input type="checkbox" class="check" aria-label="완료 표시">
+            <div><div class="title">04 · 머신러닝</div>
+                <div class="desc">분류와 회귀 모델, 하이퍼파라미터, 평가 지표(accuracy, f1, MAE, RMSE)를 다뤄요. 시험 11~12번이에요.</div>
+                <div class="tags"><span class="tag s">슬라이드</span><span class="tag n">notebooks/04_머신러닝_실습.ipynb</span></div></div>
+            <div class="links"><a class="btn" href="slides/04_머신러닝.html">슬라이드 열기</a></div>
+        </div>
+        <div class="step" data-id="s05">
+            <input type="checkbox" class="check" aria-label="완료 표시">
+            <div><div class="title">05 · 딥러닝 (PyTorch)</div>
+                <div class="desc">PyTorch로 신경망, 출력층과 손실 조합 3가지, 학습 루프, 조기 종료, 학습 곡선을 다뤄요. 시험 13~14번이에요.</div>
+                <div class="tags"><span class="tag s">슬라이드</span><span class="tag n">notebooks/05_딥러닝_실습.ipynb</span></div></div>
+            <div class="links"><a class="btn" href="slides/05_딥러닝.html">슬라이드 열기</a></div>
+        </div>
+    </div>
+
+    <!-- ===== STEP 2 ===== -->
+    <h2><span class="no">STEP 2</span>실전 전략</h2>
+    <div class="steps">
+        <div class="step" data-id="s06">
+            <input type="checkbox" class="check" aria-label="완료 표시">
+            <div><div class="title">06 · 실전 전략과 체크리스트</div>
+                <div class="desc">90분 시간 배분, 공식 문서 빨리 찾는 법, 에러 메시지 대처표, 자주 하는 실수 Top 10, 마지막 10분 점검 방법이에요.</div>
+                <div class="tags"><span class="tag s">슬라이드</span></div></div>
+            <div class="links"><a class="btn" href="slides/06_실전전략_체크리스트.html">슬라이드 열기</a></div>
+        </div>
+        <div class="step" data-id="s07">
+            <input type="checkbox" class="check" aria-label="완료 표시">
+            <div><div class="title">치트시트 (A4 4장 요약)</div>
+                <div class="desc">14문항 순서대로 핵심 코드를 A4 가로 4장에 모았어요. 인쇄해서 복습용으로 쓰세요. 시험장에는 가져갈 수 없어요.</div>
+                <div class="tags"><span class="tag">인쇄용 A4 · 4장</span></div></div>
+            <div class="links"><a class="btn ghost" href="치트시트.html">열기</a></div>
+        </div>
+    </div>
+
+    <!-- ===== STEP 3 ===== -->
+    <h2><span class="no">STEP 3</span>모의고사 3회</h2>
+    <p class="lead"><b>90분 타이머</b>를 켜고 실제 시험처럼 풀어요. 마지막 셀을 실행하면 문항별 ✅/❌와 100점 만점 점수가 나와요. <b>3회 모두 90점 이상</b>이 목표예요.</p>
+    <div class="steps">
+        <div class="step" data-id="m1">
+            <input type="checkbox" class="check" aria-label="완료 표시">
+            <div><div class="title">모의고사 1 · 배달 도착시간 예측 (회귀)</div>
+                <div class="desc">공식 샘플과 비슷한 난이도예요. 데이터 2개 병합, 이상치, 결측치, 원-핫 인코딩, 트리 회귀, PyTorch 회귀 신경망을 다뤄요.</div>
+                <div class="tags"><span class="tag m">notebooks/모의고사1_배달시간예측_회귀.ipynb</span></div></div>
+            <div class="links"><span class="path">Jupyter에서 열기</span></div>
+        </div>
+        <div class="step" data-id="m2">
+            <input type="checkbox" class="check" aria-label="완료 표시">
+            <div><div class="title">모의고사 2 · 고객 이탈 예측 (이진분류)</div>
+                <div class="desc">실제 시험 수준이에요. 공백 문자열 처리, 라벨 인코딩, stratify 분할, 스케일링, 랜덤포레스트, PyTorch 이진분류 신경망을 다뤄요.</div>
+                <div class="tags"><span class="tag m">notebooks/모의고사2_고객이탈예측_이진분류.ipynb</span></div></div>
+            <div class="links"><span class="path">Jupyter에서 열기</span></div>
+        </div>
+        <div class="step" data-id="m3">
+            <input type="checkbox" class="check" aria-label="완료 표시">
+            <div><div class="title">모의고사 3 · 와인 등급 예측 (다중분류)</div>
+                <div class="desc">실제 시험보다 조금 어려워요. concat, IQR 이상치, 결측 대체, PyTorch 다중분류와 조기 종료를 다뤄요. 목표는 70분 안에 끝내기예요.</div>
+                <div class="tags"><span class="tag m">notebooks/모의고사3_와인등급예측_다중분류.ipynb</span></div></div>
+            <div class="links"><span class="path">Jupyter에서 열기</span></div>
+        </div>
+    </div>
+
+    <!-- ===== HOW TO RUN ===== -->
+    <h2><span class="no">HOW TO</span>노트북 여는 법</h2>
+    <div class="grid2">
+        <div class="card">
+            <h3>Jupyter Lab으로 열기</h3>
+<pre><span class="c"># 1) 저장소 받기</span>
+git clone https://github.com/DrunkJin/aice-pass-kit.git
+cd aice-pass-kit/associate
+<span class="c"># 2) 라이브러리 설치 (가상환경 권장)</span>
+pip install -r requirements.txt
+<span class="c"># 3) 실행 → 브라우저가 열려요</span>
+jupyter lab</pre>
+            <p class="hint" style="margin-top:10px">VS Code에서는 .ipynb를 열고 오른쪽 위 <b>커널 선택</b>에서 라이브러리를 설치한 Python을 고르면 돼요.</p>
+        </div>
+        <div class="card">
+            <h3>실습 노트북 사용법</h3>
+            <ul>
+                <li><code>___</code> 빈칸을 채우고 <b>Shift+Enter</b>로 실행해요.</li>
+                <li>바로 아래 <b>채점 셀</b>이 ✅ 또는 ❌와 힌트를 보여줘요.</li>
+                <li>💡 힌트는 3분 고민한 뒤에 펼쳐보세요.</li>
+                <li>막히면 <code>notebooks/정답/</code>의 정답과 해설을 보세요.</li>
+                <li>데이터가 꼬이면 <b>Kernel → Restart &amp; Run All</b>로 처음부터 다시 실행해요.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ===== QUESTION MAP ===== -->
+    <h2><span class="no">MAP</span>14문항 ↔ 공부할 곳</h2>
+    <div class="tablewrap"><table>
+        <tr><th>문항</th><th>내용</th><th>슬라이드</th><th>실습</th></tr>
+        <tr><td>1~3</td><td>import, alias, 데이터 읽기·병합</td><td>01</td><td>01_판다스_기초</td></tr>
+        <tr><td>4~5</td><td>시각화, 잘못된 값 제거, 그래프 해석</td><td>02</td><td>02_EDA_시각화</td></tr>
+        <tr><td>6~8</td><td>이상치 제거, 결측치 처리, 컬럼 삭제</td><td>03</td><td>03_전처리</td></tr>
+        <tr><td>9~10</td><td>원-핫 인코딩, train/valid 분할, 스케일링</td><td>03</td><td>03_전처리</td></tr>
+        <tr><td>11~12</td><td>ML 모델 학습, 성능 평가</td><td>04</td><td>04_머신러닝</td></tr>
+        <tr><td>13~14</td><td>PyTorch 신경망 학습, 학습 곡선 시각화</td><td>05</td><td>05_딥러닝</td></tr>
+    </table></div>
+
+    <p style="margin-top:40px"><span class="pen">순서대로 따라오면 충분히 합격할 수 있어요!</span></p>
+
+    <footer>
+        <b>KT 공식 자료가 아니에요.</b> AICE를 준비하며 만든 개인 학습 자료이고, 실습·모의고사는 실제 시험 문제가 아니에요.<br>
+        시험 정보는 2025년 공개 안내(14문항 · 90분 · 80점 합격 · 응시료 8만원 · 유효기간 3년) 기준이에요. 응시 전 <a href="https://aice.study" target="_blank" rel="noopener">aice.study</a>에서 최신 규정을 꼭 확인하세요.<br>
+        참고 자료: <a href="https://github.com/venture21/AICE-associate" target="_blank" rel="noopener">venture21/AICE-associate</a> 예제와 요약 노트. 실습·모의고사 데이터는 연습용으로 만든 합성 데이터예요.
+    </footer>
+</div>
+
+<script>
+/* ===========================================
+   진도 체크 — 이 브라우저(localStorage)에만 저장
+   저장이 막힌 환경(시크릿 창 등)에서도 페이지는 정상 동작
+   =========================================== */
+(function () {
+    const KEY = 'aice-associate-progress';
+    let state = {};
+    try { state = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) { state = {}; }
+    const steps = Array.from(document.querySelectorAll('.step'));
+    const bar = document.getElementById('bar'), pct = document.getElementById('pct');
+    function render() {
+        let done = 0;
+        steps.forEach(st => {
+            const on = !!state[st.dataset.id];
+            st.querySelector('.check').checked = on;
+            st.classList.toggle('done', on);
+            if (on) done++;
+        });
+        const p = Math.round((done / steps.length) * 100);
+        bar.style.width = p + '%';
+        pct.textContent = p + '%';
+    }
+    steps.forEach(st => st.querySelector('.check').addEventListener('change', e => {
+        state[st.dataset.id] = e.target.checked;
+        try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (err) { /* 저장 불가 환경 */ }
+        render();
+    }));
+    render();
+})();
+</script>
+</body>
+</html>

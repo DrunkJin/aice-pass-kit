@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AICE Pass Kit</title>
+<meta name="description" content="KT AICE 자격시험 대비 무료 학습 자료 — 개념 슬라이드, 빈칸 실습 노트북, 자동 채점 모의고사">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=IBM+Plex+Sans+KR:wght@400;500;700&family=JetBrains+Mono:wght@400;700&family=Nanum+Pen+Script&display=swap" rel="stylesheet">
+<style>
+/* ===========================================
+   THEME — 시험지(크림 모눈종이) + 빨간 채점펜
+   =========================================== */
+:root {
+    --paper: #f3eee3; --ink: #1b2233; --ink-2: #4b546b; --ink-3: #7d8497;
+    --rule: rgba(27, 34, 51, 0.07); --red: #d6402b; --blue: #2b59c3; --green: #23845a; --yellow: #f4cf55;
+    --card: rgba(255, 253, 247, .92);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: 'IBM Plex Sans KR', sans-serif; color: var(--ink); line-height: 1.6; word-break: keep-all;
+    background-color: var(--paper);
+    background-image: linear-gradient(var(--rule) 1px, transparent 1px), linear-gradient(90deg, var(--rule) 1px, transparent 1px);
+    background-size: 32px 32px; min-height: 100vh;
+}
+.wrap { max-width: 1080px; margin: 0 auto; padding: 72px 32px 80px 64px; position: relative; }
+.wrap::before { content: ""; position: absolute; top: 0; bottom: 0; left: 32px; width: 2px; background: var(--red); opacity: .5; }
+.kicker { font-family: 'JetBrains Mono', monospace; font-weight: 700; letter-spacing: .14em; color: var(--red); font-size: 14px; }
+h1 { font-family: 'Black Han Sans', sans-serif; font-weight: 400; font-size: clamp(48px, 9vw, 96px); line-height: 1.05; margin: 12px 0 18px; }
+h1 em { font-style: normal; color: var(--red); }
+.sub { font-size: 19px; color: var(--ink-2); max-width: 720px; }
+
+/* ===========================================
+   LEVEL CARDS
+   =========================================== */
+.levels { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-top: 44px; }
+.level {
+    display: block; text-decoration: none; color: inherit; background: var(--card);
+    border: 2px solid var(--ink); border-radius: 16px; padding: 26px 28px 24px; position: relative;
+    box-shadow: 6px 6px 0 rgba(27,34,51,.12); transition: transform .15s ease, box-shadow .15s ease;
+}
+a.level:hover { transform: translate(-3px, -3px); box-shadow: 9px 9px 0 rgba(27,34,51,.16); }
+.level.live { border-top: 12px solid var(--red); }
+.level.soon { border-top: 12px solid var(--ink-3); opacity: .75; }
+.level .tag { font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: .1em; color: var(--ink-3); }
+.level h2 { font-family: 'Black Han Sans', sans-serif; font-weight: 400; font-size: 44px; line-height: 1.1; margin: 6px 0 10px; }
+.level p { color: var(--ink-2); font-size: 16px; }
+.level ul { margin: 14px 0 18px 1.1em; font-size: 15px; }
+.level li::marker { color: var(--red); }
+.go { display: inline-block; font-weight: 700; font-size: 15px; background: var(--ink); color: var(--paper); padding: 9px 18px; border-radius: 10px; }
+a.level:hover .go { background: var(--red); }
+.badge { position: absolute; right: 22px; top: 20px; font-family: 'JetBrains Mono', monospace; font-size: 12px; padding: 3px 10px; border-radius: 999px; border: 1.5px solid currentColor; }
+.live .badge { color: var(--green); }
+.soon .badge { color: var(--ink-3); }
+
+/* ===========================================
+   INFO
+   =========================================== */
+h3 { font-family: 'Black Han Sans', sans-serif; font-weight: 400; font-size: 26px; margin: 52px 0 12px; }
+.how { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.how div { background: var(--card); border: 1.5px solid rgba(27,34,51,.3); border-radius: 12px; padding: 16px 18px; font-size: 15px; }
+.how b { display: block; font-family: 'JetBrains Mono', monospace; color: var(--red); font-size: 13px; margin-bottom: 4px; }
+.pen { font-family: 'Nanum Pen Script', cursive; color: var(--red); font-size: 30px; transform: rotate(-2deg); display: inline-block; margin-top: 36px; }
+footer { margin-top: 44px; font-size: 13px; color: var(--ink-3); }
+footer a { color: inherit; }
+@media (max-width: 760px) {
+    .wrap { padding: 48px 16px 64px 34px; }
+    .wrap::before { left: 18px; }
+    .levels, .how { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+    <div class="kicker">AICE PASS KIT</div>
+    <h1>AICE, <em>합격</em>까지<br>따라오세요</h1>
+    <p class="sub">KT AICE 자격시험을 준비하는 무료 학습 자료예요. 개념 슬라이드로 이해하고, 빈칸 실습 노트북으로 손에 익히고, 자동 채점되는 모의고사로 실전 감각을 만들어요.</p>
+
+    <!-- ===== 레벨 선택 ===== -->
+    <div class="levels">
+        <a class="level live" href="associate/index.html">
+            <span class="badge">공개</span>
+            <span class="tag">LEVEL · PYTHON 실기</span>
+            <h2>Associate</h2>
+            <p>14문항 · 90분 · 80점 이상 합격. 데이터 전처리부터 머신러닝, 딥러닝(PyTorch)까지.</p>
+            <ul>
+                <li>개념 슬라이드 7개 (163장)</li>
+                <li>빈칸 실습 노트북 6개 + 정답·해설</li>
+                <li>자동 채점 모의고사 3회</li>
+                <li>A4 4장 치트시트</li>
+            </ul>
+            <span class="go">시작하기 →</span>
+        </a>
+        <div class="level soon">
+            <span class="badge">준비 중</span>
+            <span class="tag">LEVEL · 실무자</span>
+            <h2>Professional</h2>
+            <p>이미지·텍스트 같은 비정형 데이터와 성능 최적화를 다루는 상위 등급이에요. 자료를 준비하고 있어요.</p>
+        </div>
+    </div>
+
+    <!-- ===== 사용법 ===== -->
+    <h3>이렇게 공부해요</h3>
+    <div class="how">
+        <div><b>STEP 1 · 슬라이드</b>브라우저에서 바로 열어요. ←/→ 키로 넘기고, 퀴즈 카드를 눌러 정답을 확인해요.</div>
+        <div><b>STEP 2 · 실습 노트북</b>저장소를 받아 Jupyter로 열고, <code>___</code> 빈칸을 채운 뒤 채점 셀로 바로 확인해요.</div>
+        <div><b>STEP 3 · 모의고사</b>90분 타이머를 켜고 풀어요. 마지막 셀이 100점 만점으로 채점해 줘요.</div>
+    </div>
+
+    <span class="pen">순서대로 따라오면 충분히 합격할 수 있어요!</span>
+
+    <footer>
+        KT 공식 자료가 아니에요. AICE를 준비하며 만든 개인 학습 자료이고, 실습·모의고사 데이터는 연습용 합성 데이터예요. 응시 전 <a href="https://aice.study" target="_blank" rel="noopener">aice.study</a>에서 최신 규정을 꼭 확인하세요.<br>
+        소스와 노트북: <a href="https://github.com/DrunkJin/aice-pass-kit" target="_blank" rel="noopener">github.com/DrunkJin/aice-pass-kit</a> · 자료 CC BY 4.0 · 코드 MIT
+    </footer>
+</div>
+</body>
+</html>

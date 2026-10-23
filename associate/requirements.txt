@@ -1,0 +1,11 @@
+# 검증 환경: Python 3.10
+numpy==1.26.4
+pandas==2.2.0
+scikit-learn==1.7.2
+matplotlib>=3.8
+seaborn==0.13.2
+torch>=2.0
+imbalanced-learn>=0.12
+xgboost>=2.0
+lightgbm>=4.0
+jupyterlab
