@@ -48,6 +48,23 @@ jupyter lab
 
 검증한 환경: Python 3.10, numpy 1.26.4, pandas 2.2.0, scikit-learn 1.7.2, seaborn 0.13.2, torch 2.10, imbalanced-learn 0.14, xgboost 3.1, lightgbm 4.6
 
+## Kaggle에서 바로 실행하기
+
+설치 없이 브라우저에서 풀어 볼 수 있어요. 문제판은 **Copy & Edit**로 복사한 뒤 답안을 쓰고, 맨 아래 채점 셀을 실행하세요.
+
+| 노트북 | 문제 | 정답·해설 |
+|---|---|---|
+| 모의고사 1 · 배달시간 예측 (회귀) | [풀기](https://www.kaggle.com/code/cocoyachi/aice-mock-exam-1-regression) | [보기](https://www.kaggle.com/code/cocoyachi/aice-mock-exam-1-regression-answer) |
+| 모의고사 2 · 고객 이탈 예측 (이진분류) | [풀기](https://www.kaggle.com/code/cocoyachi/aice-mock-exam-2-binary-classification) | [보기](https://www.kaggle.com/code/cocoyachi/aice-mock-exam-2-binary-classification-answer) |
+| 모의고사 3 · 와인 등급 예측 (다중분류) | [풀기](https://www.kaggle.com/code/cocoyachi/aice-mock-exam-3-multiclass) | [보기](https://www.kaggle.com/code/cocoyachi/aice-mock-exam-3-multiclass-answer) |
+| 실습 01 · 판다스 기초 | [빈칸판 (GitHub)](https://github.com/DrunkJin/aice-pass-kit/blob/main/associate/notebooks/01_%ED%8C%90%EB%8B%A4%EC%8A%A4_%EA%B8%B0%EC%B4%88_%EC%8B%A4%EC%8A%B5.ipynb) | [보기](https://www.kaggle.com/code/cocoyachi/aice-practice-01-pandas-basics-answer) |
+| 실습 02 · EDA·시각화 | [빈칸판 (GitHub)](https://github.com/DrunkJin/aice-pass-kit/blob/main/associate/notebooks/02_EDA_%EC%8B%9C%EA%B0%81%ED%99%94_%EC%8B%A4%EC%8A%B5.ipynb) | [보기](https://www.kaggle.com/code/cocoyachi/aice-practice-02-eda-visualization-answer) |
+| 실습 03 · 전처리 | [빈칸판 (GitHub)](https://github.com/DrunkJin/aice-pass-kit/blob/main/associate/notebooks/03_%EC%A0%84%EC%B2%98%EB%A6%AC_%EC%8B%A4%EC%8A%B5.ipynb) | [보기](https://www.kaggle.com/code/cocoyachi/aice-practice-03-preprocessing-answer) |
+| 실습 04 · 머신러닝 | [빈칸판 (GitHub)](https://github.com/DrunkJin/aice-pass-kit/blob/main/associate/notebooks/04_%EB%A8%B8%EC%8B%A0%EB%9F%AC%EB%8B%9D_%EC%8B%A4%EC%8A%B5.ipynb) | [보기](https://www.kaggle.com/code/cocoyachi/aice-practice-04-machine-learning-answer) |
+| 실습 05 · 딥러닝 (PyTorch) | [빈칸판 (GitHub)](https://github.com/DrunkJin/aice-pass-kit/blob/main/associate/notebooks/05_%EB%94%A5%EB%9F%AC%EB%8B%9D_%EC%8B%A4%EC%8A%B5.ipynb) | [보기](https://www.kaggle.com/code/cocoyachi/aice-practice-05-deep-learning-pytorch-answer) |
+
+데이터와 채점기: [Kaggle Dataset · aice-pass-kit-data](https://www.kaggle.com/datasets/cocoyachi/aice-pass-kit-data)
+
 ## 공부하는 방법
 
 1. **슬라이드** (15분): ←/→ 키로 넘기고, Q 카드는 정답을 보기 전에 먼저 답해 보세요.

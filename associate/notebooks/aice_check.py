@@ -23,6 +23,8 @@ import pandas as pd
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
 _DATA = os.path.join(_HERE, '..', 'data')
+if not os.path.isdir(_DATA):          # Kaggle 등: 데이터와 채점기가 같은 폴더에 있을 때
+    _DATA = _HERE
 _RESULTS = {}          # {'p01': {3: True, ...}}
 
 
